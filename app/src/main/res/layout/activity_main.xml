@@ -33,13 +33,16 @@
 
     <Button
         android:id="@+id/loginFromFacebookButton"
+        android:paddingLeft="25dp"
+        android:paddingRight="45dp"
+        android:drawableLeft="@drawable/ic_facebook_icon"
         android:layout_width="220dp"
         android:layout_height="wrap_content"
         android:layout_above="@id/loginOrRegisterButton"
         android:layout_centerHorizontal="true"
         android:layout_margin="5dp"
         android:background="@drawable/fbstyle_button"
-        android:text="login using fb"
+        android:text="login"
         android:textColorLink="@color/colorPrimaryDark" />
 
     <Button
