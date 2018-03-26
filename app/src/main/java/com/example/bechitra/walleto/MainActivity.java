@@ -15,10 +15,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        myLayout = findViewById(R.id.mainActivityLayout);
+        /*myLayout = findViewById(R.id.mainActivityLayout);
         animationDrawable = (AnimationDrawable) myLayout.getBackground();
         animationDrawable.setEnterFadeDuration(4500);
         animationDrawable.setExitFadeDuration(4500);
         animationDrawable.start();
+        */
     }
 }
