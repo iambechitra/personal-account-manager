@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">Walleto</string>
+    <string name="app_name">WALLETO : Personal Account Manager</string>
+    <string name="navigation_menu_home">Home</string>
+    <string name="navigation_menu_transection">Transection</string>
+    <string name="navigation_menu_report">Report</string>
+    <string name="navigation_menu_spend">Spending</string>
 </resources>

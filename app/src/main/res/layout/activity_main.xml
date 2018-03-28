@@ -3,66 +3,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/mainActivityLayout"
-    android:background="@drawable/background_animation"
     tools:context="com.example.bechitra.walleto.MainActivity">
 
-    <TextView
-        android:id="@+id/walletoText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        android:text="Walleto"
-        android:fontFamily="monospace"
-        android:textColor="#00C853"
-        android:textSize="45sp"
-        android:textStyle="normal|bold" />
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/buttomNovigationView"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        app:menu="@menu/navigation_menu"
+        app:itemBackground="@color/colorPrimaryDark"
+        app:itemIconTint="#F5F5F5"
+        android:layout_alignParentBottom="true">
+    </android.support.design.widget.BottomNavigationView>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="15dp"
-        android:text="Your personal account manager"
-        android:textColor="#3B5998"
-        android:textSize="15sp"
-        android:textStyle="italic" />
-
-
-    <Button
-        android:id="@+id/loginFromFacebookButton"
-        android:paddingLeft="25dp"
-        android:paddingRight="45dp"
-        android:drawableLeft="@drawable/ic_facebook_icon"
-        android:layout_width="220dp"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/loginOrRegisterButton"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="5dp"
-        android:background="@drawable/fbstyle_button"
-        android:text="login"
-        android:textColorLink="@color/colorPrimaryDark" />
-
-    <Button
-        android:layout_margin="5dp"
-        android:layout_width="220dp"
-        android:background="@drawable/button_design"
-        android:id="@+id/loginOrRegisterButton"
-        android:text="Login / register"
-        android:textSize="16sp"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"/>
-
-    <Button
-        android:layout_margin="5dp"
-        android:layout_width="220dp"
-        android:text="Run as Guest"
-        android:background="@drawable/button_design"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/loginOrRegisterButton"
-        android:layout_centerHorizontal="true"/>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:id="@+id/frameLayout"
+        android:layout_margin="15dp"
+        android:layout_above="@id/buttomNovigationView"
+        android:layout_height="match_parent"></FrameLayout>
 
 </RelativeLayout>

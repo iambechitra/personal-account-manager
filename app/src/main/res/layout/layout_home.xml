@@ -1,6 +1,171 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/mainActivityLayout"
+    android:layout_margin="15dp"
+    android:orientation="vertical">
 
-</android.support.constraint.ConstraintLayout>
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_weight="3"
+        android:layout_marginBottom="1dp"
+        android:layout_height="0dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_margin="10dp"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:textColor="#FFF"
+                android:gravity="center"
+                android:text="$250"
+                android:id="@+id/mainBalance"
+                android:textSize="45dp"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/circle_shape"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/mainBalance"
+                android:layout_centerHorizontal="true"
+                android:textSize="25sp"
+                android:textColor="@color/green"
+                android:layout_marginTop="1dp"
+                android:text="is your current balance"/>
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_weight="4"
+        android:layout_height="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_margin="1dp"
+                android:layout_height="wrap_content">
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginRight="25dp"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Spending"
+                        android:textSize="18dp"
+                        android:id="@+id/sp"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_alignParentLeft="true"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="$2500"
+                        android:textSize="18sp"
+                        android:textColor="@color/blue"
+                        android:id="@+id/spendingBalance"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_alignParentRight="true"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Earning"
+                        android:textSize="18dp"
+                        android:layout_below="@id/sp"
+                        android:layout_marginBottom="8dp"
+                        android:layout_alignParentLeft="true"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="$5000"
+                        android:textColor="@color/green"
+                        android:layout_below="@id/spendingBalance"
+                        android:textSize="18sp"
+                        android:layout_marginBottom="8dp"
+                        android:layout_alignParentRight="true"/>
+
+                </RelativeLayout>
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_margin="1dp"
+                android:layout_height="wrap_content">
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="25dp"
+                    android:paddingTop="20dp"
+                    android:paddingBottom="20dp"
+                    android:layout_marginRight="25dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Excess Spending Alert"
+                        android:layout_alignParentLeft="true"
+                        android:textSize="20sp"/>
+                    <Switch
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"/>
+                </RelativeLayout>
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_margin="1dp"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="18dp"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginRight="25dp"
+                    android:orientation="vertical"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="25sp"
+                        android:drawableLeft="@drawable/ic_add_spending_black_24dp"
+                        android:drawablePadding="10dp"
+                        android:id="@+id/addSpendingText"
+                        android:textColor="@color/blue"
+                        android:text="Add Spending"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="25sp"
+                        android:id="@+id/addEarningText"
+                        android:drawableLeft="@drawable/ic_transection_24dp"
+                        android:drawablePadding="10dp"
+                        android:textColor="@color/green"
+                        android:text="Add Earning"/>
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>
