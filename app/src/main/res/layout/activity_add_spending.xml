@@ -162,7 +162,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/button_design"
+            android:background="@drawable/circle_shape"
             android:textColor="#FFFFFF"
             android:text="Confirm"
             android:id="@+id/confirmButton"

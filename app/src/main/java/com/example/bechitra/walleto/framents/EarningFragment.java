@@ -14,28 +14,23 @@ import android.widget.Switch;
 
 import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.R;
-import com.example.bechitra.walleto.adapter.SpendingRecyclerAdapter;
-import com.example.bechitra.walleto.table.Spending;
+import com.example.bechitra.walleto.adapter.EarningRecyclerAdapter;
+import com.example.bechitra.walleto.table.Earning;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/**
- * Created by bechitra on 3/26/2018.
- */
-
-public class SpendingFragment extends Fragment{
-
+public class EarningFragment extends Fragment{
+    List<Earning> earningList;
     @BindView(R.id.spendingOrEarningRecyclerView)
-    RecyclerView spendingRecyclerView;
+    RecyclerView earningRecyclerView;
+    EarningRecyclerAdapter adapter;
 
     @BindView(R.id.spendingOrEarningFilterSwitch)
     Switch filterByCurrentMonth;
 
-    SpendingRecyclerAdapter adapter;
-    List<Spending> spendingList;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -43,25 +38,25 @@ public class SpendingFragment extends Fragment{
         ButterKnife.bind(this, view);
         final DatabaseHelper db = new DatabaseHelper(view.getContext());
 
-        spendingList = db.getAllSpending();
-        spendingRecyclerView.setHasFixedSize(true);
-        spendingRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext(), LinearLayoutManager.VERTICAL, false));
-        adapter = new SpendingRecyclerAdapter(spendingList, view.getContext());
-        spendingRecyclerView.setAdapter(adapter);
+        earningList = db.getAllEarning();
+        earningRecyclerView.setHasFixedSize(true);
+        earningRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext(), LinearLayoutManager.VERTICAL, false));
+        adapter = new EarningRecyclerAdapter(view.getContext(), earningList);
+        earningRecyclerView.setAdapter(adapter);
 
         filterByCurrentMonth.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked) {
-                    spendingList.clear();
-                    spendingList = db.getCurrentMonthSpending();
-                    adapter.setData(spendingList);
+                    earningList.clear();
+                    earningList = db.getCurrentMonthEarning();
+                    adapter.setData(earningList);
                     adapter.notifyDataSetChanged();
 
                 } else {
-                    spendingList.clear();
-                    spendingList = db.getAllSpending();
-                    adapter.setData(spendingList);
+                    earningList.clear();
+                    earningList = db.getAllEarning();
+                    adapter.setData(earningList);
                     adapter.notifyDataSetChanged();
                 }
             }

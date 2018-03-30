@@ -3,28 +3,44 @@ package com.example.bechitra.walleto.dialog;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.example.bechitra.walleto.AddSpending;
+import com.example.bechitra.walleto.DatabaseHelper;
+import com.example.bechitra.walleto.MainActivity;
 import com.example.bechitra.walleto.R;
+import com.example.bechitra.walleto.StringPatternCreator;
+import com.example.bechitra.walleto.dialog.listner.OnAddCategory;
+import com.example.bechitra.walleto.dialog.listner.OnCloseDialogListener;
+import com.example.bechitra.walleto.table.Earning;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class EarningDialog extends android.support.v4.app.DialogFragment{
-    @BindView(R.id.earningDateText)
-    TextView earningDateText;
+    @BindView(R.id.earningDateText) TextView earningDateText;
+    @BindView(R.id.earningAmountEdit) EditText earningAmountEdit;
+    @BindView(R.id.earningCatagorySpinner) Spinner earningCatagorySpinner;
+    @BindView(R.id.earningCategoryCreatorText) TextView earningCatagoryCreatorText;
+
     private DatePickerDialog.OnDateSetListener dateSetListener;
+    private OnCloseDialogListener listener;
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
@@ -32,6 +48,30 @@ public class EarningDialog extends android.support.v4.app.DialogFragment{
         View view = inflater.inflate(R.layout.earning_dialog, null);
         alertDialogBuilder.setView(view);
         ButterKnife.bind(this, view);
+
+        final DatabaseHelper db = new DatabaseHelper(getActivity());
+
+        final List<String> spinnerItem = db.getDistinctCategory("EARNING");
+
+        final ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, spinnerItem);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        earningCatagorySpinner.setAdapter(spinnerAdapter);
+
+        if(spinnerItem!= null)
+            earningCatagorySpinner.setSelection(0);
+
+        earningCatagorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                earningCatagorySpinner.setSelection(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
 
         earningDateText.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,8 +89,7 @@ public class EarningDialog extends android.support.v4.app.DialogFragment{
         dateSetListener = new DatePickerDialog.OnDateSetListener()
         {
             @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth)
-            {
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 earningDateText.setText(Integer.toString(dayOfMonth) + "/" + Integer.toString(month + 1) + "/" + Integer.toString(year));
             }
         };
@@ -58,7 +97,26 @@ public class EarningDialog extends android.support.v4.app.DialogFragment{
         alertDialogBuilder.setPositiveButton("ADD", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
+                if(earningCatagorySpinner.getSelectedItem() != null && !earningAmountEdit.getText().toString().equals("")) {
+                    Log.d("Enter", "i entered successfully");
+                    BigDecimal big = new BigDecimal(earningAmountEdit.getText().toString());
+                    if(big.compareTo(BigDecimal.ZERO) == 1) {
+                        String date = "";
+
+                        if (!earningDateText.getText().equals("TODAY"))
+                            date = earningDateText.getText().toString();
+                        else
+                            date = new StringPatternCreator().getCurrentDate();
+
+                        Earning earning = new Earning(earningCatagorySpinner.getSelectedItem().toString(), earningAmountEdit.getText().toString(), date);
+                        db.OnInsertEarningTable(earning);
+                    }
+
+                }
+
+                if(listener != null)
+                    listener.onClose(true);
+
             }
         });
 
@@ -69,6 +127,40 @@ public class EarningDialog extends android.support.v4.app.DialogFragment{
             }
         });
 
+
+        earningCatagoryCreatorText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CategoryCreatorDialog dialog = new CategoryCreatorDialog();
+                dialog.show(getFragmentManager(), "OK");
+                dialog.setOnAddCategory(new OnAddCategory() {
+                    boolean flag = false;
+                    @Override
+                    public void setCategory(String category) {
+                        if(!category.equals("NULL")) {
+                            for (String str : spinnerItem) {
+                                if (str.equals(category.toUpperCase()))
+                                    flag = true;
+                            }
+
+                            if (!flag) {
+                                spinnerItem.add(category.toUpperCase());
+                                spinnerAdapter.notifyDataSetChanged();
+                                earningCatagorySpinner.setSelection(spinnerItem.size() - 1);
+                            }
+                        }
+                    }
+                });
+
+            }
+        });
+
+        alertDialogBuilder.setTitle("Set earning");
+
         return alertDialogBuilder.create();
+    }
+
+    public void setOnCloseDialogListener(OnCloseDialogListener listener) {
+        this.listener = listener;
     }
 }

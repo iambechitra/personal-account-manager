@@ -1,5 +1,6 @@
 package com.example.bechitra.walleto;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
@@ -17,8 +18,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.example.bechitra.walleto.dialog.CategoryCreatorDialog;
+import com.example.bechitra.walleto.dialog.listner.OnAddCategory;
+import com.example.bechitra.walleto.dialog.listner.OnCloseDialogListener;
 import com.example.bechitra.walleto.table.Spending;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -38,6 +43,7 @@ public class AddSpending extends AppCompatActivity {
     Button confirmButton;
 
     private DatePickerDialog.OnDateSetListener dateSetListener;
+    OnCloseDialogListener listener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,14 +51,17 @@ public class AddSpending extends AppCompatActivity {
         setContentView(R.layout.activity_add_spending);
         ButterKnife.bind(this);
 
-        List<String> spinnerItem = new ArrayList<>();
-        spinnerItem.add("FOOD");
-        spinnerItem.add("CLOTHING");
+        final DatabaseHelper db = new DatabaseHelper(this);
 
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, spinnerItem);
+        final List<String> spinnerItem = db.getDistinctCategory("SPENDING");
+
+        final ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, spinnerItem);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         catagorySpinner.setAdapter(spinnerAdapter);
-        catagorySpinner.setSelection(0);
+
+        if(spinnerItem != null)
+            catagorySpinner.setSelection(0);
+
         catagorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -91,16 +100,63 @@ public class AddSpending extends AppCompatActivity {
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!spendingAmountEdit.getText().toString().equals("")) {
-                    DatabaseHelper db = new DatabaseHelper(v.getContext());
-                    Spending spending = new Spending(titleOfSpendingEdit.getText().toString(), catagorySpinner.getSelectedItem().toString(),
-                            spendingAmountEdit.getText().toString(), additionalNoteEdit.getText().toString(), spendingDateText.getText().toString());
+                if (catagorySpinner.getSelectedItem() != null && !spendingAmountEdit.getText().toString().equals("")) {
 
-                    db.onInsertSpending(spending);
-                    Intent intent = new Intent(v.getContext(), MainActivity.class);
-                    startActivity(intent);
+                    BigDecimal big = new BigDecimal(spendingAmountEdit.getText().toString());
+                    if (big.compareTo(BigDecimal.ZERO) == 1) {
+                        String date = "";
+
+                        if (!spendingDateText.getText().equals("TODAY"))
+                            date = spendingDateText.getText().toString();
+                        else
+                            date = new StringPatternCreator().getCurrentDate();
+
+                        Spending spending = new Spending(titleOfSpendingEdit.getText().toString().toUpperCase(), catagorySpinner.getSelectedItem().toString(),
+                                spendingAmountEdit.getText().toString(), additionalNoteEdit.getText().toString().toUpperCase(), date);
+
+                        db.onInsertSpending(spending);
+                        finish();
+                        loadMainActivity();
+                    }
                 }
             }
         });
+
+        newCatagoryCreatorText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CategoryCreatorDialog dialog = new CategoryCreatorDialog();
+                dialog.show(getSupportFragmentManager(), "OK");
+                dialog.setOnAddCategory(new OnAddCategory() {
+                    boolean flag = false;
+                    @Override
+                    public void setCategory(String category) {
+                        if(!category.equals("NULL")) {
+                            for (String str : spinnerItem) {
+                                if (str.equals(category.toUpperCase()))
+                                    flag = true;
+                            }
+
+                            if (!flag) {
+                                spinnerItem.add(category.toUpperCase());
+                                spinnerAdapter.notifyDataSetChanged();
+                                catagorySpinner.setSelection(spinnerItem.size() - 1);
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    private void loadMainActivity() {
+        Intent i = new Intent(this, MainActivity.class);
+        startActivity(i);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        loadMainActivity();
     }
 }

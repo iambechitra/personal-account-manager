@@ -4,17 +4,31 @@
     <item
         android:id="@+id/navigationHome"
         android:icon="@drawable/ic_home_black_24dp"
-        android:title="@string/navigation_menu_home" />
+        android:title="@string/navigation_menu_home"
+        android:enabled="true"
+        app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/navigationSpending"
-        android:icon="@drawable/ic_spending_24dp"
-        android:title="@string/navigation_menu_spend" />
+        android:enabled="true"
+        android:icon="@drawable/ic_import_contacts_black_24dp"
+        android:title="@string/navigation_menu_spend"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/navigationEarning"
+        android:enabled="true"
+        android:icon="@drawable/ic_transection_24dp"
+        android:title="@string/navigation_menu_earn"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/navigationTransection"
-        android:icon="@drawable/ic_transection_24dp"
-        android:title="@string/navigation_menu_transection" />
+        android:enabled="true"
+        android:icon="@drawable/ic_spending_24dp"
+        android:title="@string/navigation_menu_transection"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/navigatinReport"
         android:icon="@drawable/ic_report_black_24dp"
-        android:title="@string/navigation_menu_report" />
+        android:title="@string/navigation_menu_report"
+        android:enabled="true"
+        app:showAsAction="ifRoom"/>
 </menu>

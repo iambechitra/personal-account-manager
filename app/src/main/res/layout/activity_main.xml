@@ -8,12 +8,13 @@
     tools:context="com.example.bechitra.walleto.MainActivity">
 
     <android.support.design.widget.BottomNavigationView
-        android:id="@+id/buttomNovigationView"
+        android:id="@+id/bottomNovigationView"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="wrap_content"
         app:menu="@menu/navigation_menu"
         app:itemBackground="@color/colorPrimaryDark"
-        app:itemIconTint="#F5F5F5"
+        app:itemIconTint="#FAFAFA"
+        app:itemTextColor="#FAFAFA"
         android:layout_alignParentBottom="true">
     </android.support.design.widget.BottomNavigationView>
 
@@ -21,7 +22,7 @@
         android:layout_width="match_parent"
         android:id="@+id/frameLayout"
         android:layout_margin="15dp"
-        android:layout_above="@id/buttomNovigationView"
+        android:layout_above="@id/bottomNovigationView"
         android:layout_height="match_parent"></FrameLayout>
 
 </RelativeLayout>

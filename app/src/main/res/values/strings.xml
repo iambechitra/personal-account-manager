@@ -4,4 +4,5 @@
     <string name="navigation_menu_transection">Transection</string>
     <string name="navigation_menu_report">Report</string>
     <string name="navigation_menu_spend">Spending</string>
+    <string name="navigation_menu_earn">Earning</string>
 </resources>

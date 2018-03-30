@@ -1,0 +1,78 @@
+package com.example.bechitra.walleto.adapter;
+
+import android.content.Context;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.example.bechitra.walleto.R;
+import com.example.bechitra.walleto.StringPatternCreator;
+import com.example.bechitra.walleto.table.Spending;
+
+import java.util.List;
+import java.util.StringTokenizer;
+
+public class SpendingRecyclerAdapter extends RecyclerView.Adapter<SpendingRecyclerAdapter.SpendingRecyclerViewHolder>{
+    private List<Spending> spendingsList;
+    private Context context;
+    private RelativeLayout.LayoutParams params;
+
+    public SpendingRecyclerAdapter(List<Spending> spendingsList, Context context) {
+        this.spendingsList = spendingsList;
+        this.context = context;
+        this.params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+    }
+
+    @Override
+    public SpendingRecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View view = inflater.inflate(R.layout.layout_spending_recycler,  null);
+        view.setLayoutParams(params);
+        return new SpendingRecyclerViewHolder(view);
+    }
+
+    public void setData(List<Spending> list) {
+        this.spendingsList = list;
+    }
+
+    @Override
+    public void onBindViewHolder(SpendingRecyclerViewHolder holder, int position) {
+        Spending spending = spendingsList.get(position);
+        StringPatternCreator spc = new StringPatternCreator();
+
+        String []str = spc.getSeparatedDateArray(spending.getDate());
+
+        holder.spendingRecyclerDay.setText(str[0]);
+        holder.spendingRecyclerMonth.setText(spc.getMonthName(Integer.parseInt(str[1])));
+        holder.spendingRecyclerYear.setText(str[2]);
+        holder.spendingRecyclerTitle.setText(spending.getTitle());
+        holder.spendingRecyclerCategory.setText(spending.getCategory());
+        holder.spendingRecyclerNote.setText(spending.getNote());
+        holder.spendingRecyclerAmount.setText("$"+spending.getAmount());
+
+    }
+
+    @Override
+    public int getItemCount() {
+        return spendingsList.size();
+    }
+
+    class SpendingRecyclerViewHolder extends RecyclerView.ViewHolder {
+
+        TextView spendingRecyclerCategory, spendingRecyclerTitle, spendingRecyclerNote, spendingRecyclerAmount, spendingRecyclerDay, spendingRecyclerMonth, spendingRecyclerYear;
+
+        public SpendingRecyclerViewHolder(View itemView) {
+            super(itemView);
+            spendingRecyclerTitle = itemView.findViewById(R.id.spendingRecyclerTitleText);
+            spendingRecyclerCategory = itemView.findViewById(R.id.spendingRecyclerCategoryText);
+            spendingRecyclerNote = itemView.findViewById(R.id.spendingRecyclerNoteText);
+            spendingRecyclerAmount = itemView.findViewById(R.id.spendingRecyclerAmountText);
+            spendingRecyclerDay = itemView.findViewById(R.id.spendingRecyclerDayText);
+            spendingRecyclerMonth = itemView.findViewById(R.id.spendingRecyclerMonthText);
+            spendingRecyclerYear = itemView.findViewById(R.id.spendingRecyclerYearText);
+        }
+    }
+}
