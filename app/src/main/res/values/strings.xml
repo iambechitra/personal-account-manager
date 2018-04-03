@@ -1,8 +1,19 @@
 <resources>
-    <string name="app_name">WALLETO : Personal Account Manager</string>
+    <string name="app_name">Personal Account Manager</string>
     <string name="navigation_menu_home">Home</string>
-    <string name="navigation_menu_transection">Transection</string>
+    <string name="navigation_menu_transaction">Transaction</string>
     <string name="navigation_menu_report">Report</string>
     <string name="navigation_menu_spend">Spending</string>
     <string name="navigation_menu_earn">Earning</string>
+
+    <string-array name="ALERT_PERCENTAGE">
+        <item>50%</item>
+        <item>40%</item>
+        <item>30%</item>
+        <item>20%</item>
+        <item>15%</item>
+        <item>10%</item>
+        <item>5%</item>
+    </string-array>
+
 </resources>

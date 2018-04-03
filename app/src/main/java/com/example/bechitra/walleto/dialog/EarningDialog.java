@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -19,10 +18,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.bechitra.walleto.DatabaseHelper;
-import com.example.bechitra.walleto.MainActivity;
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.StringPatternCreator;
-import com.example.bechitra.walleto.dialog.listner.OnAddCategory;
+import com.example.bechitra.walleto.dialog.listner.DialogListener;
 import com.example.bechitra.walleto.dialog.listner.OnCloseDialogListener;
 import com.example.bechitra.walleto.table.Earning;
 
@@ -98,7 +96,7 @@ public class EarningDialog extends android.support.v4.app.DialogFragment{
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if(earningCatagorySpinner.getSelectedItem() != null && !earningAmountEdit.getText().toString().equals("")) {
-                    Log.d("Enter", "i entered successfully");
+                    StringPatternCreator stk = new StringPatternCreator();
                     BigDecimal big = new BigDecimal(earningAmountEdit.getText().toString());
                     if(big.compareTo(BigDecimal.ZERO) == 1) {
                         String date = "";
@@ -106,9 +104,9 @@ public class EarningDialog extends android.support.v4.app.DialogFragment{
                         if (!earningDateText.getText().equals("TODAY"))
                             date = earningDateText.getText().toString();
                         else
-                            date = new StringPatternCreator().getCurrentDate();
+                            date = stk.getCurrentDate();
 
-                        Earning earning = new Earning(earningCatagorySpinner.getSelectedItem().toString(), earningAmountEdit.getText().toString(), date);
+                        Earning earning = new Earning(stk.stringFormatter(earningCatagorySpinner.getSelectedItem().toString()).trim(), earningAmountEdit.getText().toString(), date);
                         db.OnInsertEarningTable(earning);
                     }
 
@@ -133,10 +131,10 @@ public class EarningDialog extends android.support.v4.app.DialogFragment{
             public void onClick(View v) {
                 CategoryCreatorDialog dialog = new CategoryCreatorDialog();
                 dialog.show(getFragmentManager(), "OK");
-                dialog.setOnAddCategory(new OnAddCategory() {
+                dialog.setOnAddCategory(new DialogListener() {
                     boolean flag = false;
                     @Override
-                    public void setCategory(String category) {
+                    public void onSetDialog(String category) {
                         if(!category.equals("NULL")) {
                             for (String str : spinnerItem) {
                                 if (str.equals(category.toUpperCase()))

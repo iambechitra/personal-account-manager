@@ -20,12 +20,6 @@
         android:title="@string/navigation_menu_earn"
         app:showAsAction="ifRoom" />
     <item
-        android:id="@+id/navigationTransection"
-        android:enabled="true"
-        android:icon="@drawable/ic_spending_24dp"
-        android:title="@string/navigation_menu_transection"
-        app:showAsAction="ifRoom" />
-    <item
         android:id="@+id/navigatinReport"
         android:icon="@drawable/ic_report_black_24dp"
         android:title="@string/navigation_menu_report"

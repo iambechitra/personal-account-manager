@@ -7,22 +7,65 @@
     android:id="@+id/mainActivityLayout"
     tools:context="com.example.bechitra.walleto.MainActivity">
 
-    <android.support.design.widget.BottomNavigationView
-        android:id="@+id/bottomNovigationView"
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:backgroundTint="@color/blue"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="115dp"
+        android:visibility="invisible"
+        android:id="@+id/earningFloatingButton"
+        android:layout_marginRight="15dp"
+        android:src="@drawable/ic_add_spending_black_24dp" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:backgroundTint="@color/green"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="65dp"
+        android:layout_marginRight="15dp"
+        android:visibility="invisible"
+        android:id="@+id/spendingFloatingButton"
+        android:src="@drawable/ic_add_money_black_24dp" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:backgroundTint="@color/green"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="15dp"
+        android:layout_marginRight="15dp"
+        android:id="@+id/floatingActionButton"
+        android:src="@drawable/ic_add_black_24dp" />
+
+
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:menu="@menu/navigation_menu"
-        app:itemBackground="@color/colorPrimaryDark"
-        app:itemIconTint="#FAFAFA"
-        app:itemTextColor="#FAFAFA"
-        android:layout_alignParentBottom="true">
-    </android.support.design.widget.BottomNavigationView>
+        android:background="@color/green"
+        android:id="@+id/appbar">
 
-    <FrameLayout
+        <android.support.design.widget.TabLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tabTextColor="#F5F5F5"
+            app:tabSelectedTextColor="#FFF"
+            android:id="@+id/tabs">
+
+        </android.support.design.widget.TabLayout>
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.view.ViewPager
         android:layout_width="match_parent"
-        android:id="@+id/frameLayout"
+        android:id="@+id/viewPager"
+        android:layout_below="@id/appbar"
         android:layout_margin="15dp"
-        android:layout_above="@id/bottomNovigationView"
-        android:layout_height="match_parent"></FrameLayout>
+        android:layout_height="match_parent">
+
+    </android.support.v4.view.ViewPager>
 
 </RelativeLayout>

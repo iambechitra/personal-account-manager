@@ -81,4 +81,21 @@ public class StringPatternCreator {
 
         return str;
     }
+
+    public String stringFormatter(String string) {
+        StringTokenizer stk = new StringTokenizer(string, " ");
+        String str = "";
+        int i = 0;
+        while(stk.hasMoreTokens()) {
+            i++;
+            String token = stk.nextToken();
+            char [] ch = token.toCharArray();
+            String bind = new String(ch, 1, ch.length-1);
+            str += (ch[0]+bind.toLowerCase());
+            if(i >= 1)
+                str += " ";
+        }
+
+        return str;
+    }
 }

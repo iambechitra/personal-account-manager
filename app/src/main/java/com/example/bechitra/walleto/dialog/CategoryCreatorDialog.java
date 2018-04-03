@@ -11,7 +11,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.example.bechitra.walleto.R;
-import com.example.bechitra.walleto.dialog.listner.OnAddCategory;
+import com.example.bechitra.walleto.dialog.listner.DialogListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -19,7 +19,7 @@ import butterknife.ButterKnife;
 public class CategoryCreatorDialog extends DialogFragment{
     @BindView(R.id.categoryCreatorEdit)
     EditText categoryCreatorEdit;
-    OnAddCategory listener;
+    DialogListener listener;
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -34,9 +34,9 @@ public class CategoryCreatorDialog extends DialogFragment{
             public void onClick(DialogInterface dialog, int which) {
                 if(listener != null) {
                     if(!categoryCreatorEdit.getText().toString().equals(""))
-                        listener.setCategory(categoryCreatorEdit.getText().toString());
+                        listener.onSetDialog(categoryCreatorEdit.getText().toString());
                     else
-                        listener.setCategory("NULL");
+                        listener.onSetDialog("NULL");
                 }
             }
         });
@@ -53,7 +53,7 @@ public class CategoryCreatorDialog extends DialogFragment{
         return alertDialogBuilder.create();
     }
 
-    public void setOnAddCategory(OnAddCategory listener) {
+    public void setOnAddCategory(DialogListener listener) {
         this.listener = listener;
     }
 

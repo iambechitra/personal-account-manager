@@ -14,7 +14,7 @@ import com.example.bechitra.walleto.dialog.listner.ResetListener;
 
 import butterknife.ButterKnife;
 
-public class SettingDialog extends DialogFragment{
+public class ResetDialog extends DialogFragment{
     ResetListener listener;
     @NonNull
     @Override

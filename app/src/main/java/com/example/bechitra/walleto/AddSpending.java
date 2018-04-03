@@ -1,8 +1,6 @@
 package com.example.bechitra.walleto;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -16,15 +14,13 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.TimePicker;
 
 import com.example.bechitra.walleto.dialog.CategoryCreatorDialog;
-import com.example.bechitra.walleto.dialog.listner.OnAddCategory;
+import com.example.bechitra.walleto.dialog.listner.DialogListener;
 import com.example.bechitra.walleto.dialog.listner.OnCloseDialogListener;
 import com.example.bechitra.walleto.table.Spending;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -111,8 +107,10 @@ public class AddSpending extends AppCompatActivity {
                         else
                             date = new StringPatternCreator().getCurrentDate();
 
-                        Spending spending = new Spending(titleOfSpendingEdit.getText().toString().toUpperCase(), catagorySpinner.getSelectedItem().toString(),
-                                spendingAmountEdit.getText().toString(), additionalNoteEdit.getText().toString().toUpperCase(), date);
+                        StringPatternCreator stk = new StringPatternCreator();
+
+                        Spending spending = new Spending(stk.stringFormatter(titleOfSpendingEdit.getText().toString().toUpperCase()).trim(), stk.stringFormatter(catagorySpinner.getSelectedItem().toString()).trim(),
+                                spendingAmountEdit.getText().toString(), stk.stringFormatter(additionalNoteEdit.getText().toString().toUpperCase()).trim(), date);
 
                         db.onInsertSpending(spending);
                         finish();
@@ -127,10 +125,10 @@ public class AddSpending extends AppCompatActivity {
             public void onClick(View v) {
                 CategoryCreatorDialog dialog = new CategoryCreatorDialog();
                 dialog.show(getSupportFragmentManager(), "OK");
-                dialog.setOnAddCategory(new OnAddCategory() {
+                dialog.setOnAddCategory(new DialogListener() {
                     boolean flag = false;
                     @Override
-                    public void setCategory(String category) {
+                    public void onSetDialog(String category) {
                         if(!category.equals("NULL")) {
                             for (String str : spinnerItem) {
                                 if (str.equals(category.toUpperCase()))

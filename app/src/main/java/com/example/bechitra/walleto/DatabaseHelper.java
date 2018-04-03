@@ -13,6 +13,7 @@ import com.example.bechitra.walleto.table.Spending;
 
 import java.math.BigDecimal;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -38,8 +39,11 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     final static String UT_COL2 = "BALANCE";
     final static String UT_COL3 = "ALERT";
 
+    SQLiteDatabase db;
+
     public DatabaseHelper(Context context) {
         super(context, DB_NAME, null, 1);
+        db = this.getWritableDatabase();
     }
 
     @Override
@@ -60,13 +64,12 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         spending.put(ST_COL4, spend.getNote());
         spending.put(ST_COL5, spend.getDate());
 
-        SQLiteDatabase db = this.getWritableDatabase();
         long result = db.insert(SPENDING_TABLE, null, spending);
 
         String balance = getBalanceForUser(db);
         String newBalance = "";
 
-        if(balance != null && new StringPatternCreator().isCurrentMonth(spend.getDate())) {
+        if(balance != null) {
             newBalance = new BigDecimal(new BigDecimal(balance).subtract(new BigDecimal(spend.getAmount())).toString()).toString();
             updateUserTable(db, UT_COL2, balance, newBalance);
         }
@@ -87,7 +90,6 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     }
 
     public List<String> getDistinctCategory(String tableName) {
-        SQLiteDatabase db = this.getWritableDatabase();
         Cursor cr = db.rawQuery("SELECT DISTINCT CATEGORY FROM "+tableName, null);
         List<String> list = new ArrayList<>();
         while(cr.moveToNext())
@@ -97,8 +99,6 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     }
 
     public String getBalanceForUser() {
-        SQLiteDatabase db = this.getWritableDatabase();
-
         Cursor cr = db.rawQuery("SELECT BALANCE FROM "+USER_TABLE, null);
         String balance = "0";
 
@@ -134,8 +134,6 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
         String format = new StringPatternCreator().getCurrentMonthWithYear();
 
-        SQLiteDatabase db = this.getWritableDatabase();
-
         Cursor cr = db.rawQuery("SELECT AMOUNT FROM "+tableName+" WHERE DATE LIKE '%"+format+"'", null);
 
         BigDecimal numb = BigDecimal.ZERO;
@@ -155,16 +153,13 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         cv.put(ET_COL1, earning.getCategory());
         cv.put(ET_COL2, earning.getAmount());
         cv.put(ET_COL3, earning.getDate());
-
-        SQLiteDatabase db = this.getWritableDatabase();
         long num = db.insert(EARNING_TABLE, null, cv);
 
         String balance = getBalanceForUser(db);
 
-        if(new StringPatternCreator().isCurrentMonth(earning.getDate())) {
-            BigDecimal newBalance = new BigDecimal(new BigDecimal(balance).add(new BigDecimal(earning.getAmount())).toString());
-            updateUserTable(db, UT_COL2, balance, newBalance.toString());
-        }
+        BigDecimal newBalance = new BigDecimal(new BigDecimal(balance).add(new BigDecimal(earning.getAmount())).toString());
+        updateUserTable(db, UT_COL2, balance, newBalance.toString());
+
 
         if(num != -1)
             return true;
@@ -173,8 +168,6 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     }
 
     public boolean resetEveryThing() {
-
-        SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("DROP TABLE IF EXISTS "+SPENDING_TABLE);
         db.execSQL("DROP TABLE IF EXISTS "+EARNING_TABLE);
         db.execSQL("DROP TABLE IF EXISTS "+USER_TABLE);
@@ -185,7 +178,6 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     }
 
     public List<Spending> getAllSpending() {
-        SQLiteDatabase db = this.getWritableDatabase();
         Cursor cr = db.rawQuery("SELECT * FROM "+SPENDING_TABLE, null);
         List<Spending> spendingList = new ArrayList<>();
         while(cr.moveToNext())
@@ -198,11 +190,10 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         db.execSQL("CREATE TABLE "+SPENDING_TABLE+" (ID INTEGER PRIMARY KEY AUTOINCREMENT, "+ST_COL1+" TEXT, "+ST_COL2+" TEXT, "+ST_COL3+ " TEXT, "+ST_COL4+" TEXT, "+ST_COL5+" TEXT)");
         db.execSQL("CREATE TABLE "+EARNING_TABLE+" ("+ET_COL1+" TEXT, "+ET_COL2+" TEXT, "+ET_COL3+ " TEXT)");
         db.execSQL("CREATE TABLE "+USER_TABLE+" ("+UT_COL1+" TEXT, "+UT_COL2+" TEXT, "+UT_COL3+ " TEXT)");
-        db.execSQL("INSERT INTO "+USER_TABLE+" VALUES ('NULL', '0', 'NULL')");
+        db.execSQL("INSERT INTO "+USER_TABLE+" VALUES ('NULL', '0', '0')");
     }
 
     public List<Spending> getCurrentMonthSpending() {
-        SQLiteDatabase db = this.getWritableDatabase();
         Cursor cr = db.rawQuery("SELECT * FROM "+SPENDING_TABLE+" WHERE DATE LIKE '%"
                                 +new StringPatternCreator().getCurrentMonthWithYear()+"'", null);
         List<Spending> spendingList = new ArrayList<>();
@@ -213,8 +204,6 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     }
 
     public List<Earning> getAllEarning() {
-        SQLiteDatabase db = this.getWritableDatabase();
-
         Cursor cr = db.rawQuery("SELECT * FROM "+EARNING_TABLE,null);
         List<Earning> earningList = new ArrayList<>();
         while (cr.moveToNext())
@@ -224,8 +213,6 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     }
 
     public List<Earning> getCurrentMonthEarning() {
-        SQLiteDatabase db = this.getWritableDatabase();
-
         Cursor cr = db.rawQuery("SELECT * FROM "+EARNING_TABLE+" WHERE DATE LIKE '%"
                                 +new StringPatternCreator().getCurrentMonthWithYear()+"'",null);
         List<Earning> earningList = new ArrayList<>();
@@ -237,7 +224,6 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
     public Spending getLastInsertedSpending() {
         Spending spending = null;
-        SQLiteDatabase db = this.getWritableDatabase();
         Cursor cr = db.rawQuery("SELECT * FROM "+SPENDING_TABLE+" WHERE ID = (SELECT ID FROM "+SPENDING_TABLE+" ORDER BY ID DESC LIMIT 1)",null);
 
         while (cr.moveToNext()) {
@@ -245,6 +231,35 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         }
 
         return spending;
+    }
+
+    public String getBalanceToEarningRatio() {
+        String str = "";
+
+        String balance = getBalanceForUser();
+        String earning = getCalculationOfCurrentMonth(EARNING_TABLE);
+        double remainingBalance =  (Double.parseDouble(balance)/Double.parseDouble(earning) * 100.0);
+
+        DecimalFormat df = new DecimalFormat();
+        df.setMaximumFractionDigits(2);
+
+        return df.format(remainingBalance).toString();
+    }
+
+    public void insertOnUserTable(String percentage) {
+        String balance = getBalanceForUser();
+        if(balance != null) {
+            db.execSQL("UPDATE "+USER_TABLE+" SET "+UT_COL3+" = '"+percentage+"' WHERE "+UT_COL2+" = '"+balance+"'");
+        }
+    }
+
+    public String getOnAlertPercentage() {
+        String str = "0";
+        Cursor cr = db.rawQuery("SELECT "+UT_COL3+" FROM "+USER_TABLE,null);
+        while(cr.moveToNext())
+            str = cr.getString(0);
+
+        return str;
     }
 
 }
