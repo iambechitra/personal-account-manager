@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
@@ -21,12 +22,14 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
 
-   // @BindView(R.id.bottomNovigationView) BottomNavigationView bottomNavigationView;
+    // @BindView(R.id.bottomNovigationView) BottomNavigationView bottomNavigationView;
     @BindView(R.id.viewPager) ViewPager viewPager;
     @BindView(R.id.tabs) TabLayout tabLayout;
     @BindView(R.id.floatingActionButton) FloatingActionButton rootFloatingButton;
     @BindView(R.id.earningFloatingButton) FloatingActionButton earningFab;
     @BindView(R.id.spendingFloatingButton) FloatingActionButton spendingFab;
+
+    boolean isOpen = false;
 
     ViewPagerAdapter adapter;
     Animation floatingButtonOpen, floatingButtonClose, clockWiseRotation, antiClockWiseRotation;
@@ -38,9 +41,33 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         onSetFragment(viewPager);
         tabLayout.setupWithViewPager(viewPager);
+
         floatingButtonOpen = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_button_open);
         floatingButtonClose = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_button_close);
-        //clo
+        clockWiseRotation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_rotate_clockwise);
+        antiClockWiseRotation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_rotate_anticlock);
+
+        rootFloatingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isOpen) {
+                    earningFab.startAnimation(floatingButtonClose);
+                    spendingFab.startAnimation(floatingButtonClose);
+                    rootFloatingButton.startAnimation(antiClockWiseRotation);
+                    earningFab.setClickable(false);
+                    spendingFab.setClickable(false);
+                    isOpen = false;
+
+                } else {
+                    earningFab.startAnimation(floatingButtonOpen);
+                    spendingFab.startAnimation(floatingButtonOpen);
+                    rootFloatingButton.startAnimation(clockWiseRotation);
+                    earningFab.setClickable(true);
+                    spendingFab.setClickable(true);
+                    isOpen = true;
+                }
+            }
+        });
     }
 
     public void onSetFragment(ViewPager viewPager) {
@@ -56,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setFragmentManager(Fragment fragment) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-      //  fragmentTransaction.replace(R.id.frameLayout, fragment);
+        //  fragmentTransaction.replace(R.id.frameLayout, fragment);
         fragmentTransaction.commit();
     }
 

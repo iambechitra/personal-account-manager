@@ -4,8 +4,8 @@
 
     <rotate
         android:duration="300"
-        android:fromDegree="0"
-        android:toDegree="45"
+        android:fromDegrees="0"
+        android:toDegrees="45"
         android:interpolator="@android:anim/linear_interpolator"
         android:pivotX="50%"
         android:pivotY="50%"/>
