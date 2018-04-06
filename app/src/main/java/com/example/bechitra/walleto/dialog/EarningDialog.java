@@ -88,6 +88,7 @@ public class EarningDialog extends android.support.v4.app.DialogFragment{
         {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+
                 earningDateText.setText(Integer.toString(dayOfMonth) + "/" + Integer.toString(month + 1) + "/" + Integer.toString(year));
             }
         };

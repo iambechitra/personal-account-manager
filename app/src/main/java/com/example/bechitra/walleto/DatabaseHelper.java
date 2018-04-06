@@ -8,10 +8,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.example.bechitra.walleto.graph.GraphData;
+import com.example.bechitra.walleto.sorting.BigSort;
 import com.example.bechitra.walleto.table.Earning;
 import com.example.bechitra.walleto.table.Spending;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -91,6 +94,16 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
     public List<String> getDistinctCategory(String tableName) {
         Cursor cr = db.rawQuery("SELECT DISTINCT CATEGORY FROM "+tableName, null);
+        List<String> list = new ArrayList<>();
+        while(cr.moveToNext())
+            list.add(cr.getString(0));
+
+        return list;
+    }
+
+    public List<String> getDistinctCategoryFromCurrentMonth(String tableName) {
+        Cursor cr = db.rawQuery("SELECT DISTINCT CATEGORY FROM "+tableName+" WHERE DATE LIKE '%"
+                +new StringPatternCreator().getCurrentMonthWithYear()+"'", null);
         List<String> list = new ArrayList<>();
         while(cr.moveToNext())
             list.add(cr.getString(0));
@@ -260,6 +273,64 @@ public class DatabaseHelper extends SQLiteOpenHelper{
             str = cr.getString(0);
 
         return str;
+    }
+
+    public List<GraphData> getPieChartData() {
+        List<GraphData> graphData = new ArrayList<>();
+        List<String> numbers = new ArrayList<>();
+        List<String> sortedArray = null;
+        List <GraphData> pieChartData = new ArrayList<>();
+
+        List<String>category = getDistinctCategoryFromCurrentMonth(SPENDING_TABLE);
+        boolean flag = false;
+        if(category != null) {
+            for(String str : category) {
+                List<String> amount = getTotalAmountForACategoryForMonth(str, SPENDING_TABLE, new StringPatternCreator().getCurrentMonthWithYear());
+                String total = getTotalAmountFromAList(amount);
+                numbers.add(total);
+                graphData.add(new GraphData(str, total));
+                flag = true;
+            }
+        }
+
+        String am = getCalculationOfCurrentMonth(SPENDING_TABLE);
+        BigDecimal num = new BigDecimal(am);
+
+        if(flag) {
+            BigSort sort = new BigSort(numbers);
+            sortedArray = sort.getBigData();
+
+            for(int i = sortedArray.size()-1; i >= 0; i--) {
+                for(GraphData graphData1 : graphData) {
+                    if(graphData1.getData().equals(sortedArray.get(i)))
+                        pieChartData.add(new GraphData(graphData1.getTitle(), new BigDecimal(graphData1.getData())
+                                .divide(num, 2, RoundingMode.HALF_UP).multiply(new BigDecimal("100")).toString()));
+                }
+
+                if(sortedArray.size() - i == 4)
+                    break;
+            }
+        } else
+            pieChartData.add(new GraphData("Spending", "100"));
+
+        return  pieChartData;
+    }
+
+    public List<String> getTotalAmountForACategoryForMonth(String category, String table, String dateFormat) {
+        List<String> amount = new ArrayList<>();
+        Cursor cr = db.rawQuery("SELECT AMOUNT FROM "+table+" WHERE CATEGORY = '"+category+"' AND DATE LIKE '%"+dateFormat+"'", null);
+        while(cr.moveToNext())
+            amount.add(cr.getString(0));
+
+        return amount;
+    }
+
+    public String getTotalAmountFromAList(List<String> amount) {
+        BigDecimal total = BigDecimal.ZERO;
+        for(String str : amount)
+            total = total.add(new BigDecimal(str));
+
+        return total.toString();
     }
 
 }

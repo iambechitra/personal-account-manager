@@ -7,42 +7,6 @@
     android:id="@+id/mainActivityLayout"
     tools:context="com.example.bechitra.walleto.MainActivity">
 
-    <android.support.design.widget.FloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:backgroundTint="@color/blue"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="115dp"
-        android:visibility="invisible"
-        android:id="@+id/earningFloatingButton"
-        android:layout_marginRight="15dp"
-        android:src="@drawable/ic_add_spending_black_24dp" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:backgroundTint="@color/green"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="65dp"
-        android:layout_marginRight="15dp"
-        android:visibility="invisible"
-        android:id="@+id/spendingFloatingButton"
-        android:src="@drawable/ic_add_money_black_24dp" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:backgroundTint="@color/green"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="15dp"
-        android:layout_marginRight="15dp"
-        android:id="@+id/floatingActionButton"
-        android:src="@drawable/ic_add_black_24dp" />
-
-
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -65,7 +29,82 @@
         android:layout_below="@id/appbar"
         android:layout_margin="15dp"
         android:layout_height="match_parent">
-
     </android.support.v4.view.ViewPager>
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:backgroundTint="@color/green"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="8dp"
+        android:id="@+id/rootFloatingButton"
+        android:layout_marginRight="8dp"
+        android:src="@drawable/ic_add_black_24dp"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/earningFloatingButton"
+        android:layout_gravity="bottom|right"
+        android:visibility="gone"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="72dp">
+
+        <TextView
+            android:layout_width="75dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/fbstyle_button"
+            android:textColor="#FFF"
+            android:layout_marginRight="10dp"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:elevation="16dp"
+            android:text="Earning"/>
+
+        <android.support.design.widget.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fabSize="mini"
+            android:src="@drawable/ic_add_money_black_24dp"
+            android:backgroundTint="@color/fbcolor"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/spendingFloatingButton"
+        android:visibility="gone"
+        android:layout_marginRight="16dp"
+        android:layout_gravity="bottom|right"
+        android:layout_marginBottom="120dp">
+
+        <TextView
+            android:layout_width="75dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/blue_button"
+            android:textColor="#FFF"
+            android:gravity="center"
+            android:layout_marginRight="10dp"
+            android:layout_gravity="center"
+            android:elevation="16dp"
+            android:text="Spending"/>
+
+        <android.support.design.widget.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fabSize="mini"
+            android:src="@drawable/ic_add_spending_black_24dp"
+            android:backgroundTint="@color/blue"
+            android:layout_gravity="bottom|end" />
+
+    </LinearLayout>
 
 </RelativeLayout>

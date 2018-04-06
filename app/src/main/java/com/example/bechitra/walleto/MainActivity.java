@@ -1,17 +1,18 @@
 package com.example.bechitra.walleto;
 
+import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.example.bechitra.walleto.adapter.ViewPagerAdapter;
+import com.example.bechitra.walleto.dialog.EarningDialog;
+import com.example.bechitra.walleto.dialog.listner.OnCloseDialogListener;
 import com.example.bechitra.walleto.framents.EarningFragment;
 import com.example.bechitra.walleto.framents.HomeFragment;
 import com.example.bechitra.walleto.framents.SpendingFragment;
@@ -21,18 +22,19 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
-
-    // @BindView(R.id.bottomNovigationView) BottomNavigationView bottomNavigationView;
-    @BindView(R.id.viewPager) ViewPager viewPager;
-    @BindView(R.id.tabs) TabLayout tabLayout;
-    @BindView(R.id.floatingActionButton) FloatingActionButton rootFloatingButton;
-    @BindView(R.id.earningFloatingButton) FloatingActionButton earningFab;
-    @BindView(R.id.spendingFloatingButton) FloatingActionButton spendingFab;
-
-    boolean isOpen = false;
+    @BindView(R.id.viewPager)
+    ViewPager viewPager;
+    @BindView(R.id.tabs)
+    TabLayout tabLayout;
+    @BindView(R.id.earningFloatingButton)
+    LinearLayout earningFab;
+    @BindView(R.id.spendingFloatingButton)
+    LinearLayout spendingFab;
+    @BindView(R.id.rootFloatingButton) FloatingActionButton rootFloatingButton;
+    @BindView(R.id.mainActivityLayout)
+    RelativeLayout relativeLayout;
 
     ViewPagerAdapter adapter;
-    Animation floatingButtonOpen, floatingButtonClose, clockWiseRotation, antiClockWiseRotation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,30 +44,44 @@ public class MainActivity extends AppCompatActivity {
         onSetFragment(viewPager);
         tabLayout.setupWithViewPager(viewPager);
 
-        floatingButtonOpen = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_button_open);
-        floatingButtonClose = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_button_close);
-        clockWiseRotation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_rotate_clockwise);
-        antiClockWiseRotation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_rotate_anticlock);
-
         rootFloatingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isOpen) {
-                    earningFab.startAnimation(floatingButtonClose);
-                    spendingFab.startAnimation(floatingButtonClose);
-                    rootFloatingButton.startAnimation(antiClockWiseRotation);
-                    earningFab.setClickable(false);
-                    spendingFab.setClickable(false);
-                    isOpen = false;
-
+                if(earningFab.getVisibility() == earningFab.VISIBLE && spendingFab.getVisibility() == spendingFab.VISIBLE) {
+                    earningFab.setVisibility(earningFab.GONE);
+                    spendingFab.setVisibility(spendingFab.GONE);
                 } else {
-                    earningFab.startAnimation(floatingButtonOpen);
-                    spendingFab.startAnimation(floatingButtonOpen);
-                    rootFloatingButton.startAnimation(clockWiseRotation);
-                    earningFab.setClickable(true);
-                    spendingFab.setClickable(true);
-                    isOpen = true;
+                    earningFab.setVisibility(earningFab.VISIBLE);
+                    spendingFab.setVisibility(spendingFab.VISIBLE);
                 }
+            }
+        });
+
+        setClickableButton();
+
+    }
+
+    public void setClickableButton() {
+        spendingFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+                Intent intent = new Intent(v.getContext(), AddSpending.class);
+                startActivity(intent);
+            }
+        });
+
+        earningFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EarningDialog dialog = new EarningDialog();
+                dialog.show(getSupportFragmentManager(), "TAG");
+                dialog.setOnCloseDialogListener(new OnCloseDialogListener() {
+                    @Override
+                    public void onClose(boolean flag) {
+                        reloadActivity();
+                    }
+                });
             }
         });
     }
@@ -80,41 +96,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-    private void setFragmentManager(Fragment fragment) {
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        //  fragmentTransaction.replace(R.id.frameLayout, fragment);
-        fragmentTransaction.commit();
+    private void reloadActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        finish();
+        startActivity(intent);
     }
-
-    /*
-    public static void disableShiftMode(BottomNavigationView view) {
-        BottomNavigationMenuView menuView = (BottomNavigationMenuView) view.getChildAt(0);
-        try {
-            Field shiftingMode = menuView.getClass().getDeclaredField("mShiftingMode");
-            shiftingMode.setAccessible(true);
-            shiftingMode.setBoolean(menuView, false);
-            shiftingMode.setAccessible(false);
-            for (int i = 0; i < menuView.getChildCount(); i++) {
-                BottomNavigationItemView item = (BottomNavigationItemView) menuView.getChildAt(i);
-                item.setShiftingMode(false);
-                // set once again checked value, so view will be updated
-                item.setChecked(item.getItemData().isChecked());
-            }
-        } catch (NoSuchFieldException e) {
-            //Timber.e(e, "Unable to get shift mode field");
-        } catch (IllegalAccessException e) {
-            //Timber.e(e, "Unable to change value of shift mode");
-        }
-    }
-*/
 }
-
-/*
-<item
-        android:id="@+id/navigationTransaction"
-        android:enabled="true"
-        android:icon="@drawable/ic_spending_24dp"
-        android:title="@string/navigation_menu_transaction"
-        app:showAsAction="ifRoom" />
- */

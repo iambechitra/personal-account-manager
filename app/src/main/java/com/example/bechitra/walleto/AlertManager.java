@@ -19,8 +19,12 @@ public class AlertManager extends BroadcastReceiver{
         String percentage = db.getOnAlertPercentage();
         if(!percentage.equals("0") && percentage != null) {
             String ratio = db.getBalanceToEarningRatio();
-            if(Double.parseDouble(ratio) <= Double.parseDouble(percentage))
+            if(Double.parseDouble(ratio) <= Double.parseDouble(percentage)) {
+                if(Double.parseDouble(ratio) < 0) {
+                    ratio = "lest than 0";
+                }
                 notificationCreator(context, ratio);
+            }
         }
     }
 
@@ -33,7 +37,7 @@ public class AlertManager extends BroadcastReceiver{
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), 100, repeat, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, null)
                 .setContentIntent(pendingIntent)
-                .setSmallIcon(R.drawable.ic_import_contacts_black_24dp)
+                .setSmallIcon(R.drawable.ic_add_spending_black_24dp)
                 .setContentTitle("Excess Spending Alert")
                 .setContentText("Your Spending is very high and balance is "+ratio+"% remaining")
                 .setAutoCancel(true);
