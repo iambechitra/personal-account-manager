@@ -20,6 +20,8 @@ import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.dialog.ExcessSpendingAlertDialog;
 import com.example.bechitra.walleto.dialog.listner.AlertManagerListener;
 
+import java.util.Calendar;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -71,7 +73,14 @@ public class ReportsFragment extends Fragment{
 
     public void onSetAlarmManager(int hour, int minute, Context context) {
         alarmPreset(context);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, ((hour*60)+minute)*60*1000, AlarmManager.INTERVAL_DAY, pendingIntent);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, minute);
+        long bM = ((hour*60)+minute)*60*1000;
+        long aM = calendar.getTimeInMillis();
+        Log.d(getClass().getSimpleName(), "bM:"+bM+" aM:"+aM);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, aM, AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 
     public void stopAlarmManager(Context context) {
