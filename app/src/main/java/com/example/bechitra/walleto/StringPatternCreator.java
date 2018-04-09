@@ -5,6 +5,7 @@ import android.content.Intent;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.StringTokenizer;
 
 public class StringPatternCreator {
@@ -70,6 +71,21 @@ public class StringPatternCreator {
         return str[month-1];
     }
 
+    public String[] getAllMonthName() {
+        String [] str = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
+        return str;
+    }
+
+    public int getMonthID(String month) {
+        String [] str = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
+
+        for(int i = 0; i < str.length; i++)
+            if(str[i].equals(month))
+                return i+1;
+
+        return 0;
+    }
+
     public String[] getSeparatedDateArray(String date) {
         String []str = new String[3];
         StringTokenizer stk = new StringTokenizer(date, "/");
@@ -95,6 +111,15 @@ public class StringPatternCreator {
             if(i >= 1)
                 str += " ";
         }
+
+        return str;
+    }
+
+    public String getYearFromDate(String date) {
+        String str = "";
+        StringTokenizer stk = new StringTokenizer(date, "/");
+        while(stk.hasMoreTokens())
+            str = stk.nextToken();
 
         return str;
     }

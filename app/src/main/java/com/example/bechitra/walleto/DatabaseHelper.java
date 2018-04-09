@@ -20,7 +20,10 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 public class DatabaseHelper extends SQLiteOpenHelper{
@@ -275,7 +278,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return str;
     }
 
-    public List<GraphData> getPieChartData() {
+    public List<GraphData> getPieChartData(int limit) {
         List<GraphData> graphData = new ArrayList<>();
         List<String> numbers = new ArrayList<>();
         List<String> sortedArray = null;
@@ -293,6 +296,9 @@ public class DatabaseHelper extends SQLiteOpenHelper{
             }
         }
 
+        if(limit == 0)
+            return graphData;
+
         String am = getCalculationOfCurrentMonth(SPENDING_TABLE);
         BigDecimal num = new BigDecimal(am);
 
@@ -307,7 +313,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
                                 .divide(num, 2, RoundingMode.HALF_UP).multiply(new BigDecimal("100")).toString()));
                 }
 
-                if(sortedArray.size() - i == 4)
+                if(sortedArray.size() - i == limit)
                     break;
             }
         } else
@@ -333,4 +339,34 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return total.toString();
     }
 
+    public List<Spending> filterQuerySpending(String pattern, String category) {
+        Cursor cr = db.rawQuery("SELECT * FROM "+SPENDING_TABLE+" WHERE DATE LIKE '"+pattern+"' AND CATEGORY LIKE '"+category+"'",null);
+        List<Spending>list = new ArrayList<>();
+        while (cr.moveToNext())
+            list.add(new Spending(cr.getString(1), cr.getString(2), cr.getString(3), cr.getString(4), cr.getString(5)));
+
+        return list;
+    }
+
+    public List<Earning> filterQueryEarning(String pattern, String category) {
+        Cursor cr = db.rawQuery("SELECT * FROM "+EARNING_TABLE+" WHERE DATE LIKE '"+pattern+"' AND CATEGORY LIKE '"+category+"'",null);
+        List<Earning>list = new ArrayList<>();
+        while (cr.moveToNext())
+            list.add(new Earning(cr.getString(0), cr.getString(1), cr.getString(2)));
+
+        return list;
+    }
+
+    public List<String> getDistinctDate(String table) {
+        Set<String> date = new HashSet<>();
+        Cursor cr = db.rawQuery("SELECT DATE FROM "+table,null);
+        while (cr.moveToNext())
+            date.add(new StringPatternCreator().getYearFromDate(cr.getString(0)));
+
+        List<String> list = new ArrayList<>();
+        list.clear();
+        list.addAll(date);
+
+        return list;
+    }
 }

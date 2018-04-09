@@ -12,147 +12,126 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="5dp"
             android:orientation="horizontal">
 
-            <android.support.v7.widget.CardView
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:layout_marginRight="1dp"
-                android:layout_height="fill_parent">
-
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                android:layout_height="fill_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#3B5998"
+                    android:id="@+id/spendingRecyclerDayText"
+                    android:text="Day"/>
+                <TextView
+                    android:layout_width="55dp"
                     android:gravity="center"
-                    android:orientation="vertical">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="#3B5998"
-                        android:id="@+id/spendingRecyclerDayText"
-                        android:text="Day"/>
-                    <TextView
-                        android:layout_width="55dp"
-                        android:gravity="center"
-                        android:textColor="#FFF"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/fbstyle_button"
-                        android:id="@+id/spendingRecyclerMonthText"
-                        android:text="Month"/>
+                    android:textColor="#FFF"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/fbstyle_button"
+                    android:id="@+id/spendingRecyclerMonthText"
+                    android:text="Month"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/spendingRecyclerYearText"
-                        android:textColor="@color/green"
-                        android:text="Year"/>
-                </LinearLayout>
-            </android.support.v7.widget.CardView>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/spendingRecyclerYearText"
+                    android:textColor="@color/green"
+                    android:text="Year"/>
+            </LinearLayout>
 
-            <android.support.v7.widget.CardView
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_weight="3"
-                android:layout_marginRight="1dp"
+                android:orientation="horizontal"
+                android:layout_marginLeft="10dp"
                 android:layout_height="wrap_content">
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginLeft="10dp"
-                    android:layout_height="wrap_content">
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:paddingTop="10dp"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:layout_width="50dp"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/rr"
-                            android:text="Title"
-                            android:gravity="center"
-                            android:background="@drawable/button_design"
-                            android:textColor="#FFF"/>
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:paddingLeft="10dp"
-                            android:layout_toRightOf="@id/rr"
-                            android:text="Rice"
-                            android:id="@+id/spendingRecyclerTitleText"/>
-
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:layout_width="75dp"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/rrr"
-                            android:text="Category"
-                            android:background="@drawable/circle_shape"
-                            android:textColor="#FFF"
-                            android:gravity="center"/>
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:paddingLeft="10dp"
-                            android:layout_toRightOf="@id/rrr"
-                            android:text="Food"
-                            android:id="@+id/spendingRecyclerCategoryText"/>
-
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:paddingBottom="10dp"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:layout_width="50dp"
-                            android:gravity="center"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/rrrr"
-                            android:text="Note"
-                            android:background="@drawable/editttext_shape"
-                            android:textColor="@color/black"/>
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:paddingLeft="10dp"
-                            android:layout_toRightOf="@id/rrrr"
-                            android:text="3kg"
-                            android:id="@+id/spendingRecyclerNoteText"/>
-
-                    </RelativeLayout>
-                </LinearLayout>
-
-            </android.support.v7.widget.CardView>
-
-            <android.support.v7.widget.CardView
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="fill_parent">
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:gravity="center"
-                    android:layout_height="match_parent">
+                    android:layout_width="0dp"
+                    android:layout_weight="2"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:orientation="vertical">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:id="@+id/rr"
+                        android:text="Title : "
+                        android:gravity="end"
+                        android:textColor="@color/black" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/rrr"
+                        android:text="Category : "
+                        android:gravity="end"
+                        android:textColor="@color/black" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:gravity="end"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/rrrr"
+                        android:text="Note : "
+                        android:textColor="@color/black"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="3"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="10dp"
+                        android:text="Rice"
+                        android:id="@+id/spendingRecyclerTitleText"/>
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="10dp"
                         android:textColor="@color/green"
-                        android:textSize="18sp"
-                        android:id="@+id/spendingRecyclerAmountText"
-                        android:text="$1250"/>
+                        android:text="Food"
+                        android:id="@+id/spendingRecyclerCategoryText"/>
 
-                </RelativeLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="10dp"
+                        android:text="3kg"
+                        android:id="@+id/spendingRecyclerNoteText"/>
 
-            </android.support.v7.widget.CardView>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_weight="1.5"
+                android:gravity="center"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/red"
+                    android:textSize="18sp"
+                    android:id="@+id/spendingRecyclerAmountText"
+                    android:text="$1250"/>
+
+            </RelativeLayout>
         </LinearLayout>
 
     </android.support.v7.widget.CardView>

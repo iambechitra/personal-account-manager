@@ -162,7 +162,7 @@ public class HomeFragment extends Fragment{
     private void setPieData() {
         ArrayList<PieEntry> value = new ArrayList<>();
 
-        List<GraphData> val = db.getPieChartData();
+        List<GraphData> val = db.getPieChartData(4);
         for(GraphData d : val)
             value.add(new PieEntry((float) Double.parseDouble(d.getData()), d.getTitle()));
 
