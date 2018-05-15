@@ -118,8 +118,10 @@ public class SpendingOverviewFragment extends Fragment{
             List<TableData> list = db.getDataOnPattern(db.getSpendingTable(),"%"+stk.getMonthWithYear(map.get(i+1)));
 
             float num = 0;
-            for(TableData spending : list)
-                num += Float.parseFloat(spending.getAmount());
+            if(list.size()> 0) {
+                for (TableData spending : list)
+                    num += Float.parseFloat(spending.getAmount());
+            }
 
             value.add(new Entry(i+1, num));
         }
@@ -131,8 +133,11 @@ public class SpendingOverviewFragment extends Fragment{
             Log.d("Earning List", ""+list.size());
 
             float num = 0;
-            for(TableData spending : list)
-                num += Float.parseFloat(spending.getAmount());
+
+            if(list.size()> 0) {
+                for (TableData spending : list)
+                    num += Float.parseFloat(spending.getAmount());
+            }
 
             val.add(new Entry(i+1, num));
         }
