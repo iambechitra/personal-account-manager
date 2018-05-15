@@ -24,7 +24,7 @@ import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.adapter.EarningRecyclerAdapter;
 import com.example.bechitra.walleto.dialog.AdvanceFilterDialog;
 import com.example.bechitra.walleto.dialog.listner.FilterDialogListener;
-import com.example.bechitra.walleto.table.Earning;
+import com.example.bechitra.walleto.table.TableData;
 
 import net.cachapa.expandablelayout.ExpandableLayout;
 
@@ -33,8 +33,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class EarningFragment extends Fragment{
-    List<Earning> earningList;
+public class EarningOverviewFragment extends Fragment{
+    List<TableData> earningList;
     @BindView(R.id.spendingOrEarningRecyclerView)
     RecyclerView earningRecyclerView;
     EarningRecyclerAdapter adapter;
@@ -62,7 +62,7 @@ public class EarningFragment extends Fragment{
         ButterKnife.bind(this, view);
         final DatabaseHelper db = new DatabaseHelper(view.getContext());
 
-        earningList = db.getAllEarning();
+        earningList = db.getAllRow(db.getEarningTable());
         earningRecyclerView.setHasFixedSize(true);
         earningRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext(), LinearLayoutManager.VERTICAL, false));
         adapter = new EarningRecyclerAdapter(view.getContext(), earningList);
@@ -73,13 +73,13 @@ public class EarningFragment extends Fragment{
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked) {
                     earningList.clear();
-                    earningList = db.getCurrentMonthEarning();
+                    earningList = db.getCurrentMonthData(db.getEarningTable());
                     adapter.setData(earningList);
                     adapter.notifyDataSetChanged();
 
                 } else {
                     earningList.clear();
-                    earningList = db.getAllEarning();
+                    earningList = db.getAllRow(db.getEarningTable());
                     adapter.setData(earningList);
                     adapter.notifyDataSetChanged();
                 }
@@ -105,7 +105,7 @@ public class EarningFragment extends Fragment{
                             earningList.clear();
                             Log.d("Pattern", pattern);
                             Log.d("Category", category);
-                            earningList = db.filterQueryEarning(pattern, category);
+                            earningList = db.filterDataFromTable(db.getEarningTable(),pattern, category);
                             adapter.setData(earningList);
                             adapter.notifyDataSetChanged();
                         }
@@ -123,7 +123,7 @@ public class EarningFragment extends Fragment{
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked) {
                     double amount = 0;
-                    for(Earning sp : earningList)
+                    for(TableData sp : earningList)
                         amount += Double.parseDouble(sp.getAmount());
 
                     calculateAmountText.setVisibility(calculateAmountText.VISIBLE);

@@ -10,16 +10,16 @@ import android.widget.TextView;
 
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.StringPatternCreator;
-import com.example.bechitra.walleto.table.Earning;
+import com.example.bechitra.walleto.table.TableData;
 
 import java.util.List;
 
 public class EarningRecyclerAdapter extends RecyclerView.Adapter<EarningRecyclerAdapter.EarningRecyclerViewGroup>{
     private Context context;
-    private List<Earning> earningList;
+    private List<TableData> earningList;
     private RelativeLayout.LayoutParams params;
 
-    public EarningRecyclerAdapter(Context context, List<Earning> earningList) {
+    public EarningRecyclerAdapter(Context context, List<TableData> earningList) {
         this.context = context;
         this.earningList = earningList;
         this.params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -36,7 +36,7 @@ public class EarningRecyclerAdapter extends RecyclerView.Adapter<EarningRecycler
     @Override
     public void onBindViewHolder(EarningRecyclerViewGroup holder, int position) {
         StringPatternCreator spc = new StringPatternCreator();
-        Earning earning = earningList.get(position);
+        TableData earning = earningList.get(position);
         holder.categoryOfEarning.setText(earning.getCategory());
         holder.earningAmount.setText("$"+earning.getAmount());
         holder.earningDate.setText(spc.monthStringBuilder(earning.getDate()));
@@ -47,7 +47,7 @@ public class EarningRecyclerAdapter extends RecyclerView.Adapter<EarningRecycler
         return earningList.size();
     }
 
-    public void setData(List<Earning> list) {
+    public void setData(List<TableData> list) {
         this.earningList = list;
     }
 

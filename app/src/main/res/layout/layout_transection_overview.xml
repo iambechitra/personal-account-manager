@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="5dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginRight="10dp"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_height="match_parent">
+            <RelativeLayout
+                android:layout_width="35dp"
+                android:layout_margin="5dp"
+                android:id="@+id/circleBackLayout"
+                android:background="@drawable/circle"
+                android:layout_height="35dp">
+                <TextView
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:id="@+id/cicularIconText"
+                    android:background="@drawable/ic_expand_more_black_24dp"
+                    android:backgroundTint="#FFF"/>
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_weight="4"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:text="Category"
+                    android:textColor="@color/black"
+                    android:layout_marginLeft="5dp"
+                    android:id="@+id/categoryItemText" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1 transaction"
+                    android:id="@+id/transactionNumber"
+                    android:layout_marginLeft="5dp"
+                    android:layout_gravity="start"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="$0"
+                android:layout_weight="3"
+                android:layout_margin="5dp"
+                android:textSize="18sp"
+                android:id="@+id/categoryAmountText"
+                android:textColor="@color/red"
+                android:layout_gravity="center"
+                android:gravity="end"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

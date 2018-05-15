@@ -1,19 +1,19 @@
 package com.example.bechitra.walleto.graph;
 
 public class GraphData {
-    private String title, data;
+    private String xAxis, yAxis;
 
-    public GraphData(String title, String data) {
+    public GraphData(String xAxis, String yAxis) {
 
-        this.title = title;
-        this.data = data;
+        this.xAxis = xAxis;
+        this.yAxis = yAxis;
     }
 
-    public String getData() {
-        return this.data;
+    public String getXAxis() {
+        return this.xAxis;
     }
 
-    public String getTitle() {
-        return this.title;
+    public String getYAxis() {
+        return this.yAxis;
     }
 }

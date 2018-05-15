@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -22,7 +21,7 @@ import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.StringPatternCreator;
 import com.example.bechitra.walleto.dialog.listner.DialogListener;
 import com.example.bechitra.walleto.dialog.listner.OnCloseDialogListener;
-import com.example.bechitra.walleto.table.Earning;
+import com.example.bechitra.walleto.table.TableData;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
@@ -43,7 +42,7 @@ public class EarningDialog extends android.support.v4.app.DialogFragment{
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = LayoutInflater.from(getActivity());
-        View view = inflater.inflate(R.layout.earning_dialog, null);
+        View view = inflater.inflate(R.layout.fragment_earning_setter, null);
         alertDialogBuilder.setView(view);
         ButterKnife.bind(this, view);
 
@@ -107,8 +106,8 @@ public class EarningDialog extends android.support.v4.app.DialogFragment{
                         else
                             date = stk.getCurrentDate();
 
-                        Earning earning = new Earning(stk.stringFormatter(earningCatagorySpinner.getSelectedItem().toString()).trim(), earningAmountEdit.getText().toString(), date);
-                        db.OnInsertEarningTable(earning);
+                        TableData earning = new TableData(null,stk.stringFormatter(earningCatagorySpinner.getSelectedItem().toString()).trim(), earningAmountEdit.getText().toString(), date, null);
+                        db.insertOnTable(db.getEarningTable(),earning);
                     }
 
                 }

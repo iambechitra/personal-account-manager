@@ -10,8 +10,7 @@ import android.util.Log;
 
 import com.example.bechitra.walleto.graph.GraphData;
 import com.example.bechitra.walleto.sorting.BigSort;
-import com.example.bechitra.walleto.table.Earning;
-import com.example.bechitra.walleto.table.Spending;
+import com.example.bechitra.walleto.table.TableData;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -29,16 +28,18 @@ import java.util.StringTokenizer;
 public class DatabaseHelper extends SQLiteOpenHelper{
     final static String DB_NAME = "account.db";
     final static String SPENDING_TABLE = "SPENDING";
-    final static String ST_COL1 = "TITLE";
+    final static String ST_COL1 = "ID";
     final static String ST_COL2 = "CATEGORY";
     final static String ST_COL3 = "AMOUNT";
     final static String ST_COL4 = "NOTE";
     final static String ST_COL5 = "DATE";
 
     final static String EARNING_TABLE = "EARNING";
-    final static String ET_COL1 = "CATEGORY";
-    final static String ET_COL2 = "AMOUNT";
-    final static String ET_COL3 = "DATE";
+    final static String ET_COL1 = "ID";
+    final static String ET_COL2 = "CATEGORY";
+    final static String ET_COL3 = "AMOUNT";
+    final static String ET_COL4 = "NOTE";
+    final static String ET_COL5 = "DATE";
 
     final static String USER_TABLE = "USER";
     final static String UT_COL1 = "TRANSACTION_ID";
@@ -52,6 +53,14 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         db = this.getWritableDatabase();
     }
 
+    public String getSpendingTable() {
+        return SPENDING_TABLE;
+    }
+
+    public String getEarningTable() {
+        return EARNING_TABLE;
+    }
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         insertAllTable(db);
@@ -62,37 +71,48 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         onCreate(db);
     }
 
-    public boolean onInsertSpending(Spending spend) {
-        ContentValues spending = new ContentValues();
-        spending.put(ST_COL1, spend.getTitle());
-        spending.put(ST_COL2, spend.getCategory());
-        spending.put(ST_COL3, spend.getAmount());
-        spending.put(ST_COL4, spend.getNote());
-        spending.put(ST_COL5, spend.getDate());
+    public boolean insertOnTable(String table, TableData data) {
+        ContentValues cv = new ContentValues();
 
-        long result = db.insert(SPENDING_TABLE, null, spending);
+        if(table.equals(SPENDING_TABLE)) {
+           // cv.put(ST_COL1, data.getID());
+            cv.put(ST_COL2, data.getCategory());
+            cv.put(ST_COL3, data.getAmount());
+            cv.put(ST_COL4, data.getNote());
+            cv.put(ST_COL5, data.getDate());
 
-        String balance = getBalanceForUser(db);
-        String newBalance = "";
+            long result = db.insert(table, null, cv);
 
-        if(balance != null) {
-            newBalance = new BigDecimal(new BigDecimal(balance).subtract(new BigDecimal(spend.getAmount())).toString()).toString();
-            updateUserTable(db, UT_COL2, balance, newBalance);
+            String balance = getBalanceForUser();
+            String newBalance = "";
+
+            if (balance != null) {
+                newBalance = new BigDecimal(new BigDecimal(balance).subtract(new BigDecimal(data.getAmount())).toString()).toString();
+                updateUserTable(UT_COL2, balance, newBalance);
+            }
+
+            if (result != -1)
+                return true;
+        } else {
+           // cv.put(ET_COL1, data.getID());
+            cv.put(ET_COL2, data.getCategory());
+            cv.put(ET_COL3, data.getAmount());
+            cv.put(ET_COL4, data.getNote());
+            cv.put(ET_COL5, data.getDate());
+
+            long num = db.insert(table, null, cv);
+
+            String balance = getBalanceForUser();
+
+            BigDecimal newBalance = new BigDecimal(new BigDecimal(balance).add(new BigDecimal(data.getAmount())).toString());
+            updateUserTable(UT_COL2, balance, newBalance.toString());
+
+
+            if(num != -1)
+                return true;
         }
 
-        if(result != -1)
-            return true;
-
         return false;
-    }
-
-    public String getBalanceForUser(SQLiteDatabase db) {
-        Cursor cr = db.rawQuery("SELECT BALANCE FROM "+USER_TABLE, null);
-        String balance = "0";
-        while(cr.moveToNext())
-            balance = cr.getString(0);
-
-        return balance;
     }
 
     public List<String> getDistinctCategory(String tableName) {
@@ -142,7 +162,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return transactionID;
     }
 
-    public void updateUserTable(SQLiteDatabase db, String column, String oldValue, String newValue) {
+    public void updateUserTable(String column, String oldValue, String newValue) {
         db.execSQL("UPDATE "+USER_TABLE+" SET "+column+" ='"+newValue+"' WHERE BALANCE ='"+oldValue+"'");
     }
 
@@ -164,25 +184,6 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return numb.toString();
     }
 
-    public boolean OnInsertEarningTable(Earning earning) {
-        ContentValues cv = new ContentValues();
-        cv.put(ET_COL1, earning.getCategory());
-        cv.put(ET_COL2, earning.getAmount());
-        cv.put(ET_COL3, earning.getDate());
-        long num = db.insert(EARNING_TABLE, null, cv);
-
-        String balance = getBalanceForUser(db);
-
-        BigDecimal newBalance = new BigDecimal(new BigDecimal(balance).add(new BigDecimal(earning.getAmount())).toString());
-        updateUserTable(db, UT_COL2, balance, newBalance.toString());
-
-
-        if(num != -1)
-            return true;
-
-        return false;
-    }
-
     public boolean resetEveryThing() {
         db.execSQL("DROP TABLE IF EXISTS "+SPENDING_TABLE);
         db.execSQL("DROP TABLE IF EXISTS "+EARNING_TABLE);
@@ -193,60 +194,63 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return true;
     }
 
-    public List<Spending> getAllSpending() {
-        Cursor cr = db.rawQuery("SELECT * FROM "+SPENDING_TABLE, null);
-        List<Spending> spendingList = new ArrayList<>();
+    public List<TableData> getAllRow(String tableName) {
+        Cursor cr = db.rawQuery("SELECT * FROM "+tableName, null);
+        List<TableData> list = new ArrayList<>();
         while(cr.moveToNext())
-            spendingList.add(new Spending(cr.getString(1), cr.getString(2), cr.getString(3), cr.getString(4), cr.getString(5)));
+            list.add(new TableData(cr.getString(0), cr.getString(1), cr.getString(2), cr.getString(3), cr.getString(4)));
 
-        return spendingList;
+        return list;
     }
 
     private void insertAllTable(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE "+SPENDING_TABLE+" (ID INTEGER PRIMARY KEY AUTOINCREMENT, "+ST_COL1+" TEXT, "+ST_COL2+" TEXT, "+ST_COL3+ " TEXT, "+ST_COL4+" TEXT, "+ST_COL5+" TEXT)");
-        db.execSQL("CREATE TABLE "+EARNING_TABLE+" ("+ET_COL1+" TEXT, "+ET_COL2+" TEXT, "+ET_COL3+ " TEXT)");
+        db.execSQL("CREATE TABLE "+SPENDING_TABLE+" ("+ST_COL1+" INTEGER PRIMARY KEY AUTOINCREMENT, "+ST_COL2+" TEXT, "+ST_COL3+ " TEXT, "+ST_COL4+" TEXT, "+ST_COL5+" TEXT)");
+        db.execSQL("CREATE TABLE "+EARNING_TABLE+" ("+ET_COL1+" INTEGER PRIMARY KEY AUTOINCREMENT, "+ET_COL2+" TEXT, "+ET_COL3+ " TEXT, "+ET_COL4+" TEXT, "+ET_COL5+" TEXT)");
         db.execSQL("CREATE TABLE "+USER_TABLE+" ("+UT_COL1+" TEXT, "+UT_COL2+" TEXT, "+UT_COL3+ " TEXT)");
         db.execSQL("INSERT INTO "+USER_TABLE+" VALUES ('NULL', '0', '0')");
     }
 
-    public List<Spending> getCurrentMonthSpending() {
-        Cursor cr = db.rawQuery("SELECT * FROM "+SPENDING_TABLE+" WHERE DATE LIKE '%"
+    public List<TableData> getCurrentMonthData(String tableName) {
+        Cursor cr = db.rawQuery("SELECT * FROM "+tableName+" WHERE DATE LIKE '%"
                                 +new StringPatternCreator().getCurrentMonthWithYear()+"'", null);
-        List<Spending> spendingList = new ArrayList<>();
+        List<TableData> list = new ArrayList<>();
         while(cr.moveToNext())
-            spendingList.add(new Spending(cr.getString(1), cr.getString(2), cr.getString(3), cr.getString(4), cr.getString(5)));
+            list.add(new TableData(cr.getString(0), cr.getString(1), cr.getString(2), cr.getString(3), cr.getString(4)));
 
-        return spendingList;
+        return list;
     }
 
+    /*Dublicate
     public List<Earning> getAllEarning() {
         Cursor cr = db.rawQuery("SELECT * FROM "+EARNING_TABLE,null);
         List<Earning> earningList = new ArrayList<>();
         while (cr.moveToNext())
-            earningList.add(new Earning(cr.getString(0), cr.getString(1), cr.getString(2)));
+            earningList.add(new Earning(cr.getString(0), cr.getString(1), cr.getString(2), cr.getString(3)));
 
         return earningList;
     }
+
 
     public List<Earning> getCurrentMonthEarning() {
         Cursor cr = db.rawQuery("SELECT * FROM "+EARNING_TABLE+" WHERE DATE LIKE '%"
                                 +new StringPatternCreator().getCurrentMonthWithYear()+"'",null);
         List<Earning> earningList = new ArrayList<>();
         while (cr.moveToNext())
-            earningList.add(new Earning(cr.getString(0), cr.getString(1), cr.getString(2)));
+            earningList.add(new Earning(cr.getString(0), cr.getString(1), cr.getString(2), cr.getString(3)));
 
         return earningList;
     }
+    */
 
-    public Spending getLastInsertedSpending() {
-        Spending spending = null;
+    public TableData getLastInsertedRow(String tableName) {
+        TableData data = null;
         Cursor cr = db.rawQuery("SELECT * FROM "+SPENDING_TABLE+" WHERE ID = (SELECT ID FROM "+SPENDING_TABLE+" ORDER BY ID DESC LIMIT 1)",null);
 
         while (cr.moveToNext()) {
-            spending = new Spending(cr.getString(1), cr.getString(2), cr.getString(3), cr.getString(4), cr.getString(5));
+            data = new TableData(cr.getString(0), cr.getString(1), cr.getString(2), cr.getString(3), cr.getString(4));
         }
 
-        return spending;
+        return data;
     }
 
     public String getBalanceToEarningRatio() {
@@ -278,10 +282,11 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return str;
     }
 
+    //Need to recheck;
     public List<GraphData> getPieChartData(int limit) {
         List<GraphData> graphData = new ArrayList<>();
         List<String> numbers = new ArrayList<>();
-        List<String> sortedArray = null;
+        List<String> sortedArray;
         List <GraphData> pieChartData = new ArrayList<>();
 
         List<String>category = getDistinctCategoryFromCurrentMonth(SPENDING_TABLE);
@@ -308,8 +313,8 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
             for(int i = sortedArray.size()-1; i >= 0; i--) {
                 for(GraphData graphData1 : graphData) {
-                    if(graphData1.getData().equals(sortedArray.get(i)))
-                        pieChartData.add(new GraphData(graphData1.getTitle(), new BigDecimal(graphData1.getData())
+                    if(graphData1.getYAxis().equals(sortedArray.get(i)))
+                        pieChartData.add(new GraphData(graphData1.getXAxis(), new BigDecimal(graphData1.getYAxis())
                                 .divide(num, 2, RoundingMode.HALF_UP).multiply(new BigDecimal("100")).toString()));
                 }
 
@@ -331,6 +336,17 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return amount;
     }
 
+    public String getTotalAmountForACategory(String category, String table) {
+        Cursor cr = db.rawQuery("SELECT AMOUNT FROM "+table+" WHERE CATEGORY = '"+category+"'", null);
+        String balance = "0";
+        BigDecimal bigDecimal = BigDecimal.ZERO;
+
+        while (cr.moveToNext())
+            bigDecimal = bigDecimal.add(new BigDecimal(cr.getString(0)));
+
+        return bigDecimal.toString();
+    }
+
     public String getTotalAmountFromAList(List<String> amount) {
         BigDecimal total = BigDecimal.ZERO;
         for(String str : amount)
@@ -339,24 +355,24 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return total.toString();
     }
 
-    public List<Spending> filterQuerySpending(String pattern, String category) {
-        Cursor cr = db.rawQuery("SELECT * FROM "+SPENDING_TABLE+" WHERE DATE LIKE '"+pattern+"' AND CATEGORY LIKE '"+category+"'",null);
-        List<Spending>list = new ArrayList<>();
+    public List<TableData> filterDataFromTable(String tableName, String pattern, String category) {
+        Cursor cr = db.rawQuery("SELECT * FROM "+tableName+" WHERE DATE LIKE '"+pattern+"' AND CATEGORY LIKE '"+category+"'",null);
+        List<TableData>list = new ArrayList<>();
         while (cr.moveToNext())
-            list.add(new Spending(cr.getString(1), cr.getString(2), cr.getString(3), cr.getString(4), cr.getString(5)));
+            list.add(new TableData(cr.getString(0), cr.getString(1), cr.getString(2), cr.getString(3), cr.getString(4)));
 
         return list;
     }
-
+/*
     public List<Earning> filterQueryEarning(String pattern, String category) {
         Cursor cr = db.rawQuery("SELECT * FROM "+EARNING_TABLE+" WHERE DATE LIKE '"+pattern+"' AND CATEGORY LIKE '"+category+"'",null);
         List<Earning>list = new ArrayList<>();
         while (cr.moveToNext())
-            list.add(new Earning(cr.getString(0), cr.getString(1), cr.getString(2)));
+            list.add(new Earning(cr.getString(0), cr.getString(1), cr.getString(2), cr.getString(3)));
 
         return list;
     }
-
+*/
     public List<String> getDistinctDate(String table) {
         Set<String> date = new HashSet<>();
         Cursor cr = db.rawQuery("SELECT DATE FROM "+table,null);
@@ -366,6 +382,24 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         List<String> list = new ArrayList<>();
         list.clear();
         list.addAll(date);
+
+        return list;
+    }
+
+    public List<TableData> getDataOnPattern(String tableName, String pattern) {
+        Cursor cr = db.rawQuery("SELECT * FROM "+tableName+" WHERE DATE LIKE '"+pattern+"'",null);
+        List<TableData>list = new ArrayList<>();
+        while (cr.moveToNext())
+            list.add(new TableData(cr.getString(0), cr.getString(1), cr.getString(2), cr.getString(3), cr.getString(4)));
+
+        return list;
+    }
+
+    public List<TableData> getAllRowOfACategory(String tableName, String category) {
+        Cursor cr = db.rawQuery("SELECT * FROM "+tableName+" WHERE CATEGORY = '"+category+"'",null);
+        List<TableData>list = new ArrayList<>();
+        while (cr.moveToNext())
+            list.add(new TableData(cr.getString(0), cr.getString(1), cr.getString(2), cr.getString(3), cr.getString(4)));
 
         return list;
     }

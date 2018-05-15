@@ -1,25 +1,20 @@
 package com.example.bechitra.walleto.framents;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.CardView;
+import android.support.v4.widget.NestedScrollView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
-import android.widget.Switch;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.example.bechitra.walleto.AlertManager;
@@ -27,12 +22,17 @@ import com.example.bechitra.walleto.DatabaseHelper;;
 import com.example.bechitra.walleto.MainActivity;
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.StringPatternCreator;
+import com.example.bechitra.walleto.adapter.DataOrganizerAdapter;
+import com.example.bechitra.walleto.adapter.RecyclerViewAdapter;
 import com.example.bechitra.walleto.dialog.ExcessSpendingAlertDialog;
 import com.example.bechitra.walleto.dialog.ResetDialog;
 import com.example.bechitra.walleto.dialog.listner.AlertManagerListener;
 import com.example.bechitra.walleto.dialog.listner.ResetListener;
 import com.example.bechitra.walleto.graph.GraphData;
-import com.example.bechitra.walleto.table.Spending;
+import com.example.bechitra.walleto.table.TableData;
+import com.example.bechitra.walleto.utility.CategoryProcessor;
+import com.example.bechitra.walleto.utility.DataOrganizer;
+import com.example.bechitra.walleto.utility.DataProcessor;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
@@ -54,29 +54,48 @@ public class HomeFragment extends Fragment{
     @BindView(R.id.earnBalanceText) TextView earnBalanceText;
     @BindView(R.id.spendBalanceText) TextView spendBalanceText;
     @BindView(R.id.settingText) TextView settingText;
-    @BindView(R.id.lastSpendingAmount) TextView lastSpendingAmount;
-    @BindView(R.id.lastSpendingCategory) TextView lastSpendingCategory;
-    @BindView(R.id.lastSpendingTitle) TextView lastSpendingTitle;
-    @BindView(R.id.lastSpendingDate) TextView lastSpendingDate;
-    @BindView(R.id.lastSpendingNote) TextView lastSpendingNote;
-    @BindView(R.id.halfPieChart) PieChart halfPieChart;
+   // @BindView(R.id.lastSpendingAmount) TextView lastSpendingAmount;
+  //  @BindView(R.id.lastSpendingCategory) TextView lastSpendingCategory;
+  //  @BindView(R.id.lastSpendingTitle) TextView lastSpendingTitle;
+  //  @BindView(R.id.lastSpendingDate) TextView lastSpendingDate;
+  //  @BindView(R.id.lastSpendingNote) TextView lastSpendingNote;
+    @BindView(R.id.halfPieChart) PieChart pieChart;
     @BindView(R.id.relativeChart) RelativeLayout clickView;
-    Spending lastSpend;
+    @BindView(R.id.mainActivityLayout)
+    NestedScrollView scrollView;
+
+    @BindView(R.id.currentMonthRecycler) RecyclerView currentRecycler;
+    DataOrganizerAdapter adapter;
+    TableData lastSpend;
     DatabaseHelper db;
     int viewWidth, viewHeight;
+    List<DataOrganizer>list;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_home, null);
         ButterKnife.bind(this, view);
+        scrollView.setFocusableInTouchMode(true);
+        scrollView.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
+
         db = new DatabaseHelper(view.getContext());
         String text = db.getBalanceForUser();
-        lastSpend = db.getLastInsertedSpending();
+        lastSpend = db.getLastInsertedRow(db.getSpendingTable());
 
         showPieChart();
 
+        currentRecycler.setHasFixedSize(true);
+        currentRecycler.setLayoutManager(new LinearLayoutManager(view.getContext(), LinearLayoutManager.VERTICAL, false));
 
+        DataProcessor dataProcessor = new DataProcessor(view.getContext());
+        list = dataProcessor.getProcessedData();
+
+        adapter = new DataOrganizerAdapter(view.getContext(), list);
+        currentRecycler.setAdapter(adapter);
+        currentRecycler.setNestedScrollingEnabled(false);
+
+/*
         if(lastSpend != null) {
             lastSpendingAmount.setText("$" + lastSpend.getAmount());
             lastSpendingCategory.setText(lastSpend.getCategory());
@@ -86,9 +105,9 @@ public class HomeFragment extends Fragment{
             else
                 lastSpendingDate.setText(lastSpend.getDate());
 
-            lastSpendingTitle.setText(lastSpend.getTitle());
-            lastSpendingNote.setText(lastSpend.getNote());
-        }
+           // lastSpendingTitle.setText(lastSpend.getTitle());
+           // lastSpendingNote.setText(lastSpend.getNote());
+        }*/
 
         earnBalanceText.setText("$"+db.getCalculationOfCurrentMonth("EARNING"));
         spendBalanceText.setText("$"+db.getCalculationOfCurrentMonth("SPENDING"));
@@ -130,61 +149,64 @@ public class HomeFragment extends Fragment{
     private void showPieChart() {
         setPieData();
         loadPieScreen();
-        halfPieChart.setBackgroundColor(Color.WHITE);
-        halfPieChart.setUsePercentValues(true);
-        halfPieChart.getDescription().setEnabled(false);
-        halfPieChart.setDrawHoleEnabled(true);
-        halfPieChart.setMaxAngle(180);
-        halfPieChart.setRotationAngle(180);
-        halfPieChart.animateY(1000, Easing.EasingOption.EaseInOutCubic);
-        halfPieChart.setRotationEnabled(false);
-        halfPieChart.setDrawSliceText(false);
+        pieChart.setBackgroundColor(Color.WHITE);
+        pieChart.setUsePercentValues(true);
+        pieChart.getDescription().setEnabled(false);
+        pieChart.setDrawHoleEnabled(true);
+        //halfPieChart.setMaxAngle(180);
+        pieChart.setRotationAngle(180);
+        pieChart.animateY(1000, Easing.EasingOption.EaseInOutCubic);
+        pieChart.setRotationEnabled(false);
+        pieChart.setDrawSliceText(false);
         Log.d("height", Integer.toString(viewHeight));
         //halfPieChart.setHighl(false);
 
         // halfPieChart.setDescription("Category");
-        //halfPieChart.setHoleRadius(25f);
-        // halfPieChart.setTransparentCircleAlpha(0);
-        //halfPieChart.setCenterText("Top Category");
-        //halfPieChart.setCenterTextSize(10);
+       // halfPieChart.setHoleRadius(25f);
+       // halfPieChart.setTransparentCircleAlpha(0);
+        pieChart.setCenterText("Top Category");
+        pieChart.setCenterTextSize(10);
+        pieChart.setTransparentCircleRadius(56f);
     }
 
     private void loadPieScreen() {
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)halfPieChart.getLayoutParams();
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)pieChart.getLayoutParams();
         Display display = getActivity().getWindowManager().getDefaultDisplay();
         int height = display.getHeight();  // deprecated
 
-        int offset = (int)(height * 0.2);
-        params.setMargins(10,0,10,-offset);
-        halfPieChart.setLayoutParams(params);
+        int offset = (int)(height * 0.5);
+        params.setMargins(0,0,0,0);
+        pieChart.setLayoutParams(params);
     }
 
     private void setPieData() {
         ArrayList<PieEntry> value = new ArrayList<>();
 
         List<GraphData> val = db.getPieChartData(4);
+        //Log.d("Pie "+val.size(), ""+val.get(4).getTitle());
         for(GraphData d : val)
-            value.add(new PieEntry((float) Double.parseDouble(d.getData()), d.getTitle()));
+            value.add(new PieEntry((float) Double.parseDouble(d.getYAxis()), d.getXAxis()));
 
         PieDataSet dataSet = new PieDataSet(value, "");
         dataSet.setSelectionShift(5f);
-        dataSet.setSliceSpace(3f);
+        dataSet.setSliceSpace(5f);
         dataSet.setAutomaticallyDisableSliceSpacing(false);
         dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+        //dataSet.setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
+        //dataSet.setYValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
 
         PieData data = new PieData(dataSet);
         data.setValueFormatter(new PercentFormatter());
-        data.setValueTextSize(12f);
+        data.setValueTextSize(10f);
         data.setValueTextColor(Color.WHITE);
-        Legend legend = halfPieChart.getLegend();
-        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
-        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
-        legend.setOrientation(Legend.LegendOrientation.VERTICAL);
-        //legend.setForm(Legend.LegendForm.CIRCLE);
-        //legend.setPosition(Legend.LegendPosition.LEFT_OF_CHART);
+        Legend legend = pieChart.getLegend();
+        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
+        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
+        legend.setOrientation(Legend.LegendOrientation.HORIZONTAL);
+        legend.setForm(Legend.LegendForm.CIRCLE);
 
-        halfPieChart.setData(data);
-        halfPieChart.invalidate();
+        pieChart.setData(data);
+        pieChart.invalidate();
     }
 
 }

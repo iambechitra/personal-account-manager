@@ -97,12 +97,10 @@ public class ReportsFragment extends Fragment{
         alarmPreset(context);
 
         Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, hour);
-        calendar.set(Calendar.MINUTE, minute);
-        long bM = ((hour*60)+minute)*60*1000;
-        long aM = calendar.getTimeInMillis();
-        Log.d(getClass().getSimpleName(), "bM:"+bM+" aM:"+aM);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, aM, AlarmManager.INTERVAL_DAY, pendingIntent);
+        calendar.set(Calendar.HOUR_OF_DAY, hour);//@param hour is your hour;
+        calendar.set(Calendar.MINUTE, minute);//@param minute is your minute;
+
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 
     public void stopAlarmManager(Context context) {
@@ -123,9 +121,9 @@ public class ReportsFragment extends Fragment{
 
         if(graphData != null) {
             for(int i = 0; i < graphData.size(); i++) {
-                map.put((int)((i+1)*10), graphData.get(i).getTitle());
-                entries.add(new BarEntry((i+1)*10f, Float.parseFloat(graphData.get(i).getData())));
-                Log.d("Data", graphData.get(i).getData());
+                map.put((int)((i+1)*10), graphData.get(i).getXAxis());
+                entries.add(new BarEntry((i+1)*10f, Float.parseFloat(graphData.get(i).getYAxis())));
+                Log.d("Data", graphData.get(i).getYAxis());
             }
         } else {
             entries.add(new BarEntry(1 * 10f, 50));

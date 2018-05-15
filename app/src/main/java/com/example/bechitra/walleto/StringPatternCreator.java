@@ -19,6 +19,11 @@ public class StringPatternCreator {
         return ("/"+Integer.toString(Integer.parseInt(str[1]))+"/"+str[0]);
     }
 
+    public String getMonthWithYear(String date) {
+        String[] str = getSeparatedDateArray(date);
+        return ("/"+Integer.toString(Integer.parseInt(str[1]))+"/"+str[2]);
+    }
+
     private String[] getCurrentDateInArray() {
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Calendar cal = Calendar.getInstance();
@@ -122,5 +127,21 @@ public class StringPatternCreator {
             str = stk.nextToken();
 
         return str;
+    }
+
+    public String getPreviousMonth(String date) {
+        String[] dates = getSeparatedDateArray(date);
+        int month = Integer.parseInt(dates[1]);
+        String pattern = date;
+        if(month == 1) {
+            int year = Integer.parseInt(dates[2]);
+            year--;
+            month = 12;
+            pattern = "1"+"/"+Integer.toString(month)+"/"+Integer.toString(year);
+        } else
+            pattern = "1"+"/"+Integer.toString(month-1)+"/"+dates[2];
+
+
+        return pattern;
     }
 }

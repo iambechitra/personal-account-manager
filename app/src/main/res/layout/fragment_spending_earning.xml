@@ -1,103 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical">
+    android:scrollbars="vertical"
+    android:id="@+id/nestedScroll"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-   <android.support.v7.widget.CardView
-       android:layout_width="match_parent"
-       android:layout_marginBottom="10dp"
-       android:layout_height="wrap_content">
-
-       <LinearLayout
-           android:layout_width="match_parent"
-           android:layout_height="match_parent"
-           android:layout_margin="10dp"
-           android:orientation="vertical">
-
-           <RelativeLayout
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content">
-
-               <TextView
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentLeft="true"
-                   android:text="Filter by current month"
-                   android:textSize="18sp" />
-
-               <Switch
-                   android:id="@+id/spendingOrEarningFilterSwitch"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_marginRight="5dp"
-                   android:layout_toLeftOf="@id/toggleView" />
-
-               <RelativeLayout
-                   android:id="@+id/toggleView"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentRight="true"
-                   android:background="@drawable/ic_expand_more_black_24dp" />
-
-           </RelativeLayout>
-
-           <net.cachapa.expandablelayout.ExpandableLayout
-               android:id="@+id/expandableLayout"
-               android:layout_width="match_parent"
-               android:layout_height="wrap_content"
-               app:el_duration="1000"
-               app:el_expanded="false">
-
-               <LinearLayout
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content"
-                   android:orientation="vertical">
-
-                   <RelativeLayout
-                       android:layout_width="match_parent"
-                       android:layout_height="wrap_content">
-
-                       <CheckBox
-                           android:id="@+id/calculateAmountCheckBox"
-                           android:layout_width="wrap_content"
-                           android:layout_height="wrap_content"
-                           android:text="Calculate Amount" />
-
-                       <TextView
-                           android:id="@+id/calculateAmountTextView"
-                           android:layout_width="wrap_content"
-                           android:layout_height="wrap_content"
-                           android:layout_alignParentRight="true"
-                           android:visibility="gone"
-                           android:text="value"
-                           android:textColor="@color/green"
-                           android:textSize="18dp" />
-                   </RelativeLayout>
-
-                   <CheckBox
-                       android:id="@+id/advanceFilterText"
-                       android:layout_width="wrap_content"
-                       android:layout_height="wrap_content"
-                       android:text="Advance Filter Option" />
-
-               </LinearLayout>
-
-           </net.cachapa.expandablelayout.ExpandableLayout>
-
-       </LinearLayout>
-
-   </android.support.v7.widget.CardView>
-
-    <android.support.v7.widget.RecyclerView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scrollbars="vertical"
-        android:scrollbarThumbVertical="@android:color/darker_gray"
-        android:scrollbarSize="5dp"
-        android:id="@+id/spendingOrEarningRecyclerView">
+        android:layout_margin="5dp"
+        android:orientation="vertical">
 
-    </android.support.v7.widget.RecyclerView>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginLeft="5dp"
+            android:orientation="horizontal">
 
-</LinearLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="10dp"
+                android:background="#B9F6CA"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Life Time Earning"
+                    android:textColor="@color/black"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="$0"
+                    android:id="@+id/lifeTimeEarnText"
+                    android:textColor="@color/black"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="10dp"
+                android:background="#FFCDD2"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Life Time Spending"
+                    android:textColor="@color/black"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="$0"
+                    android:id="@+id/lifeTimeSpendText"
+                    android:textColor="@color/black"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:id="@+id/lineChart">
+
+        </com.github.mikephil.charting.charts.LineChart>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:padding="5dp"
+            android:background="#E8F5E9">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:text="Transactions"
+                android:layout_alignParentLeft="true"
+                android:textColor="@color/black"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:text="$0"
+                android:id="@+id/amountEntryTransaction"
+                android:layout_alignParentRight="true"
+                android:textColor="@color/black"/>
+
+        </RelativeLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:scrollbars="vertical"
+            android:scrollbarThumbVertical="@android:color/darker_gray"
+            android:scrollbarSize="5dp"
+            android:id="@+id/spendingOrEarningRecyclerView">
+
+        </android.support.v7.widget.RecyclerView>
+
+    </LinearLayout>
+
+
+</android.support.v4.widget.NestedScrollView>
