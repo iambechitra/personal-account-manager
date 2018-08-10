@@ -21,7 +21,7 @@ public class DataProcessor {
         db = new DatabaseHelper(context);
     }
 
-    public List<DataOrganizer> getProcessedData() {
+    public List<DataOrganizer> getProcessedData(String tableName) {
         StringPatternCreator spc = new StringPatternCreator();
         String today = spc.getCurrentDate();
         String[] date = spc.getSeparatedDateArray(today);
@@ -30,7 +30,7 @@ public class DataProcessor {
 
         for(int i = day; i >= 1; i--) {
             String pattern = Integer.toString(i)+"/"+date[1]+"/"+date[2];
-            List<TableData>  spendingList = db.getDataOnPattern(db.getSpendingTable(), pattern);
+            List<TableData>  spendingList = db.getDataOnPattern(tableName,db.getActivatedWalletID(), pattern);
 
             if(spendingList.size() > 0) {
                 BigDecimal big = BigDecimal.ZERO;
@@ -40,7 +40,7 @@ public class DataProcessor {
                 data.add(new DataOrganizer(new DataLabel(pattern, "$"+big.toString()), true));
 
                 for(TableData sp : spendingList)
-                    data.add(new DataOrganizer(new CategoryProcessor(sp.getCategory(), sp.getAmount(), "0"), false));
+                    data.add(new DataOrganizer(sp, tableName, false));
             }
         }
 

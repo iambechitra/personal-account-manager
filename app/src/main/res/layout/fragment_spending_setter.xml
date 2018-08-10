@@ -1,152 +1,181 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="15dp"
-    android:orientation="vertical"
+    android:id="@+id/nestedScroll"
+    android:layout_margin="5dp"
     tools:context=".SpendingOrEarningDataSetter">
 
-    <android.support.v7.widget.CardView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_margin="5dp"
-        android:layout_height="0dp"
-        android:layout_weight="2">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <LinearLayout
+        <android.support.v7.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="15dp"
-            android:orientation="vertical">
+            android:layout_margin="5dp"
+            android:layout_height="wrap_content">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:text="Select a Category of Spending"/>
-
-            <Spinner
-                android:layout_marginRight="45dp"
-                android:layout_width="match_parent"
-                android:id="@+id/catagorySpinner"
-                android:layout_height="0dp"
-                android:layout_weight="2" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="0"
-                android:layout_marginTop="5dp"
-                android:textColor="@color/blue"
-                android:id="@+id/newCatagoryCreatorText"
-                android:text="Create a new catagory"/>
-
-        </LinearLayout>
-
-    </android.support.v7.widget.CardView>
-
-    <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_margin="5dp"
-        android:layout_height="0dp"
-        android:layout_weight="2">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="15dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:text="Spending amount"/>
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="2"
-                android:paddingLeft="15dp"
-                android:inputType="number"
-                android:id="@+id/spendingAmountEdit"
-                android:background="@drawable/editttext_shape"/>
-
-        </LinearLayout>
-
-    </android.support.v7.widget.CardView>
-
-    <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_margin="5dp"
-        android:layout_height="0dp"
-        android:layout_weight="2">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="15dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:text="Additional Note"/>
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="2"
-                android:paddingLeft="15dp"
-                android:id="@+id/additionalNoteEdit"
-                android:background="@drawable/editttext_shape"/>
-
-        </LinearLayout>
-
-    </android.support.v7.widget.CardView>
-
-    <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_margin="5dp"
-        android:layout_height="0dp"
-        android:layout_weight="1.2">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="15dp">
-            <TextView
-                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_alignParentLeft="true"
-                android:textSize="18sp"
-                android:text="Select spending date"/>
+                android:layout_gravity="center"
+                android:layout_margin="15dp"
+                android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Select a category of Spending"/>
+
+                <Spinner
+                    android:layout_width="match_parent"
+                    android:id="@+id/catagorySpinner"
+                    android:layout_height="45dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/blue"
+                    android:id="@+id/newCatagoryCreatorText"
+                    android:text="Create a new category"/>
+
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_margin="5dp"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="TODAY"
-                android:textSize="18sp"
-                android:id="@+id/spendingDateText"
-                android:layout_alignParentRight="true"
-                android:textColor="@color/blue"/>
-        </RelativeLayout>
+                android:layout_gravity="center"
+                android:layout_margin="15dp"
+                android:orientation="vertical">
 
-    </android.support.v7.widget.CardView>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Spending amount"/>
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="@drawable/circle_shape"
-        android:textColor="#FFFFFF"
-        android:text="Confirm"
-        android:textSize="20sp"
-        android:id="@+id/confirmButton"
-        android:paddingLeft="25dp"
-        android:paddingRight="25dp"
-        android:layout_margin="5dp"
-        android:layout_centerHorizontal="true"/>
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:paddingLeft="15dp"
+                    android:hint="Type amount here"
+                    android:inputType="number"
+                    android:id="@+id/spendingAmountEdit"
+                    android:background="@drawable/editttext_shape"/>
 
-</LinearLayout>
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_margin="5dp"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_margin="15dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Additional Note"/>
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:paddingLeft="15dp"
+                    android:hint="Write note here"
+                    android:id="@+id/additionalNoteEdit"
+                    android:background="@drawable/editttext_shape"/>
+
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_margin="5dp"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="20dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:textSize="18sp"
+                    android:text="Select spending date"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TODAY"
+                    android:textSize="18sp"
+                    android:id="@+id/spendingDateText"
+                    android:layout_alignParentRight="true"
+                    android:textColor="@color/blue"/>
+            </RelativeLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp">
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Auto repeat"
+                    android:id="@+id/autoRepetitionCheckbox"
+                    android:layout_alignParentLeft="true"
+                    />
+
+                <Spinner
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginTop="5dp"
+                    android:id="@+id/autoRepetition">
+                </Spinner>
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:background="@drawable/circle_shape"
+            android:textColor="#FFFFFF"
+            android:text="Confirm"
+            android:textSize="20sp"
+            android:id="@+id/confirmButton"
+            android:paddingLeft="25dp"
+            android:paddingRight="25dp"
+            android:layout_margin="5dp"
+            android:layout_centerHorizontal="true"/>
+
+    </LinearLayout>
+
+</android.support.v4.widget.NestedScrollView>

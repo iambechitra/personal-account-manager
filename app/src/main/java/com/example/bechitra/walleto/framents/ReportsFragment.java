@@ -64,8 +64,8 @@ public class ReportsFragment extends Fragment{
 
        db = new DatabaseHelper(getContext());
 
-       if(!db.getOnAlertPercentage().equals("0"))
-            excessSpendingAlert.setChecked(true);
+     //  if(!db.getOnAlertPercentage().equals("0"))
+      //      excessSpendingAlert.setChecked(true);
 
         excessSpendingAlert.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -75,16 +75,16 @@ public class ReportsFragment extends Fragment{
                     dialog.setOnDialogListener(new AlertManagerListener() {
                         @Override
                         public void onSetNewAlert(String percentage, int hour, int minute) {
-                            db.insertOnUserTable(percentage);
+                           // db.insertOnUserTable(percentage);
                             Log.d("Per", percentage);
-                            Log.d("PerC", db.getOnAlertPercentage());
-                            onSetAlarmManager(hour, minute, view.getContext());
+                           // Log.d("PerC", db.getOnAlertPercentage());
+                            //onSetAlarmManager(hour, minute, view.getContext());
                         }
                     });
                     dialog.show(getFragmentManager(), "OK");
                 } else {
-                    db.insertOnUserTable("0");
-                    stopAlarmManager(getContext());
+                   // db.insertOnUserTable("0");
+                    //stopAlarmManager(getContext());
                 }
             }
         });
@@ -93,25 +93,6 @@ public class ReportsFragment extends Fragment{
         return view;
     }
 
-    public void onSetAlarmManager(int hour, int minute, Context context) {
-        alarmPreset(context);
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, hour);//@param hour is your hour;
-        calendar.set(Calendar.MINUTE, minute);//@param minute is your minute;
-
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
-    }
-
-    public void stopAlarmManager(Context context) {
-        alarmPreset(context);
-        alarmManager.cancel(pendingIntent);
-    }
-    private void alarmPreset(Context context) {
-        alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, AlertManager.class);
-        pendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), 100, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-    }
 
     private void setBarChart() {
         ArrayList<BarEntry> entries = new ArrayList<>();

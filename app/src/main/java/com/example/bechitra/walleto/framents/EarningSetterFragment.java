@@ -8,16 +8,20 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.NestedScrollView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.MainActivity;
@@ -25,12 +29,15 @@ import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.StringPatternCreator;
 import com.example.bechitra.walleto.dialog.CategoryCreatorDialog;
 import com.example.bechitra.walleto.dialog.listner.DialogListener;
-import com.example.bechitra.walleto.dialog.listner.OnCloseDialogListener;
+import com.example.bechitra.walleto.adapter.SpinnerAdapter;
+import com.example.bechitra.walleto.table.Schedule;
 import com.example.bechitra.walleto.table.TableData;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
@@ -49,22 +56,39 @@ public class EarningSetterFragment extends Fragment{
     @BindView(R.id.earningSetConfirmButton)
     Button confirmButton;
 
+    @BindView(R.id.autoRepetitionSpinner) Spinner autoRepetitionSpinner;
+    @BindView(R.id.autoRepetitionCheckbox)
+    CheckBox autoRepetitionCheckBox;
+
+    @BindView(R.id.nestedScroll)
+    NestedScrollView scrollView;
+
     @BindView(R.id.earningNoteEdit) EditText earningNoteEdit;
 
     private DatePickerDialog.OnDateSetListener dateSetListener;
-
+    private DatabaseHelper db;
+    private List<String> spinnerItem;
+    private SpinnerAdapter spinnerAdapter;
+    private int itemSelected = 0;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_earning_setter, null);
         ButterKnife.bind(this, view);
 
-        final DatabaseHelper db = new DatabaseHelper(getActivity());
+        scrollView.setFocusableInTouchMode(true);
+        scrollView.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
 
-        final List<String> spinnerItem = Arrays.asList(getResources().getStringArray(R.array.ECATEGORY));
+        db = new DatabaseHelper(getActivity());
 
-        final ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, spinnerItem);
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        List<String>items  = Arrays.asList(getResources().getStringArray(R.array.ECATEGORY));
+        spinnerItem = new ArrayList<>();
+        for(String str : items)
+            spinnerItem.add(str);
+
+        spinnerAdapter = new SpinnerAdapter(spinnerItem, view.getContext());
+
+
         earningCatagorySpinner.setAdapter(spinnerAdapter);
 
         if(spinnerItem!= null)
@@ -74,6 +98,7 @@ public class EarningSetterFragment extends Fragment{
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 earningCatagorySpinner.setSelection(position);
+                itemSelected = position;
             }
 
             @Override
@@ -113,15 +138,16 @@ public class EarningSetterFragment extends Fragment{
                 dialog.setOnAddCategory(new DialogListener() {
                     boolean flag = false;
                     @Override
-                    public void onSetDialog(String category) {
-                        if(!category.equals("NULL")) {
+                    public void onSetDialog(String regex, boolean flag) {
+                        if(!regex.equals("NULL")) {
                             for (String str : spinnerItem) {
-                                if (str.equals(category.toUpperCase()))
+                                if (str.equals(regex))
                                     flag = true;
                             }
 
                             if (!flag) {
-                                spinnerItem.add(category.toUpperCase());
+                                spinnerItem.add(regex);
+                                spinnerAdapter.setData(spinnerItem);
                                 spinnerAdapter.notifyDataSetChanged();
                                 earningCatagorySpinner.setSelection(spinnerItem.size() - 1);
                             }
@@ -146,17 +172,56 @@ public class EarningSetterFragment extends Fragment{
                         else
                             date = stk.getCurrentDate();
 
-                        TableData earning = new TableData(null, stk.stringFormatter(earningCatagorySpinner.getSelectedItem().toString()).trim(), earningAmountEdit.getText().toString(),
-                                                         earningNoteEdit.getText().toString(), date);
+                        TableData earning = new TableData(null, stk.stringFormatter(spinnerItem.get(itemSelected)).trim(), earningAmountEdit.getText().toString(),
+                                                         earningNoteEdit.getText().toString(), date, db.getActivatedWalletID());
                         db.insertOnTable(db.getEarningTable(), earning);
+
+                        if(autoRepetitionCheckBox.isChecked())
+                            createScheduler(date);
+
                         loadMainActivity();
                     }
+                }
+
+                if(autoRepetitionCheckBox.isChecked()) {
+                    Toast.makeText(getActivity(), autoRepetitionSpinner.getSelectedItem().toString(), Toast.LENGTH_SHORT).show();
 
                 }
             }
         });
 
+        String[] array = {"Daily", "Weekly", "Monthly", "Yearly"};
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>
+                (view.getContext(), android.R.layout.simple_spinner_item,
+                        array); //selected item will look like a spinner set from XML
+        spinnerArrayAdapter.setDropDownViewResource(android.R.layout
+                .simple_spinner_dropdown_item);
+        autoRepetitionSpinner.setAdapter(spinnerArrayAdapter);
+        autoRepetitionSpinner.setVisibility(View.INVISIBLE);
+
+        autoRepetitionCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked)
+                    autoRepetitionSpinner.setVisibility(View.VISIBLE);
+                else
+                    autoRepetitionSpinner.setVisibility(View.INVISIBLE);
+            }
+        });
+
         return view;
+    }
+
+    private void createScheduler(String date) {
+        HashMap<String, String> count = new HashMap<>();
+        count.put("Daily", "1");
+        count.put("Weekly", "7");
+        count.put("Monthly", "30");
+        count.put("Yearly", "365");
+
+        String tableName = db.getEarningTable();
+        String LAST_ROW = db.getLastRowFromTable(tableName);
+        db.insertNewSchedule(new Schedule(null, LAST_ROW, tableName, count.get(autoRepetitionSpinner.getSelectedItem().toString()), date));
     }
 
     private void loadMainActivity() {

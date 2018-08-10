@@ -201,10 +201,10 @@ public class ColorUtility {
                 return Color.parseColor("#DD2C00");
 
             case "Loan":
-                return Color.parseColor("#D32F2F");
+                return Color.parseColor("#B00020");
 
             case "Business":
-                return Color.parseColor("#FFFF00");
+                return Color.parseColor("#9E9D24");
 
             case "Extra Income":
                 return Color.parseColor("#00B8D4");

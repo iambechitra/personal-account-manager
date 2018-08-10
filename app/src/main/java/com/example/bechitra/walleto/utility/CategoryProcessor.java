@@ -1,21 +1,23 @@
 package com.example.bechitra.walleto.utility;
 
 public class CategoryProcessor {
-    String name, amount, num;
+    String category, amount, length, table;
 
-    public CategoryProcessor(String name, String amount, String num) {
-        this.name = name;
+    public CategoryProcessor(String table, String category, String amount, String length) {
+        this.category = category;
         this.amount = amount;
-        this.num = num;
+        this.length = length;
+        this.table = table;
     }
+    public String getTable() { return table; }
 
-    public String getName() {
-        return name;
+    public String getCategory() {
+        return category;
     }
 
     public String getAmount() {
         return amount;
     }
 
-    public String getNum() { return num; };
+    public String getLength() { return length; };
 }

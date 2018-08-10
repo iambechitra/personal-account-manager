@@ -32,7 +32,6 @@
         <item>Shopping</item>
         <item>Accommodation</item>
         <item>Utility</item>
-        <item>Other</item>
         <item>Transport</item>
         <item>Groceries</item>
         <item>Hobbies</item>
@@ -43,14 +42,15 @@
         <item>Rent</item>
         <item>Gift</item>
         <item>Savings</item>
+        <item>Other</item>
     </string-array>
 
     <string-array name="ECATEGORY">
+        <item>Salary</item>
         <item>Business</item>
         <item>Gifts</item>
         <item>Loan</item>
         <item>Extra Income</item>
-        <item>Salary</item>
     </string-array>
 
 </resources>

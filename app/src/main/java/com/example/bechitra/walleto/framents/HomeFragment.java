@@ -1,10 +1,12 @@
 package com.example.bechitra.walleto.framents;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,23 +16,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.example.bechitra.walleto.AlertManager;
 import com.example.bechitra.walleto.DatabaseHelper;;
 import com.example.bechitra.walleto.MainActivity;
 import com.example.bechitra.walleto.R;
-import com.example.bechitra.walleto.StringPatternCreator;
 import com.example.bechitra.walleto.adapter.DataOrganizerAdapter;
-import com.example.bechitra.walleto.adapter.RecyclerViewAdapter;
-import com.example.bechitra.walleto.dialog.ExcessSpendingAlertDialog;
 import com.example.bechitra.walleto.dialog.ResetDialog;
-import com.example.bechitra.walleto.dialog.listner.AlertManagerListener;
+import com.example.bechitra.walleto.dialog.listner.DialogListener;
 import com.example.bechitra.walleto.dialog.listner.ResetListener;
 import com.example.bechitra.walleto.graph.GraphData;
 import com.example.bechitra.walleto.table.TableData;
-import com.example.bechitra.walleto.utility.CategoryProcessor;
 import com.example.bechitra.walleto.utility.DataOrganizer;
 import com.example.bechitra.walleto.utility.DataProcessor;
 import com.github.mikephil.charting.animation.Easing;
@@ -80,8 +76,8 @@ public class HomeFragment extends Fragment{
         scrollView.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
 
         db = new DatabaseHelper(view.getContext());
-        String text = db.getBalanceForUser();
-        lastSpend = db.getLastInsertedRow(db.getSpendingTable());
+        //String text = db.getBalanceForUser();
+        //lastSpend = db.getLastInsertedRow(db.getSpendingTable());
 
         showPieChart();
 
@@ -89,9 +85,14 @@ public class HomeFragment extends Fragment{
         currentRecycler.setLayoutManager(new LinearLayoutManager(view.getContext(), LinearLayoutManager.VERTICAL, false));
 
         DataProcessor dataProcessor = new DataProcessor(view.getContext());
-        list = dataProcessor.getProcessedData();
+        list = dataProcessor.getProcessedData(db.getSpendingTable());
 
-        adapter = new DataOrganizerAdapter(view.getContext(), list);
+        adapter = new DataOrganizerAdapter(view.getContext(), list, new DialogListener() {
+            @Override
+            public void onSetDialog(String regex, boolean flag) {
+                reloadActivity();
+            }
+        });
         currentRecycler.setAdapter(adapter);
         currentRecycler.setNestedScrollingEnabled(false);
 
@@ -109,8 +110,8 @@ public class HomeFragment extends Fragment{
            // lastSpendingNote.setText(lastSpend.getNote());
         }*/
 
-        earnBalanceText.setText("$"+db.getCalculationOfCurrentMonth("EARNING"));
-        spendBalanceText.setText("$"+db.getCalculationOfCurrentMonth("SPENDING"));
+        earnBalanceText.setText("$"+db.getCalculationOfCurrentMonth(db.getEarningTable(), db.getActivatedWalletID()));
+        spendBalanceText.setText("$"+db.getCalculationOfCurrentMonth(db.getSpendingTable(), db.getActivatedWalletID()));
      //   currentDate.setText(new StringPatternCreator().getCurrentDateString());
 
         settingText.setOnClickListener(new View.OnClickListener() {
@@ -128,8 +129,7 @@ public class HomeFragment extends Fragment{
             }
         });
 
-        if(text != null)
-            mainBalance.setText("$"+text);
+       mainBalance.setText(db.getCurrentBalance(db.getActivatedWalletID()));
 
 
         return view;
@@ -142,7 +142,11 @@ public class HomeFragment extends Fragment{
     }
 
     private void reloadFragment() {
-        getFragmentManager().beginTransaction().detach(this).attach(this).commit();
+        Intent intent = new Intent(getContext(), MainActivity.class);
+        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        Activity activity = getActivity();
+        getActivity().startActivity(intent);
+        activity.finish();
     }
 
 
@@ -189,7 +193,7 @@ public class HomeFragment extends Fragment{
 
         PieDataSet dataSet = new PieDataSet(value, "");
         dataSet.setSelectionShift(5f);
-        dataSet.setSliceSpace(5f);
+        dataSet.setSliceSpace(3f);
         dataSet.setAutomaticallyDisableSliceSpacing(false);
         dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
         //dataSet.setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);

@@ -11,24 +11,61 @@ import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.example.bechitra.walleto.table.Schedule;
+import com.example.bechitra.walleto.table.TableData;
+
+import java.text.ParseException;
+import java.util.List;
+import java.util.StringTokenizer;
+
 public class AlertManager extends BroadcastReceiver{
     DatabaseHelper db;
+    final String COLUMN_NAME = "TIME";
+    final String TABLE = "SCHEDULE";
+
     @Override
     public void onReceive(Context context, Intent intent) {
         db = new DatabaseHelper(context);
-        String percentage = db.getOnAlertPercentage();
-        if(!percentage.equals("0") && percentage != null) {
-            String ratio = db.getBalanceToEarningRatio();
-            if(Double.parseDouble(ratio) <= Double.parseDouble(percentage)) {
-                if(Double.parseDouble(ratio) < 0) {
-                    ratio = "lest than 0";
+        List<Schedule> schedules = db.getScheduledData();
+        StringPatternCreator spc = new StringPatternCreator();
+        String currentDate = spc.getCurrentDate();
+        boolean flag = false;
+        int counter = 0;
+
+        for(Schedule s : schedules) {
+            try {
+                String next = formatDate(spc.addDate(s.getTime(), Integer.parseInt(s.getRepeat())));
+                //long diff = spc.dateDifference(currentDate, next);
+                if(next.equals(currentDate)) {
+                    TableData data = db.getDataFromRow(s.getItemID(), s.getTableName());
+                    if(data!=null) {
+                        db.insertOnTable(s.getTableName(), data);
+                        db.updateRowFromTable(TABLE, s.getID(), COLUMN_NAME, next);
+                        flag = true;
+                        counter++;
+                    }
                 }
-                notificationCreator(context, ratio);
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
+
+            if(flag)
+                notificationCreator(context, counter);
         }
     }
 
-    public void notificationCreator(Context context, String ratio) {
+    private String formatDate(String date) {
+        StringTokenizer stk = new StringTokenizer(date, "/");
+        int[] d = new int[3];
+        int i = 0;
+        while (stk.hasMoreTokens())
+            d[i++] = Integer.parseInt(stk.nextToken());
+
+        return (Integer.toString(d[0])+"/"+Integer.toString(d[1])+"/"+Integer.toString(d[2]));
+
+    }
+
+    private void notificationCreator(Context context, int counter) {
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -38,8 +75,8 @@ public class AlertManager extends BroadcastReceiver{
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, null)
                 .setContentIntent(pendingIntent)
                 .setSmallIcon(R.drawable.ic_add_spending_black_24dp)
-                .setContentTitle("Excess Spending Alert")
-                .setContentText("Your Spending is very high and balance is "+ratio+"% remaining")
+                .setContentTitle("Automatic Data insertion")
+                .setContentText(counter+" new record Added to the database")
                 .setAutoCancel(true);
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

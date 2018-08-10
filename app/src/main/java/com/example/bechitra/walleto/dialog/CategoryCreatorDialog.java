@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -33,10 +34,12 @@ public class CategoryCreatorDialog extends DialogFragment{
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if(listener != null) {
-                    if(!categoryCreatorEdit.getText().toString().equals(""))
-                        listener.onSetDialog(categoryCreatorEdit.getText().toString());
+                    if(!categoryCreatorEdit.getText().toString().equals("")) {
+                        Log.d("Category ", categoryCreatorEdit.getText().toString());
+                        listener.onSetDialog(categoryCreatorEdit.getText().toString(), false);
+                    }
                     else
-                        listener.onSetDialog("NULL");
+                        listener.onSetDialog("NULL", false);
                 }
             }
         });

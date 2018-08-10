@@ -1,7 +1,9 @@
 package com.example.bechitra.walleto.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,8 +13,12 @@ import android.widget.TextView;
 
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.StringPatternCreator;
+import com.example.bechitra.walleto.activity.DataEditorActivity;
+import com.example.bechitra.walleto.dialog.listner.DialogListener;
+import com.example.bechitra.walleto.table.TableData;
 import com.example.bechitra.walleto.utility.ColorUtility;
 import com.example.bechitra.walleto.utility.DataOrganizer;
+import com.example.bechitra.walleto.utility.DataParser;
 
 import java.util.List;
 
@@ -20,10 +26,12 @@ public class DataOrganizerAdapter extends RecyclerView.Adapter<RecyclerView.View
     Context context;
     List<DataOrganizer> list;
     RelativeLayout.LayoutParams params;
+    DialogListener listener;
 
-    public DataOrganizerAdapter(Context context, List<DataOrganizer> list) {
+    public DataOrganizerAdapter(Context context, List<DataOrganizer> list, DialogListener listener) {
         this.context = context;
         this.list = list;
+        this.listener = listener;
         this.params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
     }
 
@@ -70,12 +78,12 @@ public class DataOrganizerAdapter extends RecyclerView.Adapter<RecyclerView.View
             DataViewer view = (DataViewer)holder;
             DataOrganizer data = list.get(position);
             GradientDrawable gd = new GradientDrawable();
-            gd.setColor(new ColorUtility().getColors(data.getData().getName()));
+            gd.setColor(new ColorUtility().getColors(data.getData().getCategory()));
             gd.setShape(GradientDrawable.OVAL);
 
             view.layout.setBackground(gd);
-            view.icon.setBackgroundResource(new ColorUtility().getResource(data.getData().getName()));
-            view.category.setText(data.getData().getName());
+            view.icon.setBackgroundResource(new ColorUtility().getResource(data.getData().getCategory()));
+            view.category.setText(data.getData().getCategory());
             view.amount.setText("$"+data.getData().getAmount());
         }
     }
@@ -109,10 +117,29 @@ public class DataOrganizerAdapter extends RecyclerView.Adapter<RecyclerView.View
 
         public DataViewer(View itemView) {
             super(itemView);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    itemClickEvent(getAdapterPosition());
+                }
+            });
+
             icon = itemView.findViewById(R.id.cicularIconText);
             category = itemView.findViewById(R.id.categoryItemText);
             amount = itemView.findViewById(R.id.categoryAmountText);
             layout = itemView.findViewById(R.id.circleBackLayout);
         }
+    }
+
+    public void itemClickEvent(int adapterPosition) {
+        Intent intent = new Intent(context, DataEditorActivity.class);
+        TableData tableData = list.get(adapterPosition).getData();
+        String tableName = list.get(adapterPosition).getTable();
+
+        DataParser parser = new DataParser(tableName, tableData, 1);
+
+        intent.putExtra("data", parser);
+        context.startActivity(intent);
     }
 }

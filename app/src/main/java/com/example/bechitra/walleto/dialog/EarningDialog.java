@@ -106,7 +106,7 @@ public class EarningDialog extends android.support.v4.app.DialogFragment{
                         else
                             date = stk.getCurrentDate();
 
-                        TableData earning = new TableData(null,stk.stringFormatter(earningCatagorySpinner.getSelectedItem().toString()).trim(), earningAmountEdit.getText().toString(), date, null);
+                        TableData earning = new TableData(null,stk.stringFormatter(earningCatagorySpinner.getSelectedItem().toString()).trim(), earningAmountEdit.getText().toString(), date, null, db.getActivatedWalletID());
                         db.insertOnTable(db.getEarningTable(),earning);
                     }
 
@@ -134,15 +134,15 @@ public class EarningDialog extends android.support.v4.app.DialogFragment{
                 dialog.setOnAddCategory(new DialogListener() {
                     boolean flag = false;
                     @Override
-                    public void onSetDialog(String category) {
-                        if(!category.equals("NULL")) {
+                    public void onSetDialog(String regex, boolean flag) {
+                        if(!regex.equals("NULL")) {
                             for (String str : spinnerItem) {
-                                if (str.equals(category.toUpperCase()))
+                                if (str.equals(regex.toUpperCase()))
                                     flag = true;
                             }
 
                             if (!flag) {
-                                spinnerItem.add(category.toUpperCase());
+                                spinnerItem.add(regex.toUpperCase());
                                 spinnerAdapter.notifyDataSetChanged();
                                 earningCatagorySpinner.setSelection(spinnerItem.size() - 1);
                             }

@@ -20,7 +20,7 @@
         app:sbg_radius="2dp"
         app:sbg_ripple="true"
         app:sbg_rippleColor="@color/green"
-        app:sbg_selectorColor="@color/green"
+        app:sbg_selectorColor="@color/light_green"
         app:sbg_selectorTextColor="#FFF"
         app:sbg_shadow="true"
         app:sbg_shadowElevation="1dp"

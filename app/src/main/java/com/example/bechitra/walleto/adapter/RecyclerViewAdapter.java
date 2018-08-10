@@ -1,25 +1,19 @@
 package com.example.bechitra.walleto.adapter;
 
-import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.bechitra.walleto.R;
-import com.example.bechitra.walleto.dialog.CategoryViewDialog;
+import com.example.bechitra.walleto.activity.CategoryItemViewerActivity;
 import com.example.bechitra.walleto.utility.CategoryProcessor;
 import com.example.bechitra.walleto.utility.ColorUtility;
 
@@ -28,7 +22,6 @@ import java.util.List;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.RecyclerViewHolder>{
     List<CategoryProcessor> list;
-    static int counter = 0;
     Context context;
     RelativeLayout.LayoutParams params;
 
@@ -51,25 +44,25 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public void onBindViewHolder(RecyclerViewHolder holder, int position) {
         CategoryProcessor categoryProcessor = list.get(position);
         GradientDrawable gd = new GradientDrawable();
-        gd.setColor(new ColorUtility().getColors(categoryProcessor.getName()));
+        gd.setColor(new ColorUtility().getColors(categoryProcessor.getCategory()));
         gd.setShape(GradientDrawable.OVAL);
 
         holder.layout.setBackground(gd);
-        holder.icon.setBackgroundResource(new ColorUtility().getResource(categoryProcessor.getName()));
-        if(Integer.parseInt(categoryProcessor.getNum()) > 1)
-            holder.transaction.setText(categoryProcessor.getNum()+" transactions");
+        holder.icon.setBackgroundResource(new ColorUtility().getResource(categoryProcessor.getCategory()));
+        if(Integer.parseInt(categoryProcessor.getLength()) > 1)
+            holder.transaction.setText(categoryProcessor.getLength()+" transactions");
 
         holder.amount.setText("$"+categoryProcessor.getAmount());
 
         List<String>str = Arrays.asList(context.getResources().getStringArray(R.array.ECATEGORY));
         for(String s : str) {
-            if(s.equals(categoryProcessor.getName())) {
-                holder.amount.setTextColor(Color.GREEN);
+            if(s.equals(categoryProcessor.getCategory())) {
+                holder.amount.setTextColor(Color.parseColor("#2E7D32"));
                 break;
             }
         }
 
-        holder.category.setText(categoryProcessor.getName());
+        holder.category.setText(categoryProcessor.getCategory());
     }
 
     @Override
@@ -85,12 +78,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Bundle bundle = new Bundle();
-                    CategoryViewDialog dialog = new CategoryViewDialog();
-                    CategoryProcessor categoryProcessor = list.get(getAdapterPosition());
-                    bundle.putString("category", categoryProcessor.getName());
-                    dialog.setArguments(bundle);
-                    dialog.show(((AppCompatActivity)context).getSupportFragmentManager(), "TAG");
+                    onClickAction(getAdapterPosition());
                 }
             });
             icon = itemView.findViewById(R.id.cicularIconText);
@@ -101,5 +89,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         }
     }
 
-
+    private void onClickAction(int position) {
+        Bundle bundle = new Bundle();
+        Intent intent = new Intent(context, CategoryItemViewerActivity.class);
+        CategoryProcessor categoryProcessor = list.get(position);
+        bundle.putString("category", categoryProcessor.getCategory());
+        bundle.putString("table", categoryProcessor.getTable());
+        intent.putExtras(bundle);
+        context.startActivity(intent);
+    }
 }

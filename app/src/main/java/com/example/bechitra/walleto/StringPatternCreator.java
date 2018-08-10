@@ -1,12 +1,14 @@
 package com.example.bechitra.walleto;
 
-import android.content.Intent;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.List;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.StringTokenizer;
+import java.util.concurrent.TimeUnit;
 
 public class StringPatternCreator {
     public String getCurrentDate() {
@@ -22,6 +24,30 @@ public class StringPatternCreator {
     public String getMonthWithYear(String date) {
         String[] str = getSeparatedDateArray(date);
         return ("/"+Integer.toString(Integer.parseInt(str[1]))+"/"+str[2]);
+    }
+
+    public String addDate(String current, int toAdd) throws ParseException {
+        SimpleDateFormat df = new SimpleDateFormat( "dd/MM/yyyy" );
+        Date date = df.parse(current);
+        Calendar cal = GregorianCalendar.getInstance();
+        cal.setTime(date);
+        cal.add(GregorianCalendar.DAY_OF_MONTH, toAdd);
+
+        return df.format(cal.getTime());
+    }
+
+    public long dateDifference(String dateOne, String dateTwo) {
+        SimpleDateFormat myFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+        try {
+            Date date1 = myFormat.parse(dateOne);
+            Date date2 = myFormat.parse(dateTwo);
+            long diff = date2.getTime() - date1.getTime();
+            return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return -1;
+        }
     }
 
     private String[] getCurrentDateInArray() {

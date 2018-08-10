@@ -1,6 +1,7 @@
 package com.example.bechitra.walleto.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +11,9 @@ import android.widget.TextView;
 
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.StringPatternCreator;
+import com.example.bechitra.walleto.activity.DataEditorActivity;
 import com.example.bechitra.walleto.table.TableData;
+import com.example.bechitra.walleto.utility.DataParser;
 
 import java.util.List;
 
@@ -18,10 +21,12 @@ public class RowViewAdapter extends RecyclerView.Adapter<RowViewAdapter.RowViewe
     Context context;
     List<TableData> data;
     RelativeLayout.LayoutParams params;
+    String tableName;
 
-    public RowViewAdapter(Context context, List<TableData> data) {
+    public RowViewAdapter(Context context, List<TableData> data, String tableName) {
         this.context = context;
         this.data = data;
+        this.tableName = tableName;
         this.params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
     }
 
@@ -52,7 +57,7 @@ public class RowViewAdapter extends RecyclerView.Adapter<RowViewAdapter.RowViewe
         return data.size();
     }
 
-    class RowViewer extends RecyclerView.ViewHolder {
+    class RowViewer extends RecyclerView.ViewHolder implements View.OnClickListener{
         TextView note, date, amount;
 
         public RowViewer(View itemView) {
@@ -60,6 +65,15 @@ public class RowViewAdapter extends RecyclerView.Adapter<RowViewAdapter.RowViewe
             note = itemView.findViewById(R.id.noteViewItem);
             date = itemView.findViewById(R.id.dateViewItem);
             amount = itemView.findViewById(R.id.amountViewItemText);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            DataParser d = new DataParser(tableName, data.get(getAdapterPosition()), 0);
+            Intent intent = new Intent(context, DataEditorActivity.class);
+            intent.putExtra("data", d);
+            context.startActivity(intent);
         }
     }
 }

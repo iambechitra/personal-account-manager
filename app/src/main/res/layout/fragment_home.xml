@@ -167,7 +167,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="#000"
                     android:layout_marginLeft="5dp"
-                    android:text="This month spending"/>
+                    android:text="Spending history of this month"/>
 
                 <android.support.v7.widget.RecyclerView
                     android:layout_width="match_parent"

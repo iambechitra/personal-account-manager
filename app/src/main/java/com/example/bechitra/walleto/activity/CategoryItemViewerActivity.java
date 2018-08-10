@@ -1,17 +1,15 @@
-package com.example.bechitra.walleto.dialog;
+package com.example.bechitra.walleto.activity;
 
-import android.app.Dialog;
-import android.app.FragmentManager;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
+import android.os.Build;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.example.bechitra.walleto.DatabaseHelper;
@@ -27,7 +25,6 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -37,10 +34,12 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class CategoryViewDialog extends DialogFragment{
+public class CategoryItemViewerActivity extends AppCompatActivity {
 
-    @BindView(R.id.barchartCategory) BarChart barChart;
-    @BindView(R.id.categoryNameInDialog) TextView categoryName;
+    @BindView(R.id.barchartCategory)
+    BarChart barChart;
+    @BindView(R.id.categoryNameInDialog)
+    TextView categoryName;
     @BindView(R.id.recordCountCategoryText) TextView recordCount;
     @BindView(R.id.rowDataViewRecycler)
     RecyclerView rowDataViewRecycler;
@@ -49,35 +48,24 @@ public class CategoryViewDialog extends DialogFragment{
     NestedScrollView scrollView;
 
     DatabaseHelper db;
-    @NonNull
+
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Dialog dialog = new Dialog(getContext(), android.R.style.Theme_DeviceDefault_Light_NoActionBar_Fullscreen);
-        View view = LayoutInflater.from(getContext()).inflate(R.layout.layout_category_viewer, null);
-        dialog.setContentView(view);
-        ButterKnife.bind(this, view);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_category_view);
+        ButterKnife.bind(this);
 
         scrollView.setFocusableInTouchMode(true);
         scrollView.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
 
-        db = new DatabaseHelper(view.getContext());
+        db = new DatabaseHelper(this);
         StringPatternCreator stk = new StringPatternCreator();
         String date = stk.getCurrentDate();
         ArrayList<BarEntry> barEntries = new ArrayList<>();
-        String category = getArguments().getString("category");
+        String category = getIntent().getExtras().getString("category");
         categoryName.setText(category);
-
-        String table = db.getSpendingTable();
-
-        List<String> cat = Arrays.asList(getResources().getStringArray(R.array.ECATEGORY));
-
-        for(String c : cat) {
-            if (c.equals(category)) {
-                table = db.getEarningTable();
-                break;
-            }
-        }
-
+        statusBarColorChanger(new ColorUtility().getColors(category));
+        String table = getIntent().getExtras().getString("table");
 
         categoryName.setBackgroundColor(new ColorUtility().getColors(category));
         for(int i = 0; i < 12; i++) {
@@ -113,15 +101,12 @@ public class CategoryViewDialog extends DialogFragment{
 
         rowDataViewRecycler.setNestedScrollingEnabled(false);
         rowDataViewRecycler.setHasFixedSize(true);
-        rowDataViewRecycler.setLayoutManager(new LinearLayoutManager(view.getContext(), LinearLayoutManager.VERTICAL, false));
+        rowDataViewRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
         List<TableData> row = db.getAllRowOfACategory(table, category);
         recordCount.setText(""+row.size());
-        RowViewAdapter adapter = new RowViewAdapter(view.getContext(), row);
+        RowViewAdapter adapter = new RowViewAdapter(this, row, table);
         rowDataViewRecycler.setAdapter(adapter);
-
-
-        return dialog;
     }
 
     class ValueFormatter implements IAxisValueFormatter {
@@ -137,5 +122,16 @@ public class CategoryViewDialog extends DialogFragment{
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 
+    private void statusBarColorChanger(int color) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(color);
+        }
+    }
 }

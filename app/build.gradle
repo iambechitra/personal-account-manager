@@ -48,7 +48,7 @@ dependencies {
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
     implementation 'net.cachapa.expandablelayout:expandablelayout:[2.9.2]'
     implementation 'com.github.ceryle:SegmentedButton:v1.0'
-    compile('com.crashlytics.sdk.android:crashlytics:2.9.2@aar') {
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.2@aar') {
         transitive = true;
     }
 

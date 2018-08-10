@@ -11,4 +11,6 @@
     <color name="colorAccent">#4CAF50</color>
     <color name="fbcolor">#3B5998</color>
     <color name="amber">#FFC107</color>
+    <color name="tab_selected">#66BB6A</color>
+    <color name="light_green">#00C853</color>
 </resources>
