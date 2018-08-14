@@ -26,9 +26,9 @@ import android.widget.TextView;
 import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.MainActivity;
 import com.example.bechitra.walleto.R;
-import com.example.bechitra.walleto.StringPatternCreator;
+import com.example.bechitra.walleto.utility.DateManager;
 import com.example.bechitra.walleto.dialog.CategoryCreatorDialog;
-import com.example.bechitra.walleto.dialog.listner.DialogListener;
+import com.example.bechitra.walleto.dialog.listener.DialogListener;
 import com.example.bechitra.walleto.table.Schedule;
 import com.example.bechitra.walleto.table.TableData;
 import com.example.bechitra.walleto.adapter.SpinnerAdapter;
@@ -83,6 +83,12 @@ public class SpendingSetterFragment extends Fragment{
         for(String str : categoryItems)
             spinnerItem.add(str);
 
+        List<String> dbCategory = db.getDistinctCategory(db.getSpendingTable());
+
+        for(String s : dbCategory)
+            if(!spinnerItem.contains(s))
+                spinnerItem.add(s);
+
         spinnerAdapter = new SpinnerAdapter(spinnerItem, view.getContext());
 
         //spinnerAdapter = new ArrayAdapter<>(view.getContext(), android.R.layout.simple_spinner_item, spinnerItem);
@@ -123,7 +129,8 @@ public class SpendingSetterFragment extends Fragment{
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth)
             {
-                spendingDateText.setText(Integer.toString(dayOfMonth) + "/" + Integer.toString(month + 1) + "/" + Integer.toString(year));
+                spendingDateText.setText(Integer.toString(dayOfMonth) + "/" + Integer.toString(month + 1) + "/" +
+                        Integer.toString(year));
             }
         };
 
@@ -136,23 +143,26 @@ public class SpendingSetterFragment extends Fragment{
                     BigDecimal big = new BigDecimal(spendingAmountEdit.getText().toString());
                     if (big.compareTo(BigDecimal.ZERO) == 1) {
                         String date = "";
+                        DateManager stk = new DateManager();
+                        String category = stk.stringFormatter(spinnerItem.get(pos)).trim();
 
                         if (!spendingDateText.getText().equals("TODAY"))
                             date = spendingDateText.getText().toString();
                         else
-                            date = new StringPatternCreator().getCurrentDate();
+                            date = new DateManager().getCurrentDate();
 
-                        StringPatternCreator stk = new StringPatternCreator();
-
-                        TableData spending = new TableData(null, stk.stringFormatter(spinnerItem.get(pos)).trim(),
-                                spendingAmountEdit.getText().toString(), stk.stringFormatter(additionalNoteEdit.getText().toString().toUpperCase()).trim(), date, db.getActivatedWalletID());
+                        TableData spending = new TableData(null, category, spendingAmountEdit.getText().toString(),
+                                stk.stringFormatter(additionalNoteEdit.getText().toString().toUpperCase()).trim(),
+                                    date, db.getActivatedWalletID());
 
                         db.insertOnTable(db.getSpendingTable(), spending);
 
                         if(autoRepetitionCheckBox.isChecked())
-                            createScheduler(date);
+                            db.insertNewSchedule(new Schedule(null,db.getSpendingTable(), category,
+                                    spendingAmountEdit.getText().toString(), additionalNoteEdit.getText().toString(),
+                                        date, getRepeat(), db.getActivatedWalletID(), "1"));
 
-                        loadMainActivity();
+                        getActivity().finish();
                     }
                 }
             }
@@ -208,16 +218,14 @@ public class SpendingSetterFragment extends Fragment{
         return view;
     }
 
-    private void createScheduler(String date) {
+    private String getRepeat() {
         HashMap<String, String> count = new HashMap<>();
         count.put("Daily", "1");
         count.put("Weekly", "7");
         count.put("Monthly", "30");
         count.put("Yearly", "365");
 
-        String tableName = db.getSpendingTable();
-        String LAST_ROW = db.getLastRowFromTable(tableName);
-        db.insertNewSchedule(new Schedule(null, LAST_ROW, tableName, count.get(autoRepetitionSpinner.getSelectedItem().toString()), date));
+        return count.get(autoRepetitionSpinner.getSelectedItem().toString());
     }
 
     private void loadMainActivity() {

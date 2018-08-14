@@ -2,31 +2,26 @@ package com.example.bechitra.walleto;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.example.bechitra.walleto.dialog.listner.OnDeleteItem;
+import com.example.bechitra.walleto.dialog.listener.OnDeleteItem;
 import com.example.bechitra.walleto.graph.GraphData;
 import com.example.bechitra.walleto.sorting.BigSort;
 import com.example.bechitra.walleto.table.Schedule;
 import com.example.bechitra.walleto.table.TableData;
 import com.example.bechitra.walleto.table.Wallet;
+import com.example.bechitra.walleto.utility.DateManager;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 public class DatabaseHelper extends SQLiteOpenHelper{
     final static String DB_NAME = "account.db";
@@ -53,10 +48,14 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
     final static String SCHEDULE_TABLE = "SCHEDULE";
     final static String SDL_COL1 = "ID";
-    final static String SDL_COL2 = "ITEM_ID";
-    final static String SDL_COL3 = "TABLE_NAME";
-    final static String SDL_COL4 = "REPEAT";
-    final static String SDL_COL5 = "TIME";
+    final static String SDL_COL2 = "TABLE_NAME";
+    final static String SDL_COL3 = "CATEGORY";
+    final static String SDL_COL4 = "AMOUNT";
+    final static String SDL_COL5 = "NOTE";
+    final static String SDL_COL6 = "DATE";
+    final static String SDL_COL7 = "REPEAT";
+    final static String SDL_COL8 = "WALLET_ID";
+    final static String SDL_COL9 = "ACTIVE";
 
     final static String DEFAULT_WALLET = "PRIMARY";
 
@@ -122,7 +121,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
     public List<String> getDistinctCategoryFromCurrentMonth(String tableName) {
         Cursor cr = db.rawQuery("SELECT DISTINCT CATEGORY FROM "+tableName+" WHERE DATE LIKE '%"
-                +new StringPatternCreator().getCurrentMonthWithYear()+"' AND "+" "+ET_COL6+" = "+getActivatedWalletID(), null);
+                +new DateManager().getCurrentMonthWithYear()+"' AND "+" "+ET_COL6+" = "+getActivatedWalletID(), null);
         List<String> list = new ArrayList<>();
         while(cr.moveToNext())
             list.add(cr.getString(0));
@@ -164,7 +163,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
     public String getCalculationOfCurrentMonth(String tableName, String walletID) {
 
-        String format = new StringPatternCreator().getCurrentMonthWithYear();
+        String format = new DateManager().getCurrentMonthWithYear();
 
         Cursor cr = db.rawQuery("SELECT AMOUNT FROM "+tableName+" WHERE DATE LIKE '%"+format+"' AND WALLET_ID = "+walletID, null);
 
@@ -204,7 +203,8 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         db.execSQL("CREATE TABLE "+SPENDING_TABLE+" ("+ST_COL1+" INTEGER PRIMARY KEY AUTOINCREMENT, "+ST_COL2+" TEXT, "+ST_COL3+ " REAL, "+ST_COL4+" TEXT, "+ST_COL5+" TEXT, "+ST_COL6+" INTEGER)");
         db.execSQL("CREATE TABLE "+EARNING_TABLE+" ("+ET_COL1+" INTEGER PRIMARY KEY AUTOINCREMENT, "+ET_COL2+" TEXT, "+ET_COL3+ " REAL, "+ET_COL4+" TEXT, "+ET_COL5+" TEXT, "+ET_COL6+" INTEGER)");
         db.execSQL("CREATE TABLE "+WALLET_TABLE+" ("+WT_COL1+" INTEGER PRIMARY KEY AUTOINCREMENT, "+WT_COL2+" TEXT, "+WT_COL3+ " INTEGER)");
-        db.execSQL("CREATE TABLE "+SCHEDULE_TABLE+" ("+SDL_COL1+" INTEGER PRIMARY KEY AUTOINCREMENT, "+SDL_COL2+" INTEGER, "+SDL_COL3+" TEXT, "+SDL_COL4+" TEXT, "+SDL_COL5+" TEXT)");
+        db.execSQL("CREATE TABLE "+SCHEDULE_TABLE+" ("+SDL_COL1+" INTEGER PRIMARY KEY AUTOINCREMENT, "+SDL_COL2+" INTEGER, "+SDL_COL3+" TEXT, "+SDL_COL4+" TEXT, "+SDL_COL5+" TEXT, " +
+                                                SDL_COL6+" TEXT, "+SDL_COL7+" TEXT, "+SDL_COL8+" TEXT, "+SDL_COL9+" TEXT)");
         ContentValues cv = new ContentValues();
         cv.put(WT_COL2, DEFAULT_WALLET);
         cv.put(WT_COL3, 1);
@@ -225,7 +225,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
     public List<TableData> getCurrentMonthData(String tableName) {
         Cursor cr = db.rawQuery("SELECT * FROM "+tableName+" WHERE DATE LIKE '%"
-                                +new StringPatternCreator().getCurrentMonthWithYear()+"'", null);
+                                +new DateManager().getCurrentMonthWithYear()+"'", null);
         List<TableData> list = new ArrayList<>();
         while(cr.moveToNext())
             list.add(new TableData(cr.getString(0), cr.getString(1), cr.getString(2), cr.getString(3), cr.getString(4), cr.getString(5)));
@@ -277,7 +277,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         boolean flag = false;
         if(category != null) {
             for(String str : category) {
-                List<String> amount = getTotalAmountForACategoryForMonth(str, SPENDING_TABLE, new StringPatternCreator().getCurrentMonthWithYear());
+                List<String> amount = getTotalAmountForACategoryForMonth(str, SPENDING_TABLE, new DateManager().getCurrentMonthWithYear());
                 String total = getTotalAmountFromAList(amount);
                 numbers.add(total);
                 graphData.add(new GraphData(str, total));
@@ -360,7 +360,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         Set<String> date = new HashSet<>();
         Cursor cr = db.rawQuery("SELECT DATE FROM "+table,null);
         while (cr.moveToNext())
-            date.add(new StringPatternCreator().getYearFromDate(cr.getString(0)));
+            date.add(new DateManager().getYearFromDate(cr.getString(0)));
 
         List<String> list = new ArrayList<>();
         list.clear();
@@ -417,10 +417,14 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
     public boolean insertNewSchedule(Schedule schedule) {
         ContentValues cv = new ContentValues();
-        cv.put(SDL_COL2, schedule.getItemID());
-        cv.put(SDL_COL3, schedule.getTableName());
-        cv.put(SDL_COL4, schedule.getRepeat());
-        cv.put(SDL_COL5, schedule.getTime());
+        cv.put(SDL_COL2, schedule.getTableName());
+        cv.put(SDL_COL3, schedule.getCategory());
+        cv.put(SDL_COL4, schedule.getAmount());
+        cv.put(SDL_COL5, schedule.getNote());
+        cv.put(SDL_COL6, schedule.getDate());
+        cv.put(SDL_COL7, schedule.getRepeat());
+        cv.put(SDL_COL8, schedule.getWalletID());
+        cv.put(SDL_COL9, schedule.getActive());
 
         long result = db.insert(SCHEDULE_TABLE, null, cv);
 
@@ -435,19 +439,23 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
         Cursor cr = db.rawQuery("SELECT * FROM "+SCHEDULE_TABLE,null);
         while (cr.moveToNext())
-            schedules.add(new Schedule(cr.getString(0), cr.getString(1), cr.getString(2), cr.getString(3), cr.getString(4)));
+            schedules.add(new Schedule(cr.getString(0), cr.getString(1), cr.getString(2),
+                    cr.getString(3), cr.getString(4), cr.getString(5),
+                        cr.getString(6), cr.getString(7), cr.getString(8)));
 
         return schedules;
     }
 
-    public Schedule getScheduledData(String itemID, String tableName) {
-        Log.d("item", itemID+" "+tableName);
-        Cursor cr = db.rawQuery("SELECT * FROM "+SCHEDULE_TABLE+" WHERE "+SDL_COL2+" = '"+itemID+"' AND "+SDL_COL3+
-                                " = '"+tableName+"'",null);
+    public Schedule getScheduledData(String tableName, String category, String amount, String note, String walletID) {
+        Cursor cr = db.rawQuery("SELECT * FROM "+SCHEDULE_TABLE+" WHERE "+SDL_COL2+" = '"+tableName+"' AND "+SDL_COL3+
+                                " = '"+category+"' AND "+SDL_COL4+" = '"+amount+"' AND "+SDL_COL5+" = '"+note+"' AND "+
+                                        SDL_COL8+" = '"+walletID+"'",null);
         Schedule schedule = null;
 
         while (cr.moveToNext())
-            schedule = new Schedule(cr.getString(0), cr.getString(1), cr.getString(2), cr.getString(3), cr.getString(4));
+            schedule = new Schedule(cr.getString(0), cr.getString(1), cr.getString(2),
+                            cr.getString(3), cr.getString(4), cr.getString(5),
+                                cr.getString(6), cr.getString(7), cr.getString(8));
 
         return schedule;
     }

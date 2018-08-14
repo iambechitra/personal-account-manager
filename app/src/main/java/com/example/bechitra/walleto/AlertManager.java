@@ -9,10 +9,10 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
 import com.example.bechitra.walleto.table.Schedule;
 import com.example.bechitra.walleto.table.TableData;
+import com.example.bechitra.walleto.utility.DateManager;
 
 import java.text.ParseException;
 import java.util.List;
@@ -27,23 +27,23 @@ public class AlertManager extends BroadcastReceiver{
     public void onReceive(Context context, Intent intent) {
         db = new DatabaseHelper(context);
         List<Schedule> schedules = db.getScheduledData();
-        StringPatternCreator spc = new StringPatternCreator();
+        DateManager spc = new DateManager();
         String currentDate = spc.getCurrentDate();
         boolean flag = false;
         int counter = 0;
 
         for(Schedule s : schedules) {
             try {
-                String next = formatDate(spc.addDate(s.getTime(), Integer.parseInt(s.getRepeat())));
+                String next = formatDate(spc.addDate(s.getDate(), Integer.parseInt(s.getRepeat())));
                 //long diff = spc.dateDifference(currentDate, next);
                 if(next.equals(currentDate)) {
-                    TableData data = db.getDataFromRow(s.getItemID(), s.getTableName());
-                    if(data!=null) {
-                        db.insertOnTable(s.getTableName(), data);
-                        db.updateRowFromTable(TABLE, s.getID(), COLUMN_NAME, next);
-                        flag = true;
-                        counter++;
-                    }
+                    TableData data = new TableData(null, s.getCategory(), s.getAmount(), s.getNote(), next, s.getWalletID());
+
+                    db.insertOnTable(s.getTableName(), data);
+                    db.updateRowFromTable(TABLE, s.getID(), COLUMN_NAME, next);
+                    flag = true;
+                    counter++;
+
                 }
             } catch (ParseException e) {
                 e.printStackTrace();

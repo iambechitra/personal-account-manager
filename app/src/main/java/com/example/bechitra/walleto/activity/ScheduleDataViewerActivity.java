@@ -4,15 +4,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 
 import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.adapter.AutoRepetitionDataViewerAdapter;
-import com.example.bechitra.walleto.dialog.listner.OnDeleteItem;
+import com.example.bechitra.walleto.dialog.listener.OnDeleteItem;
 import com.example.bechitra.walleto.table.Schedule;
-import com.example.bechitra.walleto.table.TableData;
-import com.example.bechitra.walleto.utility.ScheduleData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,18 +47,16 @@ public class ScheduleDataViewerActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
     }
 
-    private List<ScheduleData> filteredScheduler() {
+    private List<Schedule> filteredScheduler() {
         List<Schedule> list = db.getScheduledData();
         String currentActiveWallet = db.getActivatedWalletID();
-        List<ScheduleData> data = new ArrayList<>();
+        List<Schedule> adapterData = new ArrayList<>();
 
-        for(Schedule s : list) {
-            TableData tData = db.getDataFromRow(s.getItemID(), s.getTableName());
-            if(tData.getWalletID().equals(currentActiveWallet))
-                data.add(new ScheduleData(s.getID(), tData.getCategory(), tData.getAmount(), s.getTableName(), s.getTime(), s.getRepeat()));
+        for(Schedule s : list)
+            if(s.getWalletID().equals(currentActiveWallet))
+                adapterData.add(s);
 
-        }
 
-        return data;
+        return adapterData;
     }
 }

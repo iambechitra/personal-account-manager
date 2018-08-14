@@ -55,13 +55,13 @@ public class ColorUtility {
                 return R.drawable.ic_entertainment;
 
             case "Shopping":
-                return R.drawable.ic_shoping;
+                return R.drawable.ic_shopping;
 
             case "Accommodation":
                 return R.drawable.ic_accomodation;
 
             case "Utility":
-                return R.drawable.ic_utilites;
+                return R.drawable.ic_utility;
 
             case "Other":
                 return R.drawable.ic_other;
@@ -94,7 +94,7 @@ public class ColorUtility {
                 return R.drawable.ic_gift;
 
             case "Savings":
-                return R.drawable.ic_savings;
+                return R.drawable.ic_saving;
 
             case "Gifts":
                 return R.drawable.ic_gift;
@@ -165,7 +165,7 @@ public class ColorUtility {
                 return Color.parseColor("#827717");
 
             case "Other":
-                return Color.parseColor("#C6FF00");
+                return Color.parseColor("#4A148C");
 
             case "Transport":
                 return Color.parseColor("#BF360C");

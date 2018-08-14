@@ -18,9 +18,9 @@ import android.widget.TextView;
 
 import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.R;
-import com.example.bechitra.walleto.StringPatternCreator;
-import com.example.bechitra.walleto.dialog.listner.DialogListener;
-import com.example.bechitra.walleto.dialog.listner.OnCloseDialogListener;
+import com.example.bechitra.walleto.utility.DateManager;
+import com.example.bechitra.walleto.dialog.listener.DialogListener;
+import com.example.bechitra.walleto.dialog.listener.OnCloseDialogListener;
 import com.example.bechitra.walleto.table.TableData;
 
 import java.math.BigDecimal;
@@ -96,7 +96,7 @@ public class EarningDialog extends android.support.v4.app.DialogFragment{
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if(earningCatagorySpinner.getSelectedItem() != null && !earningAmountEdit.getText().toString().equals("")) {
-                    StringPatternCreator stk = new StringPatternCreator();
+                    DateManager stk = new DateManager();
                     BigDecimal big = new BigDecimal(earningAmountEdit.getText().toString());
                     if(big.compareTo(BigDecimal.ZERO) == 1) {
                         String date = "";

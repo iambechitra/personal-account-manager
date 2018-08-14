@@ -1,8 +1,8 @@
 package com.example.bechitra.walleto.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,10 +11,11 @@ import android.widget.TextView;
 
 import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.R;
-import com.example.bechitra.walleto.StringPatternCreator;
-import com.example.bechitra.walleto.dialog.listner.OnDeleteItem;
-import com.example.bechitra.walleto.table.TableData;
-import com.example.bechitra.walleto.utility.ScheduleData;
+import com.example.bechitra.walleto.dialog.RowDeleteDialog;
+import com.example.bechitra.walleto.dialog.listener.OnCloseDialogListener;
+import com.example.bechitra.walleto.table.Schedule;
+import com.example.bechitra.walleto.utility.DateManager;
+import com.example.bechitra.walleto.dialog.listener.OnDeleteItem;
 
 import java.text.ParseException;
 import java.util.List;
@@ -24,13 +25,13 @@ import butterknife.ButterKnife;
 
 public class AutoRepetitionDataViewerAdapter extends RecyclerView.Adapter<AutoRepetitionDataViewerAdapter.DataBinder>{
     Context context;
-    List<ScheduleData> data;
+    List<Schedule> data;
     RelativeLayout.LayoutParams params;
     DatabaseHelper db;
 
     OnDeleteItem listener;
 
-    public AutoRepetitionDataViewerAdapter(Context context, List<ScheduleData> data) {
+    public AutoRepetitionDataViewerAdapter(Context context, List<Schedule> data) {
         this.data = data;
         this.context = context;
         db = new DatabaseHelper(context);
@@ -46,25 +47,24 @@ public class AutoRepetitionDataViewerAdapter extends RecyclerView.Adapter<AutoRe
         return new DataBinder(view);
     }
 
-    public void setData(List<ScheduleData> list) { this.data = list; }
+    public void setData(List<Schedule> list) { this.data = list; }
 
     @Override
     public void onBindViewHolder(DataBinder holder, int position) {
-        ScheduleData schedule = data.get(position);
+        Schedule schedule = data.get(position);
         holder.categoryText.setText(schedule.getCategory());
         holder.itemAmountText.setText(schedule.getAmount()+"$");
-        holder.tableName.setText(schedule.getTable());
-        holder.lastRepeatDateText.setText(schedule.getLastRepeat());
-        Log.d("DIFF", schedule.getRepetitionInterval());
+        holder.tableName.setText(schedule.getTableName());
+        holder.lastRepeatDateText.setText(schedule.getDate());
 
-        if(schedule.getRepetitionInterval().equals("1"))
+        if(schedule.getRepeat().equals("1"))
             holder.repetitionText.setText("Repeat Tomorrow");
         else {
-            StringPatternCreator spc = new StringPatternCreator();
+            DateManager spc = new DateManager();
             String currentDate = spc.getCurrentDate();
             long diff = 0;
             try {
-                diff = spc.dateDifference(currentDate, spc.addDate(schedule.getLastRepeat(), Integer.parseInt(schedule.getRepetitionInterval())));
+                diff = spc.dateDifference(currentDate, spc.addDate(schedule.getDate(), Integer.parseInt(schedule.getRepeat())));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -78,7 +78,7 @@ public class AutoRepetitionDataViewerAdapter extends RecyclerView.Adapter<AutoRe
         return data.size();
     }
 
-    class DataBinder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
+    class DataBinder extends RecyclerView.ViewHolder implements View.OnClickListener{
         @BindView(R.id.repetitionText) TextView repetitionText;
         @BindView(R.id.lastRepeatDateText) TextView lastRepeatDateText;
         @BindView(R.id.tableName) TextView tableName;
@@ -89,18 +89,20 @@ public class AutoRepetitionDataViewerAdapter extends RecyclerView.Adapter<AutoRe
         public DataBinder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            itemView.setOnLongClickListener(this);
+            itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-
-        }
-
-        @Override
-        public boolean onLongClick(View v) {
-            listener.onDelete(data.get(getAdapterPosition()).getID(), getAdapterPosition());
-            return true;
+            RowDeleteDialog dialog = new RowDeleteDialog();
+            dialog.show(((Activity)context).getFragmentManager(), "TAG");
+            dialog.setOnCloseDialogManager(new OnCloseDialogListener() {
+                @Override
+                public void onClose(boolean flag) {
+                    if(flag)
+                        listener.onDelete(data.get(getAdapterPosition()).getID(), getAdapterPosition());
+                }
+            });
         }
     }
 

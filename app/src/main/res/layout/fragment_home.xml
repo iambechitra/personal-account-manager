@@ -162,12 +162,26 @@
                 android:layout_margin="10dp"
                 android:orientation="vertical">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="#000"
-                    android:layout_marginLeft="5dp"
-                    android:text="Spending history of this month"/>
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#000"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginLeft="5dp"
+                        android:textSize="16sp"
+                        android:text="History of this month"/>
+
+                    <Spinner
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:id="@+id/tableSelectorSpinner"></Spinner>
+
+                </RelativeLayout>
 
                 <android.support.v7.widget.RecyclerView
                     android:layout_width="match_parent"

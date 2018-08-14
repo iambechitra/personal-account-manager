@@ -6,24 +6,21 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.MainActivity;
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.adapter.WalletCreatorAdapter;
 import com.example.bechitra.walleto.dialog.WalletCreatorDialog;
-import com.example.bechitra.walleto.dialog.listner.DialogListener;
-import com.example.bechitra.walleto.dialog.listner.OnItemClick;
-import com.example.bechitra.walleto.dialog.listner.OnLongClickItem;
+import com.example.bechitra.walleto.dialog.listener.DialogListener;
+import com.example.bechitra.walleto.dialog.listener.OnItemClick;
+import com.example.bechitra.walleto.dialog.listener.OnLongClickItem;
 import com.example.bechitra.walleto.table.Wallet;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -129,9 +126,5 @@ public class AccountManagementActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-
-        Intent i = new Intent(this, MainActivity.class);
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(i);
     }
 }

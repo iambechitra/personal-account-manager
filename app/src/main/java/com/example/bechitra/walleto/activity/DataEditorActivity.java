@@ -1,6 +1,5 @@
 package com.example.bechitra.walleto.activity;
 
-import android.app.ActionBar;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -12,7 +11,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.KeyListener;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -33,8 +31,7 @@ import com.example.bechitra.walleto.MainActivity;
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.adapter.DefaultSpinnerAdapter;
 import com.example.bechitra.walleto.dialog.RowDeleteDialog;
-import com.example.bechitra.walleto.dialog.listner.OnCloseDialogListener;
-import com.example.bechitra.walleto.dialog.listner.OnDeleteItem;
+import com.example.bechitra.walleto.dialog.listener.OnCloseDialogListener;
 import com.example.bechitra.walleto.table.Schedule;
 import com.example.bechitra.walleto.utility.ColorUtility;
 import com.example.bechitra.walleto.utility.DataParser;
@@ -78,6 +75,7 @@ public class DataEditorActivity extends AppCompatActivity {
 
     private List<String> spinnerItem;
     DatabaseHelper db;
+    Schedule schedule;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,27 +111,34 @@ public class DataEditorActivity extends AppCompatActivity {
 
         // hideSoftKey(amountEt);
 
-        final Schedule schedule = db.getScheduledData(data.getID(), data.getTableName());
+        schedule = db.getScheduledData(data.getTableName(), data.getCategory(), data.getAmount(),
+                data.getNote(), data.getWalletID());
+
+        Log.d("information", data.getTableName()+" "+data.getCategory()+" "+
+                    data.getAmount()+" "+data.getNote()+" "+data.getWalletID());
 
         if(schedule != null) {
             autoRepetitionSpinner.setVisibility(View.VISIBLE);
             for(Map.Entry<String, String> map : count.entrySet()) {
+                Log.d("schedule key", map.getValue()+" "+schedule.getRepeat());
                 if(map.getValue().equals(schedule.getRepeat())){
                     Log.d("map item", map.getKey());
 
                     for(int i = 0; i < array.length; i++)
-                        if(array[i].equals(map.getKey()))
+                        if(array[i].equals(map.getKey())) {
+                        Log.d("auto repeat", array[i]);
                             autoRepetitionSpinner.setSelection(i);
+                        }
 
                     break;
                 }
             }
-
+            repeatCheckbox.setChecked(true);
             autoRepetitionSpinner.setEnabled(false);
             autoRepetitionSpinner.setVisibility(View.VISIBLE);
             repeatCheckbox.setEnabled(false);
-            repeatCheckbox.setChecked(true);
-        }
+         } else
+             Log.d("schedule", "null");
 
 
 
@@ -165,7 +170,12 @@ public class DataEditorActivity extends AppCompatActivity {
         dateText.setText(data.getDate());
         note.setText(data.getNote());
 
-        List<String> temp = Arrays.asList(getResources().getStringArray(R.array.SCATEGORY));
+        List<String> temp;
+        if(data.getTableName().equals("EARNING"))
+            temp = Arrays.asList(getResources().getStringArray(R.array.ECATEGORY));
+        else
+            temp = Arrays.asList(getResources().getStringArray(R.array.SCATEGORY));
+
         spinnerItem = new ArrayList<>();
 
         for(String str : temp)
@@ -181,6 +191,7 @@ public class DataEditorActivity extends AppCompatActivity {
         DefaultSpinnerAdapter adapter = new DefaultSpinnerAdapter(this, spinnerItem);
         categorySpinner.setAdapter(adapter);
         categorySpinner.setSelection(position);
+        categorySpinner.setEnabled(false);
 
 
         back.setOnClickListener(new View.OnClickListener() {
@@ -230,7 +241,7 @@ public class DataEditorActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 RowDeleteDialog d = new RowDeleteDialog();
-                d.show(getSupportFragmentManager(), "TAG");
+                d.show(getFragmentManager(), "TAG");
                 d.setOnCloseDialogManager(new OnCloseDialogListener() {
                     @Override
                     public void onClose(boolean flag) {
@@ -276,12 +287,24 @@ public class DataEditorActivity extends AppCompatActivity {
                 String itemID = data.getID();
                 String category = categorySpinner.getSelectedItem().toString();
                 String date = dateText.getText().toString();
+                String notes = note.getText().toString();
+                String amount = amountEt.getText().toString();
+                String repeat = count.get(autoRepetitionSpinner.getSelectedItem().toString());
                 db.updateRowFromTable(data.getTableName(), itemID, category, amountEt.getText().toString(), note.getText().toString(), date);
                 if(repeatCheckbox.isChecked()) {
                     if(schedule != null) {
-                        db.updateRowFromTable("SCHEDULE", schedule.getID(), "REPEAT", count.get(autoRepetitionSpinner.getSelectedItem().toString()));
+                        if(!data.getCategory().equals(category))
+                            db.updateRowFromTable("SCHEDULE", schedule.getID(), "CATEGORY", category);
+                        if(!data.getAmount().equals(amount))
+                            db.updateRowFromTable("SCHEDULE", schedule.getID(), "AMOUNT", amount);
+                        //if(!data.getDate().equals(date))
+                            //db.updateRowFromTable("SCHEDULE", schedule.getID(), "DATE", date);
+                        if(!data.getNote().equals(notes))
+                            db.updateRowFromTable("SCHEDULE", schedule.getID(), "NOTE", notes);
+                        if(!schedule.getRepeat().equals(repeat))
+                            db.updateRowFromTable("SCHEDULE", schedule.getID(), "REPEAT", repeat);
                     } else
-                        db.insertNewSchedule(new Schedule(null, itemID, data.getTableName(), count.get(autoRepetitionSpinner.getSelectedItem().toString()), date));
+                        db.insertNewSchedule(new Schedule(null, data.getTableName(), category, amount, notes, date, repeat, data.getWalletID(), "1"));
                 }
                 if(data.getFlag() == 1) {
                     reloadActivity(MainActivity.class, new Bundle());

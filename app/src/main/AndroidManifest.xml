@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SpendingOrEarningDataSetter"
+            android:name=".activity.SpendingOrEarningDataSetterActivity"
             android:screenOrientation="portrait" />
 
         <receiver android:name=".AlertManager" />
@@ -36,7 +36,8 @@
             android:label="Information" />
         <activity android:name=".activity.CategoryItemViewerActivity" />
         <activity android:name=".activity.AccountManagementActivity" />
-        <activity android:name=".activity.ScheduleDataViewerActivity"></activity>
+        <activity android:name=".activity.ScheduleDataViewerActivity" />
+        <activity android:name=".activity.DataQueryActivity"></activity>
     </application>
 
 </manifest>

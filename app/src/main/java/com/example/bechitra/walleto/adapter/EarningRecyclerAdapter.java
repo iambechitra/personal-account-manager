@@ -9,7 +9,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.bechitra.walleto.R;
-import com.example.bechitra.walleto.StringPatternCreator;
+import com.example.bechitra.walleto.utility.DateManager;
 import com.example.bechitra.walleto.table.TableData;
 
 import java.util.List;
@@ -35,7 +35,7 @@ public class EarningRecyclerAdapter extends RecyclerView.Adapter<EarningRecycler
 
     @Override
     public void onBindViewHolder(EarningRecyclerViewGroup holder, int position) {
-        StringPatternCreator spc = new StringPatternCreator();
+        DateManager spc = new DateManager();
         TableData earning = earningList.get(position);
         holder.categoryOfEarning.setText(earning.getCategory());
         holder.earningAmount.setText("$"+earning.getAmount());

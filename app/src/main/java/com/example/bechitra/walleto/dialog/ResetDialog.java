@@ -6,13 +6,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.view.LayoutInflater;
-import android.view.View;
 
-import com.example.bechitra.walleto.R;
-import com.example.bechitra.walleto.dialog.listner.ResetListener;
-
-import butterknife.ButterKnife;
+import com.example.bechitra.walleto.dialog.listener.ResetListener;
 
 public class ResetDialog extends DialogFragment{
     ResetListener listener;

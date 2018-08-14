@@ -7,14 +7,16 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.R;
-import com.example.bechitra.walleto.StringPatternCreator;
+import com.example.bechitra.walleto.utility.DateManager;
 import com.example.bechitra.walleto.adapter.RowViewAdapter;
 import com.example.bechitra.walleto.table.TableData;
 import com.example.bechitra.walleto.utility.ColorUtility;
@@ -28,7 +30,6 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
@@ -47,6 +48,11 @@ public class CategoryItemViewerActivity extends AppCompatActivity {
     @BindView(R.id.rowViewScrollView)
     NestedScrollView scrollView;
 
+    @BindView(R.id.labelLayout)
+    RelativeLayout labelLayout;
+
+    @BindView(R.id.backButton) TextView backButton;
+
     DatabaseHelper db;
 
     @Override
@@ -59,7 +65,7 @@ public class CategoryItemViewerActivity extends AppCompatActivity {
         scrollView.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
 
         db = new DatabaseHelper(this);
-        StringPatternCreator stk = new StringPatternCreator();
+        DateManager stk = new DateManager();
         String date = stk.getCurrentDate();
         ArrayList<BarEntry> barEntries = new ArrayList<>();
         String category = getIntent().getExtras().getString("category");
@@ -67,7 +73,17 @@ public class CategoryItemViewerActivity extends AppCompatActivity {
         statusBarColorChanger(new ColorUtility().getColors(category));
         String table = getIntent().getExtras().getString("table");
 
-        categoryName.setBackgroundColor(new ColorUtility().getColors(category));
+        //Log.d("table", table);
+
+        labelLayout.setBackgroundColor(new ColorUtility().getColors(category));
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
         for(int i = 0; i < 12; i++) {
             List<TableData> list = db.filterDataFromTable(table,"%"+stk.getMonthWithYear(date), category);
 
@@ -83,7 +99,7 @@ public class CategoryItemViewerActivity extends AppCompatActivity {
         }
 
         BarDataSet dataSet = new BarDataSet(barEntries, "Cost");
-        dataSet.setValueTextSize(11f);
+        //dataSet.setValueTextSize(8f);
         dataSet.setColors(new ColorUtility().getColors(category));
 
         BarData data = new BarData(dataSet);
@@ -120,11 +136,6 @@ public class CategoryItemViewerActivity extends AppCompatActivity {
         public String getFormattedValue(float value, AxisBase axis) {
             return name[(int)value];
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
     }
 
     private void statusBarColorChanger(int color) {

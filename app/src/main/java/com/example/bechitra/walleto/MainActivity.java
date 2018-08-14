@@ -7,17 +7,14 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,10 +22,8 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.example.bechitra.walleto.activity.AccountManagementActivity;
 import com.example.bechitra.walleto.activity.ScheduleDataViewerActivity;
-import com.example.bechitra.walleto.adapter.ViewPagerAdapter;
-import com.example.bechitra.walleto.framents.EarningOverviewFragment;
+import com.example.bechitra.walleto.activity.SpendingOrEarningDataSetterActivity;
 import com.example.bechitra.walleto.framents.HomeFragment;
-import com.example.bechitra.walleto.framents.ReportsFragment;
 import com.example.bechitra.walleto.framents.SpendingOverviewFragment;
 
 import java.util.Calendar;
@@ -62,14 +57,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         stopAlarmManager(this);
-        onSetAlarmManager(10, 53, this);
+        onSetAlarmManager(1, 1, this);
         attachFragment(new HomeFragment());
         //dashboardBack.setBackgroundColor(view.getResources().getColor(R.color.tab_selected));
 
         rootFloatingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), SpendingOrEarningDataSetter.class);
+                Intent intent = new Intent(v.getContext(), SpendingOrEarningDataSetterActivity.class);
                 startActivity(intent);
             }
         });
@@ -112,6 +107,10 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(ScheduleDataViewerActivity.class);
                         break;
                     }
+
+                    case R.id.dataQuery : {
+
+                    }
                 }
 
                 return true;
@@ -125,22 +124,11 @@ public class MainActivity extends AppCompatActivity {
         startActivity(i);
     }
 
-    public void ToastMassage() {
-        Toast toast = Toast.makeText(this, "Clicked!", Toast.LENGTH_SHORT);
-        toast.show();
-    }
 
     public void attachFragment(Fragment fragment) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.mainFrame, fragment);
         fragmentTransaction.commit();
-    }
-
-    private void reloadActivity() {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        finish();
-        startActivity(intent);
     }
 
     @Override

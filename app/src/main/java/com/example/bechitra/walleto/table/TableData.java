@@ -12,6 +12,8 @@ public class TableData {
         this.walletID = walletID;
     }
 
+    public void setDate(String date) { this.date = date; }
+
     public String getID() {
         return ID;
     }

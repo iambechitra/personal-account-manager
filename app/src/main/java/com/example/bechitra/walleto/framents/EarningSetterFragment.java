@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,9 +27,9 @@ import android.widget.Toast;
 import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.MainActivity;
 import com.example.bechitra.walleto.R;
-import com.example.bechitra.walleto.StringPatternCreator;
+import com.example.bechitra.walleto.utility.DateManager;
 import com.example.bechitra.walleto.dialog.CategoryCreatorDialog;
-import com.example.bechitra.walleto.dialog.listner.DialogListener;
+import com.example.bechitra.walleto.dialog.listener.DialogListener;
 import com.example.bechitra.walleto.adapter.SpinnerAdapter;
 import com.example.bechitra.walleto.table.Schedule;
 import com.example.bechitra.walleto.table.TableData;
@@ -85,6 +86,12 @@ public class EarningSetterFragment extends Fragment{
         spinnerItem = new ArrayList<>();
         for(String str : items)
             spinnerItem.add(str);
+
+        List<String> dbCategory = db.getDistinctCategory(db.getEarningTable());
+
+        for(String s : dbCategory)
+            if(!spinnerItem.contains(s))
+                spinnerItem.add(s);
 
         spinnerAdapter = new SpinnerAdapter(spinnerItem, view.getContext());
 
@@ -162,30 +169,29 @@ public class EarningSetterFragment extends Fragment{
             @Override
             public void onClick(View v) {
                 if(earningCatagorySpinner.getSelectedItem() != null && !earningAmountEdit.getText().toString().equals("")) {
-                    StringPatternCreator stk = new StringPatternCreator();
+                    DateManager stk = new DateManager();
                     BigDecimal big = new BigDecimal(earningAmountEdit.getText().toString());
                     if(big.compareTo(BigDecimal.ZERO) == 1) {
                         String date = "";
+                        String category = stk.stringFormatter(spinnerItem.get(itemSelected)).trim();
 
                         if (!earningDateText.getText().equals("TODAY"))
                             date = earningDateText.getText().toString();
                         else
                             date = stk.getCurrentDate();
 
-                        TableData earning = new TableData(null, stk.stringFormatter(spinnerItem.get(itemSelected)).trim(), earningAmountEdit.getText().toString(),
+                        TableData earning = new TableData(null, category, earningAmountEdit.getText().toString(),
                                                          earningNoteEdit.getText().toString(), date, db.getActivatedWalletID());
                         db.insertOnTable(db.getEarningTable(), earning);
 
-                        if(autoRepetitionCheckBox.isChecked())
-                            createScheduler(date);
+                        if(autoRepetitionCheckBox.isChecked()) {
+                            db.insertNewSchedule(new Schedule(null, db.getEarningTable(), category,
+                                    earningAmountEdit.getText().toString(), earningNoteEdit.getText().toString(), date,
+                                            getRepeat(), db.getActivatedWalletID(), "1"));
+                        }
 
-                        loadMainActivity();
+                        getActivity().finish();
                     }
-                }
-
-                if(autoRepetitionCheckBox.isChecked()) {
-                    Toast.makeText(getActivity(), autoRepetitionSpinner.getSelectedItem().toString(), Toast.LENGTH_SHORT).show();
-
                 }
             }
         });
@@ -212,16 +218,14 @@ public class EarningSetterFragment extends Fragment{
         return view;
     }
 
-    private void createScheduler(String date) {
+    private String getRepeat() {
         HashMap<String, String> count = new HashMap<>();
         count.put("Daily", "1");
         count.put("Weekly", "7");
         count.put("Monthly", "30");
         count.put("Yearly", "365");
 
-        String tableName = db.getEarningTable();
-        String LAST_ROW = db.getLastRowFromTable(tableName);
-        db.insertNewSchedule(new Schedule(null, LAST_ROW, tableName, count.get(autoRepetitionSpinner.getSelectedItem().toString()), date));
+        return count.get(autoRepetitionSpinner.getSelectedItem().toString());
     }
 
     private void loadMainActivity() {

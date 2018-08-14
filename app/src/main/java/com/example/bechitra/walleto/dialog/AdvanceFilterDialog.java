@@ -16,8 +16,8 @@ import android.widget.TextView;
 
 import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.R;
-import com.example.bechitra.walleto.StringPatternCreator;
-import com.example.bechitra.walleto.dialog.listner.FilterDialogListener;
+import com.example.bechitra.walleto.utility.DateManager;
+import com.example.bechitra.walleto.dialog.listener.FilterDialogListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -110,7 +110,7 @@ public class AdvanceFilterDialog extends DialogFragment{
             public void onClick(DialogInterface dialog, int which) {
 
                 String day = (!dayTextDiolog.getText().toString().equals("") && checked[0])? dayTextDiolog.getText().toString():"%";
-                String month = monthSpinner.getSelectedItem() != null  && checked[1]? Integer.toString(new StringPatternCreator().getMonthID(monthSpinner.getSelectedItem().toString())):"%";
+                String month = monthSpinner.getSelectedItem() != null  && checked[1]? Integer.toString(new DateManager().getMonthID(monthSpinner.getSelectedItem().toString())):"%";
                 String year = yearItemSpinner.getSelectedItem() != null && checked[2]? yearItemSpinner.getSelectedItem().toString() : "%";
                 String category = categorySpinner.getSelectedItem() != null && checked[3]? categorySpinner.getSelectedItem().toString() : "%";
 
@@ -126,7 +126,7 @@ public class AdvanceFilterDialog extends DialogFragment{
         });
 
         alertDialogBuilder.setTitle("Advance Filter Option");
-        StringPatternCreator creator = new StringPatternCreator();
+        DateManager creator = new DateManager();
         String[]lst = creator.getAllMonthName();
         List<String> monthSpinnerItem = new ArrayList<>();
         for(String str :lst)

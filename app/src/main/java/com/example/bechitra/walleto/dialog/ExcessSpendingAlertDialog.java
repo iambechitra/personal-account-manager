@@ -15,7 +15,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.example.bechitra.walleto.R;
-import com.example.bechitra.walleto.dialog.listner.AlertManagerListener;
+import com.example.bechitra.walleto.dialog.listener.AlertManagerListener;
 
 import java.util.Arrays;
 import java.util.Calendar;

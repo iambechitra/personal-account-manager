@@ -12,7 +12,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.example.bechitra.walleto.R;
-import com.example.bechitra.walleto.dialog.listner.DialogListener;
+import com.example.bechitra.walleto.dialog.listener.DialogListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

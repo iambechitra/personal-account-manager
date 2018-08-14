@@ -12,18 +12,20 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.R;
-import com.example.bechitra.walleto.StringPatternCreator;
+import com.example.bechitra.walleto.utility.DateManager;
 import com.example.bechitra.walleto.adapter.RecyclerViewAdapter;
-import com.example.bechitra.walleto.adapter.SpendingRecyclerAdapter;
 import com.example.bechitra.walleto.table.TableData;
 import com.example.bechitra.walleto.utility.CategoryProcessor;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -57,6 +59,9 @@ public class SpendingOverviewFragment extends Fragment{
     @BindView(R.id.nestedScroll)
     NestedScrollView scrollView;
 
+    @BindView(R.id.resultSelectorSpinner)
+    Spinner resultSelectorSpinner;
+
     DatabaseHelper db;
 
    // @BindView(R.id.spendingOrEarningFilterSwitch)
@@ -71,11 +76,6 @@ public class SpendingOverviewFragment extends Fragment{
    // @BindView(R.id.calculateAmountCheckBox) CheckBox calculateAmountCheck;
    // @BindView(R.id.calculateAmountTextView) TextView calculateAmountText;
 
-    SpendingRecyclerAdapter adapter;
-    List<TableData> spendingList;
-    int ROTATION_ANGLE = 0;
-    int CHECKED = 0;
-
     List<CategoryProcessor> list;
     RecyclerViewAdapter recyclerViewAdapter;
     View view;
@@ -89,6 +89,14 @@ public class SpendingOverviewFragment extends Fragment{
         scrollView.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
         db = new DatabaseHelper(view.getContext());
 
+        String[] array = {"Daily", "Weekly", "Monthly", "Yearly"};
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>
+                (view.getContext(), android.R.layout.simple_spinner_item,
+                        array); //selected item will look like a spinner set from XML
+        spinnerArrayAdapter.setDropDownViewResource(android.R.layout
+                .simple_spinner_dropdown_item);
+        resultSelectorSpinner.setAdapter(spinnerArrayAdapter);
+
 
         spendingRecyclerView.setHasFixedSize(true);
         spendingRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext(), LinearLayoutManager.VERTICAL, false));
@@ -100,7 +108,7 @@ public class SpendingOverviewFragment extends Fragment{
     }
 
     private void loadGraphData() {
-        StringPatternCreator stk = new StringPatternCreator();
+        DateManager stk = new DateManager();
         String date = stk.getCurrentDate();
         HashMap<Integer, String> map = new HashMap<>();
         ArrayList<Entry> value = new ArrayList<>();
@@ -142,13 +150,13 @@ public class SpendingOverviewFragment extends Fragment{
         LineDataSet set1 = new LineDataSet(value, "Spending");
         set1.setColor(Color.RED);
         set1.setLineWidth(2f);
-        set1.setValueTextSize(8f);
+        set1.setValueTextSize(7f);
         set1.setValueTextColor(Color.BLACK);
         LineDataSet set2 = new LineDataSet(val, "Earning");
         set2.setColor(Color.GREEN);
         set2.setLineWidth(2f);
         set2.setValueTextColor(Color.BLACK);
-        set2.setValueTextSize(8f);
+        set2.setValueTextSize(7f);
         ArrayList<ILineDataSet> data = new ArrayList<>();
         data.add(set1);
         data.add(set2);
@@ -198,6 +206,10 @@ public class SpendingOverviewFragment extends Fragment{
 
     private void reloadFragment() {
         getFragmentManager().beginTransaction().detach(this).attach(this).commit();
+    }
+
+    private void dataViewMonthly() {
+
     }
 /*
     private void setViewExpandable()

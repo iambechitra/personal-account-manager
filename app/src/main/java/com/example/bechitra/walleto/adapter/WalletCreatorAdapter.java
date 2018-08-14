@@ -1,21 +1,21 @@
 package com.example.bechitra.walleto.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.R;
-import com.example.bechitra.walleto.dialog.listner.OnLongClickItem;
+import com.example.bechitra.walleto.dialog.WalletManagementDialog;
+import com.example.bechitra.walleto.dialog.listener.DialogListener;
+import com.example.bechitra.walleto.dialog.listener.OnLongClickItem;
 import com.example.bechitra.walleto.table.Wallet;
-import com.example.bechitra.walleto.dialog.listner.OnItemClick;
+import com.example.bechitra.walleto.dialog.listener.OnItemClick;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +74,7 @@ public class WalletCreatorAdapter extends RecyclerView.Adapter<WalletCreatorAdap
                 balance.add(db.getCurrentBalance(w.getID()));
     }
 
-    class WalletCreatorViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
+    class WalletCreatorViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         @BindView(R.id.walletNameText) TextView walletNameText;
         @BindView(R.id.currentBalance) TextView currentBalanceText;
         @BindView(R.id.circleBackLayout) RelativeLayout layout;
@@ -84,18 +84,24 @@ public class WalletCreatorAdapter extends RecyclerView.Adapter<WalletCreatorAdap
             super(itemView);
             ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(this);
-            itemView.setOnLongClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-            listener.onClick(getAdapterPosition(), true);
-        }
+            WalletManagementDialog dialog = new WalletManagementDialog();
+            dialog.show(((Activity)context).getFragmentManager(), "TAG");
+            dialog.setDialogListener(new DialogListener() {
+                @Override
+                public void onSetDialog(String regex, boolean flag) {
+                    if(flag) {
+                        if(regex.equals("1"))
+                            listener.onClick(getAdapterPosition(), true);
+                        else
+                            longClickListener.onLongClick("TAG", getAdapterPosition());
+                    }
+                }
+            });
 
-        @Override
-        public boolean onLongClick(View v) {
-            longClickListener.onLongClick("TAG", getAdapterPosition());
-            return true;
         }
     }
 

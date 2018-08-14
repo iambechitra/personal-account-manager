@@ -3,7 +3,6 @@ package com.example.bechitra.walleto.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
-import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,9 +11,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.bechitra.walleto.R;
-import com.example.bechitra.walleto.StringPatternCreator;
+import com.example.bechitra.walleto.utility.DateManager;
 import com.example.bechitra.walleto.activity.DataEditorActivity;
-import com.example.bechitra.walleto.dialog.listner.DialogListener;
 import com.example.bechitra.walleto.table.TableData;
 import com.example.bechitra.walleto.utility.ColorUtility;
 import com.example.bechitra.walleto.utility.DataOrganizer;
@@ -26,12 +24,10 @@ public class DataOrganizerAdapter extends RecyclerView.Adapter<RecyclerView.View
     Context context;
     List<DataOrganizer> list;
     RelativeLayout.LayoutParams params;
-    DialogListener listener;
 
-    public DataOrganizerAdapter(Context context, List<DataOrganizer> list, DialogListener listener) {
+    public DataOrganizerAdapter(Context context, List<DataOrganizer> list) {
         this.context = context;
         this.list = list;
-        this.listener = listener;
         this.params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
     }
 
@@ -57,7 +53,7 @@ public class DataOrganizerAdapter extends RecyclerView.Adapter<RecyclerView.View
             LabelViewer label = (LabelViewer)holder;
             DataOrganizer data = list.get(position);
             String date = data.getLabel().getDate();
-            StringPatternCreator spc = new StringPatternCreator();
+            DateManager spc = new DateManager();
 
             if(date.equals(spc.getCurrentDate()))
                 label.date.setText("Today");
@@ -99,6 +95,10 @@ public class DataOrganizerAdapter extends RecyclerView.Adapter<RecyclerView.View
             return 0;
 
         return 1;
+    }
+
+    public void setData(List<DataOrganizer> data) {
+        this.list = data;
     }
 
     class LabelViewer extends RecyclerView.ViewHolder {

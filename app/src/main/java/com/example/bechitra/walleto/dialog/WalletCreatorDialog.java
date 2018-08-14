@@ -6,14 +6,13 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.example.bechitra.walleto.R;
-import com.example.bechitra.walleto.dialog.listner.DialogListener;
+import com.example.bechitra.walleto.dialog.listener.DialogListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

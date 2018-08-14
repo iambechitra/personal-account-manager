@@ -12,10 +12,17 @@
         <item
             android:title="Scheduled Data"
             android:id="@+id/scheduleData"
-            android:icon="@drawable/ic_business">
+            android:icon="@drawable/ic_schedule">
         </item>
+
         <item
-            android:title="Setting"
+            android:title="Data Query"
+            android:id="@+id/dataQuery"
+            android:icon="@drawable/ic_search">
+        </item>
+
+        <item
+            android:title="Settings"
             android:icon="@drawable/ic_settings"></item>
 
     </group>

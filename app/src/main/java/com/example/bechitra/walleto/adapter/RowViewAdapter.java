@@ -3,6 +3,7 @@ package com.example.bechitra.walleto.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.bechitra.walleto.R;
-import com.example.bechitra.walleto.StringPatternCreator;
+import com.example.bechitra.walleto.utility.DateManager;
 import com.example.bechitra.walleto.activity.DataEditorActivity;
 import com.example.bechitra.walleto.table.TableData;
 import com.example.bechitra.walleto.utility.DataParser;
@@ -46,7 +47,7 @@ public class RowViewAdapter extends RecyclerView.Adapter<RowViewAdapter.RowViewe
         if(!tData.getNote().equals(""))
             holder.note.setText(tData.getNote());
 
-        StringPatternCreator stk = new StringPatternCreator();
+        DateManager stk = new DateManager();
         holder.date.setText(stk.monthStringBuilder(tData.getDate()));
         holder.amount.setText("$"+tData.getAmount());
 
@@ -70,6 +71,7 @@ public class RowViewAdapter extends RecyclerView.Adapter<RowViewAdapter.RowViewe
 
         @Override
         public void onClick(View v) {
+            Log.d("table", tableName);
             DataParser d = new DataParser(tableName, data.get(getAdapterPosition()), 0);
             Intent intent = new Intent(context, DataEditorActivity.class);
             intent.putExtra("data", d);

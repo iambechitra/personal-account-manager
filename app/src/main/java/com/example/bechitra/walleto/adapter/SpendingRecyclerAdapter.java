@@ -9,7 +9,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.bechitra.walleto.R;
-import com.example.bechitra.walleto.StringPatternCreator;
+import com.example.bechitra.walleto.utility.DateManager;
 import com.example.bechitra.walleto.table.TableData;
 
 import java.util.List;
@@ -40,7 +40,7 @@ public class SpendingRecyclerAdapter extends RecyclerView.Adapter<SpendingRecycl
     @Override
     public void onBindViewHolder(SpendingRecyclerViewHolder holder, int position) {
         TableData spending = spendingsList.get(position);
-        StringPatternCreator spc = new StringPatternCreator();
+        DateManager spc = new DateManager();
 
         String []str = spc.getSeparatedDateArray(spending.getDate());
 

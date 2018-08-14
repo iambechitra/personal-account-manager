@@ -3,7 +3,6 @@ package com.example.bechitra.walleto.utility;
 import android.content.Context;
 
 import com.example.bechitra.walleto.DatabaseHelper;
-import com.example.bechitra.walleto.StringPatternCreator;
 import com.example.bechitra.walleto.table.TableData;
 
 import java.math.BigDecimal;
@@ -22,7 +21,7 @@ public class DataProcessor {
     }
 
     public List<DataOrganizer> getProcessedData(String tableName) {
-        StringPatternCreator spc = new StringPatternCreator();
+        DateManager spc = new DateManager();
         String today = spc.getCurrentDate();
         String[] date = spc.getSeparatedDateArray(today);
 
