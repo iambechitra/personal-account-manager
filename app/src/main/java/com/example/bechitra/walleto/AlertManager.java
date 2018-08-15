@@ -20,7 +20,7 @@ import java.util.StringTokenizer;
 
 public class AlertManager extends BroadcastReceiver{
     DatabaseHelper db;
-    final String COLUMN_NAME = "TIME";
+    final String COLUMN_NAME = "DATE";
     final String TABLE = "SCHEDULE";
 
     @Override

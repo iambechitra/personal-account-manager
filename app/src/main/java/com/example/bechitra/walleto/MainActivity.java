@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.example.bechitra.walleto.activity.AccountManagementActivity;
+import com.example.bechitra.walleto.activity.DataQueryActivity;
 import com.example.bechitra.walleto.activity.ScheduleDataViewerActivity;
 import com.example.bechitra.walleto.activity.SpendingOrEarningDataSetterActivity;
 import com.example.bechitra.walleto.framents.HomeFragment;
@@ -109,7 +110,8 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     case R.id.dataQuery : {
-
+                        startActivity(DataQueryActivity.class);
+                        break;
                     }
                 }
 
