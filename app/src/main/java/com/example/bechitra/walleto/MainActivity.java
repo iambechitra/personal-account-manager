@@ -57,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        stopAlarmManager(this);
         onSetAlarmManager(1, 1, this);
         attachFragment(new HomeFragment());
         //dashboardBack.setBackgroundColor(view.getResources().getColor(R.color.tab_selected));

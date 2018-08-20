@@ -8,6 +8,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -32,10 +34,8 @@ public class AccountManagementActivity extends AppCompatActivity {
     @BindView(R.id.activeWalletCurrentBalance) TextView activeWalletCurrentBalance;
     @BindView(R.id.totalSpending) TextView activeWalletTotalSpending;
     @BindView(R.id.totalEarning) TextView activeWalletTotalEarning;
-    @BindView(R.id.newWalletCreatorLayout) RelativeLayout newWalletCreatorLayout;
+    @BindView(R.id.newWalletCreatorLayout) LinearLayout newWalletCreatorLayout;
     @BindView(R.id.recyclerView) RecyclerView recyclerView;
-    @BindView(R.id.nestedScroll)
-    NestedScrollView scrollView;
 
     DatabaseHelper db;
     Wallet wallet;
@@ -47,9 +47,6 @@ public class AccountManagementActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_management);
         ButterKnife.bind(this);
-
-        scrollView.setFocusableInTouchMode(true);
-        scrollView.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
 
         db = new DatabaseHelper(this);
         data = db.getInactivateWallet();

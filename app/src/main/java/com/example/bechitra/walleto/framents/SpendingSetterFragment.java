@@ -42,6 +42,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.example.bechitra.walleto.utility.SaveInstanceState;
 
 public class SpendingSetterFragment extends Fragment{
     @BindView(R.id.catagorySpinner)
@@ -90,13 +91,21 @@ public class SpendingSetterFragment extends Fragment{
                 spinnerItem.add(s);
 
         spinnerAdapter = new SpinnerAdapter(spinnerItem, view.getContext());
-
-        //spinnerAdapter = new ArrayAdapter<>(view.getContext(), android.R.layout.simple_spinner_item, spinnerItem);
-        //spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         categorySpinner.setAdapter(spinnerAdapter);
 
-        if(spinnerItem != null)
+        String[] array = {"Daily", "Weekly", "Monthly", "Yearly"};
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>
+                (view.getContext(), android.R.layout.simple_spinner_item,
+                        array); //selected item will look like a spinner set from XML
+        spinnerArrayAdapter.setDropDownViewResource(android.R.layout
+                .simple_spinner_dropdown_item);
+        autoRepetitionSpinner.setAdapter(spinnerArrayAdapter);
+
+        if(getArguments() == null) {
             categorySpinner.setSelection(0);
+            autoRepetitionSpinner.setVisibility(View.INVISIBLE);
+        } else
+            loadSavedState(getArguments());
 
         categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -196,15 +205,6 @@ public class SpendingSetterFragment extends Fragment{
             }
         });
 
-        String[] array = {"Daily", "Weekly", "Monthly", "Yearly"};
-        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>
-                (view.getContext(), android.R.layout.simple_spinner_item,
-                        array); //selected item will look like a spinner set from XML
-        spinnerArrayAdapter.setDropDownViewResource(android.R.layout
-                .simple_spinner_dropdown_item);
-        autoRepetitionSpinner.setAdapter(spinnerArrayAdapter);
-        autoRepetitionSpinner.setVisibility(View.INVISIBLE);
-
         autoRepetitionCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -218,6 +218,32 @@ public class SpendingSetterFragment extends Fragment{
         return view;
     }
 
+    private void loadSavedState(Bundle savedInstanceState) {
+        SaveInstanceState state = new SaveInstanceState(savedInstanceState);
+        if (state.isExist()) {
+            categorySpinner.setSelection(spinnerItem.indexOf(state.getCategory()));
+            spendingAmountEdit.setText(state.getAmount());
+            additionalNoteEdit.setText(state.getNote());
+            spendingDateText.setText(state.getDate());
+
+            if (state.isRepetitionChaked()) {
+                autoRepetitionCheckBox.setChecked(true);
+                autoRepetitionSpinner.setVisibility(View.VISIBLE);
+
+                String[] array = {"Daily", "Weekly", "Monthly", "Yearly"};
+                String repeat = state.getRepeatKey();
+                for (int i = 0; i < array.length; i++) {
+                    if (array[i].equals(repeat)) {
+                        autoRepetitionSpinner.setSelection(i);
+                        break;
+                    }
+                }
+
+            } else
+                autoRepetitionSpinner.setVisibility(View.INVISIBLE);
+        }
+    }
+
     private String getRepeat() {
         HashMap<String, String> count = new HashMap<>();
         count.put("Daily", "1");
@@ -226,12 +252,5 @@ public class SpendingSetterFragment extends Fragment{
         count.put("Yearly", "365");
 
         return count.get(autoRepetitionSpinner.getSelectedItem().toString());
-    }
-
-    private void loadMainActivity() {
-        Intent i = new Intent(view.getContext(), MainActivity.class);
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        getActivity().finish();
-        startActivity(i);
     }
 }

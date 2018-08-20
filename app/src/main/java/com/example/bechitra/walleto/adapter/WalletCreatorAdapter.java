@@ -2,6 +2,7 @@ package com.example.bechitra.walleto.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.example.bechitra.walleto.utility.ColorUtility;
 
 public class WalletCreatorAdapter extends RecyclerView.Adapter<WalletCreatorAdapter.WalletCreatorViewHolder>{
     List<Wallet> data;
@@ -30,11 +32,13 @@ public class WalletCreatorAdapter extends RecyclerView.Adapter<WalletCreatorAdap
     DatabaseHelper db;
     List<String> balance;
     OnItemClick listener;
+    ColorUtility colorUtility;
     OnLongClickItem longClickListener;
 
     public WalletCreatorAdapter(List<Wallet> data, Context context) {
         this.data = data;
         this.context = context;
+        this.colorUtility = new ColorUtility();
         this.params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         db = new DatabaseHelper(context);
         balance = new ArrayList<>();
@@ -58,6 +62,9 @@ public class WalletCreatorAdapter extends RecyclerView.Adapter<WalletCreatorAdap
         Wallet wallet = data.get(position);
         holder.currentBalanceText.setText("$"+balance.get(position));
         holder.walletNameText.setText(wallet.getName());
+        holder.layout.setBackground(colorUtility.generateOvalShape(colorUtility.getRandomColor()));
+        char ch = wallet.getName().charAt(0);
+        holder.textInCircle.setText(""+ch);
     }
 
     @Override
@@ -78,6 +85,7 @@ public class WalletCreatorAdapter extends RecyclerView.Adapter<WalletCreatorAdap
         @BindView(R.id.walletNameText) TextView walletNameText;
         @BindView(R.id.currentBalance) TextView currentBalanceText;
         @BindView(R.id.circleBackLayout) RelativeLayout layout;
+        @BindView(R.id.circularIconText) TextView textInCircle;
         @BindView(R.id.layoutOverview) RelativeLayout linearLayout;
 
         public WalletCreatorViewHolder(View itemView) {
@@ -89,7 +97,7 @@ public class WalletCreatorAdapter extends RecyclerView.Adapter<WalletCreatorAdap
         @Override
         public void onClick(View v) {
             WalletManagementDialog dialog = new WalletManagementDialog();
-            dialog.show(((Activity)context).getFragmentManager(), "TAG");
+            dialog.show(((FragmentActivity)context).getSupportFragmentManager(), "TAG");
             dialog.setDialogListener(new DialogListener() {
                 @Override
                 public void onSetDialog(String regex, boolean flag) {

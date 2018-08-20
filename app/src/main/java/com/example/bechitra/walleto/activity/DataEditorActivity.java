@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.KeyListener;
@@ -241,7 +242,7 @@ public class DataEditorActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 RowDeleteDialog d = new RowDeleteDialog();
-                d.show(getFragmentManager(), "TAG");
+                d.show(getSupportFragmentManager(), "TAG");
                 d.setOnCloseDialogManager(new OnCloseDialogListener() {
                     @Override
                     public void onClose(boolean flag) {

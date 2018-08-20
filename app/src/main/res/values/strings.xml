@@ -5,6 +5,13 @@
     <string name="navigation_menu_report">Report</string>
     <string name="navigation_menu_spend">Spending</string>
     <string name="navigation_menu_earn">Earning</string>
+    <string name="item_category">Category</string>
+    <string name="item_amount">Amount</string>
+    <string name="item_note">Note</string>
+    <string name="item_date">Date</string>
+    <string name="item_repeat_status">isRepeat</string>
+    <string name="item_repeat_key">RepeatKey</string>
+
 
     <string-array name="ALERT_PERCENTAGE">
         <item>50%</item>
@@ -22,9 +29,9 @@
         <item>Home</item>
         <item>Education</item>
         <item>Health &amp; Fitness</item>
+        <item>Family &amp; Personal</item>
         <item>Drinks</item>
         <item>Sports</item>
-        <item>Family &amp; Personal</item>
         <item>Travel</item>
         <item>Bills</item>
         <item>Car</item>

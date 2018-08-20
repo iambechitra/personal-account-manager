@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.bechitra.walleto">
+          package="com.example.bechitra.walleto">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.SET_ALARM" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.SET_ALARM"/>
 
     <application
         android:allowBackup="true"
@@ -16,28 +16,30 @@
             android:name=".MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity
             android:name=".activity.SpendingOrEarningDataSetterActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"/>
 
-        <receiver android:name=".AlertManager" />
+        <receiver android:name=".AlertManager"/>
 
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="119e45c354bbe3c578a01ace2acbf907809502c4" />
+            android:value="119e45c354bbe3c578a01ace2acbf907809502c4"/>
 
         <activity
             android:name=".activity.DataEditorActivity"
-            android:label="Information" />
-        <activity android:name=".activity.CategoryItemViewerActivity" />
-        <activity android:name=".activity.AccountManagementActivity" />
-        <activity android:name=".activity.ScheduleDataViewerActivity" />
-        <activity android:name=".activity.DataQueryActivity"></activity>
+            android:label="Information"/>
+        <activity android:name=".activity.CategoryItemViewerActivity"/>
+        <activity android:name=".activity.AccountManagementActivity"/>
+        <activity android:name=".activity.ScheduleDataViewerActivity"/>
+        <activity android:name=".activity.DataQueryActivity"/>
+        <activity android:name=".activity.ScheduleManagementActivity">
+        </activity>
     </application>
 
 </manifest>

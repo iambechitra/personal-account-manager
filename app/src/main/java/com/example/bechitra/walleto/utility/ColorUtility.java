@@ -2,7 +2,11 @@ package com.example.bechitra.walleto.utility;
 
 import android.graphics.Color;
 
+import android.graphics.drawable.GradientDrawable;
 import com.example.bechitra.walleto.R;
+
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /*
         <item>Gift</item>
@@ -16,6 +20,12 @@ import com.example.bechitra.walleto.R;
  */
 
 public class ColorUtility {
+    private Random random;
+
+    public ColorUtility() {
+        this.random = new Random();
+    }
+
     public int getResource(String category) {
         switch (category) {
             case "Home":
@@ -214,5 +224,21 @@ public class ColorUtility {
         }
 
         return Color.parseColor("#004D40");
+    }
+
+    public int getRandomColor() {
+        String[] color = {"#827717", "#00695C", "#006064", "#0277BD", "#0D47A1", "#3949AB",
+                                "#311B92", "#880E4F", "#8E24AA"};
+
+        int rand = random.nextInt(color.length-1);
+        return Color.parseColor(color[rand]);
+    }
+
+    public GradientDrawable generateOvalShape(int color) {
+        GradientDrawable gd = new GradientDrawable();
+        gd.setColor(color);
+        gd.setShape(GradientDrawable.OVAL);
+
+        return gd;
     }
 }

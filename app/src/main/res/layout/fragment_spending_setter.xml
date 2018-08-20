@@ -126,6 +126,7 @@
                     android:layout_height="wrap_content"
                     android:text="TODAY"
                     android:textSize="18sp"
+                    android:freezesText="true"
                     android:id="@+id/spendingDateText"
                     android:layout_alignParentRight="true"
                     android:textColor="@color/blue"/>

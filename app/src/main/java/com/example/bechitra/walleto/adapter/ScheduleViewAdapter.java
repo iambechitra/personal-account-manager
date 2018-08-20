@@ -2,6 +2,8 @@ package com.example.bechitra.walleto.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +13,7 @@ import android.widget.TextView;
 
 import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.R;
+import com.example.bechitra.walleto.activity.ScheduleManagementActivity;
 import com.example.bechitra.walleto.dialog.RowDeleteDialog;
 import com.example.bechitra.walleto.dialog.listener.OnCloseDialogListener;
 import com.example.bechitra.walleto.table.Schedule;
@@ -22,8 +25,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.example.bechitra.walleto.utility.ScheduleParser;
 
-public class AutoRepetitionDataViewerAdapter extends RecyclerView.Adapter<AutoRepetitionDataViewerAdapter.DataBinder>{
+public class ScheduleViewAdapter extends RecyclerView.Adapter<ScheduleViewAdapter.DataBinder>{
     Context context;
     List<Schedule> data;
     RelativeLayout.LayoutParams params;
@@ -31,7 +35,7 @@ public class AutoRepetitionDataViewerAdapter extends RecyclerView.Adapter<AutoRe
 
     OnDeleteItem listener;
 
-    public AutoRepetitionDataViewerAdapter(Context context, List<Schedule> data) {
+    public ScheduleViewAdapter(Context context, List<Schedule> data) {
         this.data = data;
         this.context = context;
         db = new DatabaseHelper(context);
@@ -94,15 +98,10 @@ public class AutoRepetitionDataViewerAdapter extends RecyclerView.Adapter<AutoRe
 
         @Override
         public void onClick(View v) {
-            RowDeleteDialog dialog = new RowDeleteDialog();
-            dialog.show(((Activity)context).getFragmentManager(), "TAG");
-            dialog.setOnCloseDialogManager(new OnCloseDialogListener() {
-                @Override
-                public void onClose(boolean flag) {
-                    if(flag)
-                        listener.onDelete(data.get(getAdapterPosition()).getID(), getAdapterPosition());
-                }
-            });
+            Intent intent = new Intent(context, ScheduleManagementActivity.class);
+            ScheduleParser scheduleParser = new ScheduleParser(data.get(getAdapterPosition()));
+            intent.putExtra("schedule", scheduleParser);
+            context.startActivity(intent);
         }
     }
 
