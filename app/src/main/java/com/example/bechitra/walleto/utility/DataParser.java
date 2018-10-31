@@ -3,7 +3,7 @@ package com.example.bechitra.walleto.utility;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.example.bechitra.walleto.table.TableData;
+import com.example.bechitra.walleto.table.PrimeTable;
 
 public class DataParser implements Parcelable{
     String tableName, ID, category, amount, note, date, walletID;
@@ -20,7 +20,7 @@ public class DataParser implements Parcelable{
         flag = in.readInt();
     }
 
-    public DataParser(String tableName, TableData data, int flag) {
+    public DataParser(String tableName, PrimeTable data, int flag) {
         this.tableName = tableName;
         this.ID = data.getID();
         this.category = data.getCategory();

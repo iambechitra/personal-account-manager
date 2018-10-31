@@ -1,29 +1,28 @@
 package com.example.bechitra.walleto.utility;
 
 
+import android.util.Log;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class DateManager {
     public String getCurrentDate() {
         String[] str = getCurrentDateInArray();
-        return (Integer.toString(Integer.parseInt(str[2]))+"/"+Integer.toString(Integer.parseInt(str[1]))+"/"+str[0]);
+        return (str[2]+"/"+str[1]+"/"+str[0]);
     }
 
     public String getCurrentMonthWithYear() {
         String[] str = getCurrentDateInArray();
-        return ("/"+Integer.toString(Integer.parseInt(str[1]))+"/"+str[0]);
+        return ("/"+str[1]+"/"+str[0]);
     }
 
     public String getMonthWithYear(String date) {
         String[] str = getSeparatedDateArray(date);
-        return ("/"+Integer.toString(Integer.parseInt(str[1]))+"/"+str[2]);
+        return ("/"+str[1]+"/"+str[2]);
     }
 
     public String addDate(String current, int toAdd) throws ParseException {
@@ -97,6 +96,13 @@ public class DateManager {
         return (str[0]+" "+name+" "+str[2]);
     }
 
+    public String getMonthNameWithYear(String date) {
+        String []str = getSeparatedDateArray(date);
+        String name = getMonthName(Integer.parseInt(str[1]));
+
+        return (name+" "+str[2]);
+    }
+
     public String getMonthName(int month) {
         String [] str = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
         return str[month-1];
@@ -115,6 +121,17 @@ public class DateManager {
                 return i+1;
 
         return 0;
+    }
+
+    public  int getWeekOfYear(String date) {
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        Calendar cal = Calendar.getInstance();
+        try {
+            cal.setTime(format.parse(date));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return cal.get(Calendar.WEEK_OF_YEAR);
     }
 
     public String[] getSeparatedDateArray(String date) {
@@ -146,6 +163,45 @@ public class DateManager {
         return str;
     }
 
+    public boolean validateDate(String date) {
+        char[] ch = date.toCharArray();
+
+        for(int i = 0; i < ch.length; i++) {
+            if(((int)ch[i] >= 48 && (int)ch[i] <= 57) || ch[i] == '/')
+                continue;
+            else
+                return false;
+        }
+
+        StringTokenizer stk = new StringTokenizer(date, "/");
+
+        if(stk.countTokens() != 3) {
+            Log.d("error", "i am creating error "+stk.countTokens());
+            return false;
+        }
+
+        String dateArray[] = getSeparatedDateArray(date);
+
+        int day = Integer.parseInt(dateArray[0]);
+        int month = Integer.parseInt(dateArray[1]);
+        int year = Integer.parseInt(dateArray[2]);
+
+        if(!(month > 0 && month < 13))
+            return false;
+
+        int currYear = Integer.parseInt(getYearFromDate(getCurrentDate()));
+
+        if((currYear - year) < 0 || (currYear - year) > 15)
+            return false;
+
+        int dayMax = getNumberOfDayFromMonth(month, year);
+
+        if(day > dayMax || day < 1)
+            return false;
+
+        return true;
+    }
+
     public String getYearFromDate(String date) {
         String str = "";
         StringTokenizer stk = new StringTokenizer(date, "/");
@@ -153,6 +209,59 @@ public class DateManager {
             str = stk.nextToken();
 
         return str;
+    }
+
+    public List<String> getAllMonthsWithinRange(String startingDate, String endingDate) {
+        List<String> dates = new ArrayList<>();
+
+        int startYear = Integer.parseInt(getYearFromDate(startingDate));
+        int endYear = Integer.parseInt(getYearFromDate(endingDate));
+        int diff = endYear - startYear;
+        String date = startingDate;
+
+        StringTokenizer stk = new StringTokenizer(date, "/");
+
+        int day = Integer.parseInt(stk.nextToken());
+        int month = Integer.parseInt(stk.nextToken());
+        int year = Integer.parseInt(stk.nextToken());
+
+        if(diff == 0) {
+            while (dateDifference(date, endingDate) >= 0) {
+
+                dates.add(date);
+                month++;
+                char [] ch = Integer.toString(month).toCharArray();
+                if(ch.length > 1)
+                    date = ("01/" + month + "/" + year);
+                else
+                    date = ("01/0"+ month + "/" + year);
+            }
+        } else {
+            StringTokenizer st = new StringTokenizer(endingDate, "/");
+
+            int eday = Integer.parseInt(st.nextToken());
+            int emonth = Integer.parseInt(st.nextToken());
+            int eyear = Integer.parseInt(st.nextToken());
+
+            for(int i = year; i <= eyear; i++) {
+                for(int j = month; j <= 12; j++) {
+                    if(i == year && j == month) {
+                        dates.add(date);
+                        month = 1;
+                    }
+                    else
+                    if(!(i == endYear && j > emonth)) {
+                        char [] ch = Integer.toString(j).toCharArray();
+                        if(ch.length > 1)
+                            dates.add("01/" + j + "/" + i);
+                        else
+                            dates.add("01/0" + j + "/" + i);
+                    }
+                }
+            }
+        }
+
+        return dates;
     }
 
     public int getNumberOfDayFromMonth(int month, int year) {
@@ -171,6 +280,42 @@ public class DateManager {
         return 0;
     }
 
+    public List<String> allFirstDayOfWeekFromMonth(String date) {
+        List<String> dates = new ArrayList<>();
+        String monthYear = getMonthWithYear(date);
+
+        StringTokenizer stk = new StringTokenizer(date, "/");
+
+        int day = Integer.parseInt(stk.nextToken());
+        int month = Integer.parseInt(stk.nextToken());
+        int year = Integer.parseInt(stk.nextToken());
+        int limit = getNumberOfDayFromMonth(month, year);
+
+        while(day <= limit) {
+            char[] ch = Integer.toString(day).toCharArray();
+            if(ch.length > 1)
+                dates.add(day+""+monthYear);
+            else dates.add("0"+day+""+monthYear);
+            day += 7;
+        }
+
+        return dates;
+    }
+
+    public String getDate(int day, int month, int year) {
+        char[] d = Integer.toString(day).toCharArray();
+        char[] m = Integer.toString(month).toCharArray();
+
+        String da = ""+day, mo = ""+month, ya = ""+year;
+
+        if(d.length < 2)
+            da = "0"+day;
+        if(m.length < 2)
+            mo = ("0"+month);
+
+        return (da+"/"+mo+"/"+ya);
+    }
+
     public String getPreviousMonth(String date) {
         String[] dates = getSeparatedDateArray(date);
         int month = Integer.parseInt(dates[1]);
@@ -179,10 +324,14 @@ public class DateManager {
             int year = Integer.parseInt(dates[2]);
             year--;
             month = 12;
-            pattern = "1"+"/"+Integer.toString(month)+"/"+Integer.toString(year);
-        } else
-            pattern = "1"+"/"+Integer.toString(month-1)+"/"+dates[2];
-
+            pattern = "01"+"/"+month+"/"+Integer.toString(year);
+        } else {
+            char[] ch = Integer.toString(month).toCharArray();
+            if(ch.length > 1)
+                pattern = "01/" + (month - 1) + "/" + dates[2];
+            else
+                pattern = "01/0" + (month - 1) + "/" + dates[2];
+        }
 
         return pattern;
     }

@@ -13,7 +13,7 @@ import android.widget.TextView;
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.utility.DateManager;
 import com.example.bechitra.walleto.activity.DataEditorActivity;
-import com.example.bechitra.walleto.table.TableData;
+import com.example.bechitra.walleto.table.PrimeTable;
 import com.example.bechitra.walleto.utility.ColorUtility;
 import com.example.bechitra.walleto.utility.DataOrganizer;
 import com.example.bechitra.walleto.utility.DataParser;
@@ -24,10 +24,12 @@ public class DataOrganizerAdapter extends RecyclerView.Adapter<RecyclerView.View
     Context context;
     List<DataOrganizer> list;
     RelativeLayout.LayoutParams params;
+    DateManager spc;
 
     public DataOrganizerAdapter(Context context, List<DataOrganizer> list) {
         this.context = context;
         this.list = list;
+        spc = new DateManager();
         this.params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
     }
 
@@ -53,7 +55,6 @@ public class DataOrganizerAdapter extends RecyclerView.Adapter<RecyclerView.View
             LabelViewer label = (LabelViewer)holder;
             DataOrganizer data = list.get(position);
             String date = data.getLabel().getDate();
-            DateManager spc = new DateManager();
 
             if(date.equals(spc.getCurrentDate()))
                 label.date.setText("Today");
@@ -69,7 +70,7 @@ public class DataOrganizerAdapter extends RecyclerView.Adapter<RecyclerView.View
                     label.date.setText(date);
             }
 
-            label.amount.setText(data.getLabel().getAmount());
+            label.amount.setText("$"+data.getLabel().getAmount());
         } else {
             DataViewer view = (DataViewer)holder;
             DataOrganizer data = list.get(position);
@@ -134,10 +135,10 @@ public class DataOrganizerAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     public void itemClickEvent(int adapterPosition) {
         Intent intent = new Intent(context, DataEditorActivity.class);
-        TableData tableData = list.get(adapterPosition).getData();
+        PrimeTable primeTable = list.get(adapterPosition).getData();
         String tableName = list.get(adapterPosition).getTable();
 
-        DataParser parser = new DataParser(tableName, tableData, 1);
+        DataParser parser = new DataParser(tableName, primeTable, 1);
 
         intent.putExtra("data", parser);
         context.startActivity(intent);

@@ -226,6 +226,13 @@ public class ColorUtility {
         return Color.parseColor("#004D40");
     }
 
+    public int getLighterColor(int color, float factor) {
+        int red = (int) ((Color.red(color) * (1 - factor) / 255 + factor) * 255);
+        int green = (int) ((Color.green(color) * (1 - factor) / 255 + factor) * 255);
+        int blue = (int) ((Color.blue(color) * (1 - factor) / 255 + factor) * 255);
+        return Color.argb(Color.alpha(color), red, green, blue);
+    }
+
     public int getRandomColor() {
         String[] color = {"#827717", "#00695C", "#006064", "#0277BD", "#0D47A1", "#3949AB",
                                 "#311B92", "#880E4F", "#8E24AA"};

@@ -31,7 +31,7 @@ import com.example.bechitra.walleto.dialog.CategoryCreatorDialog;
 import com.example.bechitra.walleto.dialog.listener.DialogListener;
 import com.example.bechitra.walleto.adapter.SpinnerAdapter;
 import com.example.bechitra.walleto.table.Schedule;
-import com.example.bechitra.walleto.table.TableData;
+import com.example.bechitra.walleto.table.PrimeTable;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -42,7 +42,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import com.example.bechitra.walleto.utility.SaveInstanceState;
 
 public class EarningSetterFragment extends Fragment {
 
@@ -145,8 +144,7 @@ public class EarningSetterFragment extends Fragment {
         {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-
-                earningDateText.setText(Integer.toString(dayOfMonth) + "/" + Integer.toString(month + 1) + "/" + Integer.toString(year));
+                earningDateText.setText( new DateManager().getDate(dayOfMonth, month+1, year) );
             }
         };
 
@@ -193,7 +191,7 @@ public class EarningSetterFragment extends Fragment {
                         else
                             date = stk.getCurrentDate();
 
-                        TableData earning = new TableData(null, category, earningAmountEdit.getText().toString(),
+                        PrimeTable earning = new PrimeTable(null, category, earningAmountEdit.getText().toString(),
                                                          earningNoteEdit.getText().toString(), date, db.getActivatedWalletID());
                         db.insertOnTable(db.getEarningTable(), earning);
 

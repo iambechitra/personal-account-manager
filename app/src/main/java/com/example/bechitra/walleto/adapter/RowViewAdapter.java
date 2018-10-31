@@ -13,18 +13,18 @@ import android.widget.TextView;
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.utility.DateManager;
 import com.example.bechitra.walleto.activity.DataEditorActivity;
-import com.example.bechitra.walleto.table.TableData;
+import com.example.bechitra.walleto.table.PrimeTable;
 import com.example.bechitra.walleto.utility.DataParser;
 
 import java.util.List;
 
 public class RowViewAdapter extends RecyclerView.Adapter<RowViewAdapter.RowViewer>{
     Context context;
-    List<TableData> data;
+    List<PrimeTable> data;
     RelativeLayout.LayoutParams params;
     String tableName;
 
-    public RowViewAdapter(Context context, List<TableData> data, String tableName) {
+    public RowViewAdapter(Context context, List<PrimeTable> data, String tableName) {
         this.context = context;
         this.data = data;
         this.tableName = tableName;
@@ -42,7 +42,7 @@ public class RowViewAdapter extends RecyclerView.Adapter<RowViewAdapter.RowViewe
 
     @Override
     public void onBindViewHolder(RowViewer holder, int position) {
-        TableData tData = data.get(position);
+        PrimeTable tData = data.get(position);
 
         if(!tData.getNote().equals(""))
             holder.note.setText(tData.getNote());

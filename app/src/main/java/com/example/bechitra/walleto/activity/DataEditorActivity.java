@@ -46,6 +46,7 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.example.bechitra.walleto.utility.DateManager;
 
 public class DataEditorActivity extends AppCompatActivity {
 
@@ -233,7 +234,7 @@ public class DataEditorActivity extends AppCompatActivity {
         dateSetListener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                String d = Integer.toString(dayOfMonth) + "/" + Integer.toString(month + 1) + "/" + Integer.toString(year);
+                String d = new DateManager().getDate(dayOfMonth, month+1, year);
                 dateText.setText(d);
             }
         };

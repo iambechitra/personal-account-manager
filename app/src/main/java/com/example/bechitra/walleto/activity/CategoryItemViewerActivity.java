@@ -16,9 +16,10 @@ import android.widget.TextView;
 
 import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.R;
+import com.example.bechitra.walleto.utility.DataProcessor;
 import com.example.bechitra.walleto.utility.DateManager;
 import com.example.bechitra.walleto.adapter.RowViewAdapter;
-import com.example.bechitra.walleto.table.TableData;
+import com.example.bechitra.walleto.table.PrimeTable;
 import com.example.bechitra.walleto.utility.ColorUtility;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -29,8 +30,7 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -51,29 +51,35 @@ public class CategoryItemViewerActivity extends AppCompatActivity {
     @BindView(R.id.labelLayout)
     RelativeLayout labelLayout;
 
+    @BindView(R.id.recordBar) RelativeLayout recordBar;
+
     @BindView(R.id.backButton) TextView backButton;
 
     DatabaseHelper db;
+    DataProcessor dataProcessor;
+    DateManager dateManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category_view);
         ButterKnife.bind(this);
+        dataProcessor = new DataProcessor(this);
+        dateManager = new DateManager();
 
         scrollView.setFocusableInTouchMode(true);
         scrollView.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
 
         db = new DatabaseHelper(this);
-        DateManager stk = new DateManager();
-        String date = stk.getCurrentDate();
+        String date = dateManager.getCurrentDate();
         ArrayList<BarEntry> barEntries = new ArrayList<>();
         String category = getIntent().getExtras().getString("category");
         categoryName.setText(category);
-        statusBarColorChanger(new ColorUtility().getColors(category));
+        int color = new ColorUtility().getColors(category);
+        statusBarColorChanger(color);
         String table = getIntent().getExtras().getString("table");
 
-        //Log.d("table", table);
+        recordBar.setBackgroundColor(new ColorUtility().getLighterColor(color, 0.8f));
 
         labelLayout.setBackgroundColor(new ColorUtility().getColors(category));
 
@@ -84,22 +90,30 @@ public class CategoryItemViewerActivity extends AppCompatActivity {
             }
         });
 
-        for(int i = 0; i < 12; i++) {
-            List<TableData> list = db.filterDataFromTable(table,"%"+stk.getMonthWithYear(date), category);
+        Map<String, List<PrimeTable>> map = dataProcessor.getMonthlyData(table, "01/01/"+dateManager.getYearFromDate(date), date);
 
-            BigDecimal big = BigDecimal.ZERO;
-            for(TableData spending : list)
-                big = big.add(new BigDecimal(spending.getAmount()));
-
-            float amount = Float.parseFloat(big.toString());
-            String [] str = stk.getSeparatedDateArray(date);
-            barEntries.add(new BarEntry(Integer.parseInt(str[1]), amount));
-            date = stk.getPreviousMonth(date);
-            Log.d("Integer", Integer.toString(Integer.parseInt(str[1])));
+        //Balance Preparation of BarChart
+        Map<Integer, Float> balance = new HashMap<>();
+        int[] monthCount = new int[13];
+        for(Map.Entry<String, List<PrimeTable>> entry : map.entrySet()) {
+            float amount = Float.parseFloat(dataProcessor.getBalanceCalculation(entry.getValue()));
+            StringTokenizer stk = new StringTokenizer(entry.getKey());
+            String monthName = stk.nextToken();
+            int monthID = dateManager.getMonthID(monthName);
+            balance.put(monthID, amount);
+            monthCount[monthID] = 1;
         }
 
+        //Assigning value to BarChart;
+        for(int i = 1; i < monthCount.length; i++)
+            if(monthCount[i] != 1)
+                barEntries.add(new BarEntry(i, 0f));
+            else
+                barEntries.add(new BarEntry(i, balance.get(i)));
+
+
         BarDataSet dataSet = new BarDataSet(barEntries, "Cost");
-        //dataSet.setValueTextSize(8f);
+        dataSet.setValueTextSize(8f);
         dataSet.setColors(new ColorUtility().getColors(category));
 
         BarData data = new BarData(dataSet);
@@ -119,7 +133,7 @@ public class CategoryItemViewerActivity extends AppCompatActivity {
         rowDataViewRecycler.setHasFixedSize(true);
         rowDataViewRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
-        List<TableData> row = db.getAllRowOfACategory(table, category);
+        List<PrimeTable> row = db.getAllRowOfACategory(table, category);
         recordCount.setText(""+row.size());
         RowViewAdapter adapter = new RowViewAdapter(this, row, table);
         rowDataViewRecycler.setAdapter(adapter);

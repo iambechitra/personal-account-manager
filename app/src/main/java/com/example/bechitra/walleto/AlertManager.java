@@ -11,7 +11,7 @@ import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 
 import com.example.bechitra.walleto.table.Schedule;
-import com.example.bechitra.walleto.table.TableData;
+import com.example.bechitra.walleto.table.PrimeTable;
 import com.example.bechitra.walleto.utility.DateManager;
 
 import java.text.ParseException;
@@ -37,7 +37,7 @@ public class AlertManager extends BroadcastReceiver{
                 String next = formatDate(spc.addDate(s.getDate(), Integer.parseInt(s.getRepeat())));
                 //long diff = spc.dateDifference(currentDate, next);
                 if(next.equals(currentDate)) {
-                    TableData data = new TableData(null, s.getCategory(), s.getAmount(), s.getNote(), next, s.getWalletID());
+                    PrimeTable data = new PrimeTable(null, s.getCategory(), s.getAmount(), s.getNote(), next, s.getWalletID());
 
                     db.insertOnTable(s.getTableName(), data);
                     db.updateRowFromTable(TABLE, s.getID(), COLUMN_NAME, next);

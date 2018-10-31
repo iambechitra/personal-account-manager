@@ -7,7 +7,7 @@
     android:id="@+id/drawerLayout"
     android:fitsSystemWindows="true"
     tools:context="com.example.bechitra.walleto.MainActivity"
-    tools:openDrawer="start">
+    tools:openDrawer="end">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -39,6 +39,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:id="@+id/dashboardBack"
+                android:background="@drawable/ic_background_custom"
                 android:layout_weight="4">
 
                 <TextView

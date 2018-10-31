@@ -12,6 +12,8 @@ import butterknife.ButterKnife;
 import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.adapter.DefaultSpinnerAdapter;
+import com.example.bechitra.walleto.dialog.RowDeleteDialog;
+import com.example.bechitra.walleto.dialog.listener.OnCloseDialogListener;
 import com.example.bechitra.walleto.utility.DateManager;
 import com.example.bechitra.walleto.utility.ScheduleParser;
 
@@ -61,7 +63,18 @@ public class ScheduleManagementActivity extends AppCompatActivity {
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                db.deleteRowFromTable("SCHEDULE", schedule.getID());
+                RowDeleteDialog dialog = new RowDeleteDialog();
+                dialog.show(getSupportFragmentManager(), "TAG");
+
+                dialog.setOnCloseDialogManager(new OnCloseDialogListener() {
+                    @Override
+                    public void onClose(boolean flag) {
+                        if(flag) {
+                            db.deleteRowFromTable("SCHEDULE", schedule.getID());
+                            finish();
+                        }
+                    }
+                });
             }
         });
 
@@ -125,7 +138,7 @@ public class ScheduleManagementActivity extends AppCompatActivity {
         dateSetListener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                DATE = Integer.toString(dayOfMonth) + "/" + Integer.toString(month + 1) + "/" + Integer.toString(year);
+                DATE = new DateManager().getDate(dayOfMonth, month+1, year);
                 dateText.setText(DATE);
             }
         };

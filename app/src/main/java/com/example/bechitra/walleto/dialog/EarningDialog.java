@@ -21,7 +21,7 @@ import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.utility.DateManager;
 import com.example.bechitra.walleto.dialog.listener.DialogListener;
 import com.example.bechitra.walleto.dialog.listener.OnCloseDialogListener;
-import com.example.bechitra.walleto.table.TableData;
+import com.example.bechitra.walleto.table.PrimeTable;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
@@ -106,7 +106,7 @@ public class EarningDialog extends android.support.v4.app.DialogFragment{
                         else
                             date = stk.getCurrentDate();
 
-                        TableData earning = new TableData(null,stk.stringFormatter(earningCatagorySpinner.getSelectedItem().toString()).trim(), earningAmountEdit.getText().toString(), date, null, db.getActivatedWalletID());
+                        PrimeTable earning = new PrimeTable(null,stk.stringFormatter(earningCatagorySpinner.getSelectedItem().toString()).trim(), earningAmountEdit.getText().toString(), date, null, db.getActivatedWalletID());
                         db.insertOnTable(db.getEarningTable(),earning);
                     }
 

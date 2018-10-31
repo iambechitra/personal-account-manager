@@ -80,6 +80,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/tableSpinner"
+                        android:gravity="end"
+                        android:textAlignment="textEnd"
                         android:layout_alignParentRight="true"/>
                 </RelativeLayout>
 
@@ -106,6 +108,8 @@
                     <Spinner
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:textAlignment="textEnd"
                         android:id="@+id/categorySpinner"
                         android:layout_alignParentRight="true"/>
                 </RelativeLayout>
@@ -230,6 +234,8 @@
                     <Spinner
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:textAlignment="textEnd"
                         android:id="@+id/autoRepetitionSpinner"
                         android:layout_alignParentRight="true"/>
                 </RelativeLayout>

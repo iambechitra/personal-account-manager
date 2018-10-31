@@ -20,10 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
-import com.example.bechitra.walleto.activity.AccountManagementActivity;
-import com.example.bechitra.walleto.activity.DataQueryActivity;
-import com.example.bechitra.walleto.activity.ScheduleDataViewerActivity;
-import com.example.bechitra.walleto.activity.SpendingOrEarningDataSetterActivity;
+import com.example.bechitra.walleto.activity.*;
 import com.example.bechitra.walleto.framents.HomeFragment;
 import com.example.bechitra.walleto.framents.SpendingOverviewFragment;
 
@@ -73,9 +70,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 attachFragment(new HomeFragment());
-                dashboardTextView.setBackgroundResource(R.drawable.tab_indicator);
-                // dashboardBack.setBackgroundColor(view.getResources().getColor(R.color.tab_selected));
-                //overviewBack.setBackgroundColor(view.getResources().getColor(R.color.green));
+                dashboardBack.setBackgroundResource(R.drawable.ic_background_custom);
+                overviewBack.setBackgroundResource(R.color.green);
             }
         });
 
@@ -83,8 +79,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 attachFragment(new SpendingOverviewFragment());
-                // overviewBack.setBackgroundColor(view.getResources().getColor(R.color.tab_selected));
-                // dashboardBack.setBackgroundColor(view.getResources().getColor(R.color.green));
+                overviewBack.setBackgroundResource(R.drawable.ic_background_custom);
+                dashboardBack.setBackgroundResource(R.color.green);
             }
         });
 
@@ -110,6 +106,11 @@ public class MainActivity extends AppCompatActivity {
 
                     case R.id.dataQuery : {
                         startActivity(DataQueryActivity.class);
+                        break;
+                    }
+
+                    case R.id.settingsMenu : {
+                        startActivity(SettingsActivity.class);
                         break;
                     }
                 }

@@ -1,14 +1,26 @@
 package com.example.bechitra.walleto.utility;
 
 public class CategoryProcessor {
-    String category, amount, length, table;
+    private String category, amount, length, table, lowerBound, upperBound;
 
-    public CategoryProcessor(String table, String category, String amount, String length) {
-        this.category = category;
-        this.amount = amount;
-        this.length = length;
+    public CategoryProcessor(MapHelper mapHelper, String table) {
+        this.category = mapHelper.getKey();
+        this.amount = mapHelper.getAmount();
+        this.length = mapHelper.getHit();
         this.table = table;
+        this.lowerBound = mapHelper.getLowerBound();
+        this.upperBound = mapHelper.getUpperBound();
     }
+
+
+    public String getLowerBound() {
+        return lowerBound;
+    }
+
+    public String getUpperBound() {
+        return upperBound;
+    }
+
     public String getTable() { return table; }
 
     public String getCategory() {

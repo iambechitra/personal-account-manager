@@ -1,7 +1,6 @@
 package com.example.bechitra.walleto.framents;
 
 import android.app.DatePickerDialog;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -24,13 +23,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.bechitra.walleto.DatabaseHelper;
-import com.example.bechitra.walleto.MainActivity;
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.utility.DateManager;
 import com.example.bechitra.walleto.dialog.CategoryCreatorDialog;
 import com.example.bechitra.walleto.dialog.listener.DialogListener;
 import com.example.bechitra.walleto.table.Schedule;
-import com.example.bechitra.walleto.table.TableData;
+import com.example.bechitra.walleto.table.PrimeTable;
 import com.example.bechitra.walleto.adapter.SpinnerAdapter;
 
 import java.math.BigDecimal;
@@ -138,8 +136,7 @@ public class SpendingSetterFragment extends Fragment{
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth)
             {
-                spendingDateText.setText(Integer.toString(dayOfMonth) + "/" + Integer.toString(month + 1) + "/" +
-                        Integer.toString(year));
+                spendingDateText.setText(new DateManager().getDate(dayOfMonth, month+1, year));
             }
         };
 
@@ -160,7 +157,7 @@ public class SpendingSetterFragment extends Fragment{
                         else
                             date = new DateManager().getCurrentDate();
 
-                        TableData spending = new TableData(null, category, spendingAmountEdit.getText().toString(),
+                        PrimeTable spending = new PrimeTable(null, category, spendingAmountEdit.getText().toString(),
                                 stk.stringFormatter(additionalNoteEdit.getText().toString().toUpperCase()).trim(),
                                     date, db.getActivatedWalletID());
 

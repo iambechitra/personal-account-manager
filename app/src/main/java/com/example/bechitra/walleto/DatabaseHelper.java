@@ -8,20 +8,15 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.example.bechitra.walleto.dialog.listener.OnDeleteItem;
-import com.example.bechitra.walleto.graph.GraphData;
-import com.example.bechitra.walleto.sorting.BigSort;
+import com.example.bechitra.walleto.utility.EntrySet;
 import com.example.bechitra.walleto.table.Schedule;
-import com.example.bechitra.walleto.table.TableData;
+import com.example.bechitra.walleto.table.PrimeTable;
 import com.example.bechitra.walleto.table.Wallet;
 import com.example.bechitra.walleto.utility.DateManager;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class DatabaseHelper extends SQLiteOpenHelper{
     final static String DB_NAME = "account.db";
@@ -87,7 +82,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         onCreate(db);
     }
 
-    public boolean insertOnTable(String table, TableData data) {
+    public boolean insertOnTable(String table, PrimeTable data) {
         ContentValues cv = new ContentValues();
         cv.put(ST_COL2, data.getCategory());
         cv.put(ST_COL3, data.getAmount());
@@ -190,11 +185,11 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return true;
     }
 
-    public List<TableData> getAllRow(String tableName) {
+    public List<PrimeTable> getAllRow(String tableName) {
         Cursor cr = db.rawQuery("SELECT * FROM "+tableName, null);
-        List<TableData> list = new ArrayList<>();
+        List<PrimeTable> list = new ArrayList<>();
         while(cr.moveToNext())
-            list.add(new TableData(cr.getString(0), cr.getString(1), cr.getString(2), cr.getString(3), cr.getString(4), cr.getString(5)));
+            list.add(new PrimeTable(cr.getString(0), cr.getString(1), cr.getString(2), cr.getString(3), cr.getString(4), cr.getString(5)));
 
         return list;
     }
@@ -203,7 +198,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         db.execSQL("CREATE TABLE "+SPENDING_TABLE+" ("+ST_COL1+" INTEGER PRIMARY KEY AUTOINCREMENT, "+ST_COL2+" TEXT, "+ST_COL3+ " REAL, "+ST_COL4+" TEXT, "+ST_COL5+" TEXT, "+ST_COL6+" INTEGER)");
         db.execSQL("CREATE TABLE "+EARNING_TABLE+" ("+ET_COL1+" INTEGER PRIMARY KEY AUTOINCREMENT, "+ET_COL2+" TEXT, "+ET_COL3+ " REAL, "+ET_COL4+" TEXT, "+ET_COL5+" TEXT, "+ET_COL6+" INTEGER)");
         db.execSQL("CREATE TABLE "+WALLET_TABLE+" ("+WT_COL1+" INTEGER PRIMARY KEY AUTOINCREMENT, "+WT_COL2+" TEXT, "+WT_COL3+ " INTEGER)");
-        db.execSQL("CREATE TABLE "+SCHEDULE_TABLE+" ("+SDL_COL1+" INTEGER PRIMARY KEY AUTOINCREMENT, "+SDL_COL2+" INTEGER, "+SDL_COL3+" TEXT, "+SDL_COL4+" TEXT, "+SDL_COL5+" TEXT, " +
+        db.execSQL("CREATE TABLE "+SCHEDULE_TABLE+" ("+SDL_COL1+" INTEGER PRIMARY KEY AUTOINCREMENT, "+SDL_COL2+" TEXT, "+SDL_COL3+" TEXT, "+SDL_COL4+" TEXT, "+SDL_COL5+" TEXT, " +
                                                 SDL_COL6+" TEXT, "+SDL_COL7+" TEXT, "+SDL_COL8+" TEXT, "+SDL_COL9+" TEXT)");
         ContentValues cv = new ContentValues();
         cv.put(WT_COL2, DEFAULT_WALLET);
@@ -223,12 +218,12 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         db.insert(WALLET_TABLE, null, cv);
     }
 
-    public List<TableData> getCurrentMonthData(String tableName) {
+    public List<PrimeTable> getCurrentMonthData(String tableName) {
         Cursor cr = db.rawQuery("SELECT * FROM "+tableName+" WHERE DATE LIKE '%"
                                 +new DateManager().getCurrentMonthWithYear()+"'", null);
-        List<TableData> list = new ArrayList<>();
+        List<PrimeTable> list = new ArrayList<>();
         while(cr.moveToNext())
-            list.add(new TableData(cr.getString(0), cr.getString(1), cr.getString(2), cr.getString(3), cr.getString(4), cr.getString(5)));
+            list.add(new PrimeTable(cr.getString(0), cr.getString(1), cr.getString(2), cr.getString(3), cr.getString(4), cr.getString(5)));
 
         return list;
     }
@@ -267,48 +262,39 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     }
 
     //Need to recheck;
-    public List<GraphData> getPieChartData(int limit) {
-        List<GraphData> graphData = new ArrayList<>();
+    public List<EntrySet> getPieChartData(int limit) {
+        List<EntrySet> graphData = new ArrayList<>();
         List<String> numbers = new ArrayList<>();
-        List<String> sortedArray;
-        List <GraphData> pieChartData = new ArrayList<>();
 
         List<String>category = getDistinctCategoryFromCurrentMonth(SPENDING_TABLE);
         boolean flag = false;
         if(category != null) {
             for(String str : category) {
                 List<String> amount = getTotalAmountForACategoryForMonth(str, SPENDING_TABLE, new DateManager().getCurrentMonthWithYear());
-                String total = getTotalAmountFromAList(amount);
-                numbers.add(total);
-                graphData.add(new GraphData(str, total));
-                flag = true;
+                double value = Double.parseDouble(getTotalAmountFromAList(amount));
+                graphData.add(new EntrySet(str, value));
             }
-        }
-
-        if(limit == 0)
-            return graphData;
-
-        String am = getCalculationOfCurrentMonth(SPENDING_TABLE, getActivatedWalletID());
-        BigDecimal num = new BigDecimal(am);
-
-        if(flag) {
-            BigSort sort = new BigSort(numbers);
-            sortedArray = sort.getBigData();
-
-            for(int i = sortedArray.size()-1; i >= 0; i--) {
-                for(GraphData graphData1 : graphData) {
-                    if(graphData1.getYAxis().equals(sortedArray.get(i)))
-                        pieChartData.add(new GraphData(graphData1.getXAxis(), new BigDecimal(graphData1.getYAxis())
-                                .divide(num, 2, RoundingMode.HALF_UP).multiply(new BigDecimal("100")).toString()));
+            Collections.sort(graphData, new Comparator<EntrySet>() {
+                @Override
+                public int compare(EntrySet o1, EntrySet o2) {
+                    return compareValue(o1.getValue(), o2.getValue());
                 }
+            });
+        }
+        else
+            graphData.add(new EntrySet("Spending", 100.0));
+        
+        
+        return graphData;
+    }
 
-                if(sortedArray.size() - i == limit)
-                    break;
-            }
-        } else
-            pieChartData.add(new GraphData("Spending", "100"));
-
-        return  pieChartData;
+    private int compareValue(double value, double value1) {
+        if(value > value1)
+            return 1;
+        else if(value == value1)
+            return 0;
+        else
+            return -1;
     }
 
     public List<String> getTotalAmountForACategoryForMonth(String category, String table, String dateFormat) {
@@ -338,11 +324,11 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return total.toString();
     }
 
-    public List<TableData> filterDataFromTable(String tableName, String pattern, String category) {
+    public List<PrimeTable> filterDataFromTable(String tableName, String pattern, String category) {
         Cursor cr = db.rawQuery("SELECT * FROM "+tableName+" WHERE DATE LIKE '"+pattern+"' AND CATEGORY LIKE '"+category+"' AND "+ET_COL6+" = "+getActivatedWalletID(),null);
-        List<TableData>list = new ArrayList<>();
+        List<PrimeTable>list = new ArrayList<>();
         while (cr.moveToNext())
-            list.add(new TableData(cr.getString(0), cr.getString(1), cr.getString(2), cr.getString(3), cr.getString(4), cr.getString(5)));
+            list.add(new PrimeTable(cr.getString(0), cr.getString(1), cr.getString(2), cr.getString(3), cr.getString(4), cr.getString(5)));
 
         return list;
     }
@@ -369,20 +355,20 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return list;
     }
 
-    public List<TableData> getDataOnPattern(String tableName, String activeWallet, String pattern) {
+    public List<PrimeTable> getDataOnPattern(String tableName, String activeWallet, String pattern) {
         Cursor cr = db.rawQuery("SELECT * FROM "+tableName+" WHERE DATE LIKE '"+pattern+"' AND "+ST_COL6+" = "+activeWallet,null);
-        List<TableData>list = new ArrayList<>();
+        List<PrimeTable>list = new ArrayList<>();
         while (cr.moveToNext())
-            list.add(new TableData(cr.getString(0), cr.getString(1), cr.getString(2), cr.getString(3), cr.getString(4), cr.getString(5)));
-
+            list.add(new PrimeTable(cr.getString(0), cr.getString(1), cr.getString(2), cr.getString(3), cr.getString(4), cr.getString(5)));
+        cr.close();
         return list;
     }
 
-    public List<TableData> getAllRowOfACategory(String tableName, String category) {
+    public List<PrimeTable> getAllRowOfACategory(String tableName, String category) {
         Cursor cr = db.rawQuery("SELECT * FROM "+tableName+" WHERE CATEGORY = '"+category+"' AND "+ET_COL6+" = "+getActivatedWalletID(),null);
-        List<TableData>list = new ArrayList<>();
+        List<PrimeTable>list = new ArrayList<>();
         while (cr.moveToNext())
-            list.add(new TableData(cr.getString(0), cr.getString(1), cr.getString(2), cr.getString(3), cr.getString(4), cr.getString(5)));
+            list.add(new PrimeTable(cr.getString(0), cr.getString(1), cr.getString(2), cr.getString(3), cr.getString(4), cr.getString(5)));
 
         return list;
     }
@@ -434,6 +420,28 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return false;
     }
 
+    public List<PrimeTable> getDataWithinARange(String table, String lowerBound, String upperBound) {
+        List<PrimeTable> data = new ArrayList<>();
+
+        String[] low = new DateManager().getSeparatedDateArray(lowerBound);
+        String[] high = new DateManager().getSeparatedDateArray(upperBound);
+
+        String lower = (low[2]+low[1]+low[0]); // convert date dd/MM/yyyy -> yyyyMMdd format;
+        String upper = (high[2]+high[1]+high[0]);
+
+        String query = "SELECT * FROM "+table+" WHERE (SUBSTR(DATE,7)||SUBSTR(DATE,4,2)||SUBSTR(DATE,1,2) BETWEEN '"
+                                    +lower+"' AND '"+upper+"') AND WALLET_ID = "+getActivatedWalletID();
+
+        Cursor cr = db.rawQuery(query,null);
+
+        while (cr.moveToNext()) {
+            data.add(new PrimeTable(cr.getString(0), cr.getString(1), cr.getString(2),
+                    cr.getString(3), cr.getString(4), cr.getString(5)));
+        }
+
+        return data;
+    }
+
     public List<Schedule> getScheduledData() {
         List<Schedule> schedules = new ArrayList<>();
 
@@ -460,11 +468,11 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return schedule;
     }
 
-    public TableData getDataFromRow(String id, String tableName) {
-        TableData data = null;
+    public PrimeTable getDataFromRow(String id, String tableName) {
+        PrimeTable data = null;
         Cursor cr = db.rawQuery("SELECT * FROM "+tableName+" WHERE ID = "+id,null);
         while (cr.moveToNext())
-            data = new TableData(cr.getString(0), cr.getString(1), cr.getString(2),
+            data = new PrimeTable(cr.getString(0), cr.getString(1), cr.getString(2),
                     cr.getString(3), cr.getString(4), cr.getString(5));
 
         return data;

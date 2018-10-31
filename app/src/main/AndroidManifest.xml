@@ -40,6 +40,10 @@
         <activity android:name=".activity.DataQueryActivity"/>
         <activity android:name=".activity.ScheduleManagementActivity">
         </activity>
+        <activity android:name=".activity.SettingsActivity">
+        </activity>
+        <activity android:name=".activity.CategorisedDataViewerActivity">
+        </activity>
     </application>
 
 </manifest>

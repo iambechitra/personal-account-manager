@@ -1,9 +1,9 @@
 package com.example.bechitra.walleto.table;
 
-public class TableData {
+public class PrimeTable {
     String ID, category, amount, note, date, walletID;
 
-    public TableData(String ID, String category, String amount, String note, String date, String walletID) {
+    public PrimeTable(String ID, String category, String amount, String note, String date, String walletID) {
         this.ID = ID;
         this.category = category;
         this.amount = amount;

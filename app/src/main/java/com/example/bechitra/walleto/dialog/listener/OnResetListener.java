@@ -1,5 +1,5 @@
 package com.example.bechitra.walleto.dialog.listener;
 
-public interface ResetListener {
+public interface OnResetListener {
     void onResetData(boolean action);
 }

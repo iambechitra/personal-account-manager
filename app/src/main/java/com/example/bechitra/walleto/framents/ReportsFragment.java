@@ -16,7 +16,7 @@ import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.dialog.ExcessSpendingAlertDialog;
 import com.example.bechitra.walleto.dialog.listener.AlertManagerListener;
-import com.example.bechitra.walleto.graph.GraphData;
+import com.example.bechitra.walleto.utility.EntrySet;
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.data.BarData;
@@ -89,13 +89,12 @@ public class ReportsFragment extends Fragment{
         ArrayList<BarEntry> entries = new ArrayList<>();
         map = new HashMap<>();
 
-        List<GraphData> graphData = db.getPieChartData(0);
+        List<EntrySet> graphData = db.getPieChartData(0);
 
         if(graphData != null) {
             for(int i = 0; i < graphData.size(); i++) {
-                map.put((int)((i+1)*10), graphData.get(i).getXAxis());
-                entries.add(new BarEntry((i+1)*10f, Float.parseFloat(graphData.get(i).getYAxis())));
-                Log.d("Data", graphData.get(i).getYAxis());
+                map.put((int)((i+1)*10), graphData.get(i).getKey());
+                entries.add(new BarEntry((i+1)*10f, (float)graphData.get(i).getValue()));
             }
         } else {
             entries.add(new BarEntry(1 * 10f, 50));

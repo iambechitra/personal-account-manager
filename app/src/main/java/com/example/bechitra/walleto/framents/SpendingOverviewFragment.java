@@ -18,23 +18,22 @@ import android.widget.TextView;
 
 import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.R;
+import com.example.bechitra.walleto.utility.DataProcessor;
 import com.example.bechitra.walleto.utility.DateManager;
 import com.example.bechitra.walleto.adapter.RecyclerViewAdapter;
-import com.example.bechitra.walleto.table.TableData;
+import com.example.bechitra.walleto.table.PrimeTable;
 import com.example.bechitra.walleto.utility.CategoryProcessor;
+import com.example.bechitra.walleto.utility.MapHelper;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -62,7 +61,8 @@ public class SpendingOverviewFragment extends Fragment{
     @BindView(R.id.resultSelectorSpinner)
     Spinner resultSelectorSpinner;
 
-    DatabaseHelper db;
+    DateManager dateManager;
+    DataProcessor dataProcessor;
 
    // @BindView(R.id.spendingOrEarningFilterSwitch)
    // Switch filterByCurrentMonth;
@@ -87,7 +87,9 @@ public class SpendingOverviewFragment extends Fragment{
         ButterKnife.bind(this, view);
         scrollView.setFocusableInTouchMode(true);
         scrollView.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
-        db = new DatabaseHelper(view.getContext());
+        dataProcessor = new DataProcessor(view.getContext());
+        dateManager = new DateManager();
+
 
         String[] array = {"Daily", "Weekly", "Monthly", "Yearly"};
         ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>
@@ -108,51 +110,56 @@ public class SpendingOverviewFragment extends Fragment{
     }
 
     private void loadGraphData() {
-        DateManager stk = new DateManager();
-        String date = stk.getCurrentDate();
-        HashMap<Integer, String> map = new HashMap<>();
-        ArrayList<Entry> value = new ArrayList<>();
+        ArrayList<Entry> earningEntry = new ArrayList<>();
+        ArrayList<Entry> spendingEntry = new ArrayList<>();
+        String upperBound = dateManager.getCurrentDate();
+        String year = dateManager.getYearFromDate(upperBound);
+        String lowerBound = "01/01/"+ year;
+        Map<String, List<PrimeTable>> mapEarning = dataProcessor.getMonthlyData("EARNING", lowerBound, upperBound);
+        Map<String, List<PrimeTable>> mapSpending = dataProcessor.getMonthlyData("SPENDING", lowerBound, upperBound);
 
-        for(int i = 0; i < 12; i++) {
-            String [] s = stk.getSeparatedDateArray(date);
-            map.put(Integer.parseInt(s[1]), date);
-            date = stk.getPreviousMonth(date);
+        Map<Integer, Float> balance = new HashMap<>();
+        int[] monthCount = new int[13];
+        for(Map.Entry<String, List<PrimeTable>> entry : mapSpending.entrySet()) {
+            float amount = Float.parseFloat(dataProcessor.getBalanceCalculation(entry.getValue()));
+            StringTokenizer stk = new StringTokenizer(entry.getKey());
+            String monthName = stk.nextToken();
+            int monthID = dateManager.getMonthID(monthName);
+            balance.put(monthID, amount);
+            monthCount[monthID] = 1;
         }
 
-        for(int i = 0; i < 12; i++) {
-            List<TableData> list = db.getDataOnPattern(db.getSpendingTable(),db.getActivatedWalletID(),"%"+stk.getMonthWithYear(map.get(i+1)));
-
-            float num = 0;
-            if(list.size()> 0) {
-                for (TableData spending : list)
-                    num += Float.parseFloat(spending.getAmount());
-            }
-
-            value.add(new Entry(i+1, num));
+        for(int i = 1; i < monthCount.length; i++) {
+            if (monthCount[i] != 1)
+                spendingEntry.add(new Entry(i, 0f));
+            else
+                spendingEntry.add(new Entry(i, balance.get(i)));
         }
 
-        ArrayList<Entry> val = new ArrayList<>();
-
-        for(int i = 0; i < 12; i++) {
-            List<TableData> list = db.getDataOnPattern(db.getEarningTable(),db.getActivatedWalletID(),"%"+stk.getMonthWithYear(map.get(i+1)));
-            Log.d("Earning List", ""+list.size());
-
-            float num = 0;
-
-            if(list.size()> 0) {
-                for (TableData spending : list)
-                    num += Float.parseFloat(spending.getAmount());
-            }
-
-            val.add(new Entry(i+1, num));
+        balance.clear();
+        Arrays.fill(monthCount, 0);
+        for(Map.Entry<String, List<PrimeTable>> entry : mapEarning.entrySet()) {
+            float amount = Float.parseFloat(dataProcessor.getBalanceCalculation(entry.getValue()));
+            StringTokenizer stk = new StringTokenizer(entry.getKey());
+            String monthName = stk.nextToken();
+            int monthID = dateManager.getMonthID(monthName);
+            balance.put(monthID, amount);
+            monthCount[monthID] = 1;
         }
 
-        LineDataSet set1 = new LineDataSet(value, "Spending");
+        for(int i = 1; i < monthCount.length; i++) {
+            if (monthCount[i] != 1)
+                earningEntry.add(new Entry(i, 0f));
+            else
+                earningEntry.add(new Entry(i, balance.get(i)));
+        }
+
+        LineDataSet set1 = new LineDataSet(spendingEntry, "Spending");
         set1.setColor(Color.RED);
         set1.setLineWidth(2f);
         set1.setValueTextSize(7f);
         set1.setValueTextColor(Color.BLACK);
-        LineDataSet set2 = new LineDataSet(val, "Earning");
+        LineDataSet set2 = new LineDataSet(earningEntry, "Earning");
         set2.setColor(Color.GREEN);
         set2.setLineWidth(2f);
         set2.setValueTextColor(Color.BLACK);
@@ -176,29 +183,34 @@ public class SpendingOverviewFragment extends Fragment{
     }
 
     private void reloadData() {
-        List<String> categoryA = db.getDistinctCategory(db.getSpendingTable());
-        List<String> categoryB = db.getDistinctCategory(db.getEarningTable());
+        String upperBound = dateManager.getCurrentDate();
+        String year = dateManager.getYearFromDate(upperBound);
+        String lowerBound = "01/01/"+ year;
+        Map<String, List<PrimeTable>> mapEarning = dataProcessor.getYearlyData("EARNING", lowerBound, upperBound);
+        Map<String, List<PrimeTable>> mapSpending = dataProcessor.getYearlyData("SPENDING", lowerBound, upperBound);
         list = new ArrayList<>();
-        for(String str : categoryB)
-            list.add(new CategoryProcessor(db.getEarningTable(), str, db.getTotalAmountForACategory(str, db.getEarningTable()),
-                    ""+db.getAllRowOfACategory(db.getEarningTable(), str).size()));
-        double earn = 0;
-        for(CategoryProcessor c : list)
-            earn += Double.parseDouble(c.getAmount());
 
-        lifeTimeEarnText.setText("$"+earn);
+        double totalEarn = 0;
+        for(Map.Entry<String, List<PrimeTable>> entry : mapEarning.entrySet()) {
+            List<MapHelper> map = dataProcessor.getCategorisedData(entry.getValue());
+            totalEarn = Double.parseDouble(dataProcessor.getBalanceCalculation(entry.getValue()));
 
-        for(String str : categoryA)
-            list.add(new CategoryProcessor(db.getSpendingTable(), str, db.getTotalAmountForACategory(str, db.getSpendingTable()),
-                    ""+db.getAllRowOfACategory(db.getSpendingTable(), str).size()));
+            for(MapHelper m : map)
+                list.add(new CategoryProcessor(m, "EARNING"));
+        }
 
-        double balance = 0;
-        for(CategoryProcessor c : list)
-            balance += Double.parseDouble(c.getAmount());
+        double totalSpend = 0;
+        for(Map.Entry<String, List<PrimeTable>> entry : mapSpending.entrySet()) {
+            List<MapHelper> map = dataProcessor.getCategorisedData(entry.getValue());
+            totalSpend = Double.parseDouble(dataProcessor.getBalanceCalculation(entry.getValue()));
+            for(MapHelper m : map)
+                list.add(new CategoryProcessor(m, "SPENDING"));
+        }
 
-        lifeTimeSpendText.setText("$"+(balance-earn));
+        lifeTimeEarnText.setText("$"+totalEarn);
+        lifeTimeSpendText.setText("$"+totalSpend);
+        amountText.setText("$"+(totalEarn+totalSpend));
 
-        amountText.setText("$"+balance);
         recyclerViewAdapter = new RecyclerViewAdapter(list, view.getContext());
         spendingRecyclerView.setAdapter(recyclerViewAdapter);
         spendingRecyclerView.setNestedScrollingEnabled(false);

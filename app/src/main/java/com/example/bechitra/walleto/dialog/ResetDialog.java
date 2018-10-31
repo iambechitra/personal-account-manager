@@ -7,10 +7,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 
-import com.example.bechitra.walleto.dialog.listener.ResetListener;
+import com.example.bechitra.walleto.dialog.listener.OnResetListener;
 
 public class ResetDialog extends DialogFragment{
-    ResetListener listener;
+    OnResetListener listener;
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -29,6 +29,9 @@ public class ResetDialog extends DialogFragment{
         alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                if(listener != null)
+                    listener.onResetData(false);
+
                 dialog.dismiss();
             }
         });
@@ -36,7 +39,7 @@ public class ResetDialog extends DialogFragment{
         return alertDialogBuilder.create();
     }
 
-    public void setResetListener(ResetListener listener) {
+    public void setOnResetListener(OnResetListener listener) {
         this.listener = listener;
     }
 }

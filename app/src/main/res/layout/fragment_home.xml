@@ -101,13 +101,6 @@
                         android:textColor="@color/black"
                         android:text="Balance"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:id="@+id/settingText"
-                        android:background="@drawable/ic_more_horiz_black_24dp"/>
-
                 </RelativeLayout>
 
                 <TextView

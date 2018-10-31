@@ -10,16 +10,16 @@ import android.widget.TextView;
 
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.utility.DateManager;
-import com.example.bechitra.walleto.table.TableData;
+import com.example.bechitra.walleto.table.PrimeTable;
 
 import java.util.List;
 
 public class SpendingRecyclerAdapter extends RecyclerView.Adapter<SpendingRecyclerAdapter.SpendingRecyclerViewHolder>{
-    private List<TableData> spendingsList;
+    private List<PrimeTable> spendingsList;
     private Context context;
     private RelativeLayout.LayoutParams params;
 
-    public SpendingRecyclerAdapter(List<TableData> spendingsList, Context context) {
+    public SpendingRecyclerAdapter(List<PrimeTable> spendingsList, Context context) {
         this.spendingsList = spendingsList;
         this.context = context;
         this.params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -33,13 +33,13 @@ public class SpendingRecyclerAdapter extends RecyclerView.Adapter<SpendingRecycl
         return new SpendingRecyclerViewHolder(view);
     }
 
-    public void setData(List<TableData> list) {
+    public void setData(List<PrimeTable> list) {
         this.spendingsList = list;
     }
 
     @Override
     public void onBindViewHolder(SpendingRecyclerViewHolder holder, int position) {
-        TableData spending = spendingsList.get(position);
+        PrimeTable spending = spendingsList.get(position);
         DateManager spc = new DateManager();
 
         String []str = spc.getSeparatedDateArray(spending.getDate());

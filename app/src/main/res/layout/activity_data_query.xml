@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:id="@+id/scrollView"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".activity.DataQueryActivity">
@@ -19,11 +21,11 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
                 android:orientation="vertical">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
+                    android:padding="10dp"
                     android:layout_height="wrap_content">
 
                     <TextView
@@ -36,84 +38,109 @@
 
                     <Spinner
                         android:layout_width="wrap_content"
-                        android:layout_toLeftOf="@id/expandMoreText"
+                        android:gravity="end"
+                        android:textAlignment="textEnd"
+                        android:id="@+id/viewTypeSpinner"
+                        android:layout_toLeftOf="@id/expandMoreRelativeLayout"
                         android:layout_height="wrap_content"/>
-
                     <RelativeLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="5dp"
-                        android:layout_alignParentRight="true"
-                        android:id="@+id/expandMoreText"
-                        android:background="@drawable/ic_expand_more_black_24dp"/>
+                        android:id="@+id/expandMoreRelativeLayout"
+                        android:background="@drawable/button_design"
+                        android:layout_alignParentRight="true">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:id="@+id/toggleButton"
+                            android:background="@drawable/ic_expand_more_black_24dp"/>
+                    </RelativeLayout>
 
                 </RelativeLayout>
 
                 <net.cachapa.expandablelayout.ExpandableLayout
-                    android:id="@+id/expandableLayout2"
+                    android:id="@+id/expandableLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:el_duration="1000"
-                    app:el_expanded="true">
+                    app:el_expanded="false">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginRight="10dp">
 
-                        <RelativeLayout
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_margin="10dp">
+                            android:layout_alignParentLeft="true"
+                            android:orientation="horizontal">
 
-                            <LinearLayout
-                                android:layout_width="wrap_content"
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_weight="3"
                                 android:layout_height="wrap_content"
-                                android:layout_alignParentLeft="true"
-                                android:orientation="horizontal">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="From :"
-                                    android:layout_marginRight="15dp"
-                                    android:textColor="@color/black"/>
+                                android:text="From"
+                                android:layout_marginRight="8dp"
+                                android:textColor="@color/black"/>
 
 
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="tap to enter"
-                                    android:id="@+id/fromDateInputText"/>
-
-                            </LinearLayout>
-
-
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_alignParentRight="true"
+                            <EditText
+                                android:layout_width="0dp"
+                                android:layout_weight="6"
                                 android:layout_height="wrap_content"
-                                android:orientation="horizontal">
+                                android:hint="dd/MM/yyyy"
+                                android:gravity="end"
+                                android:paddingRight="15dp"
+                                android:ellipsize="end"
+                                android:id="@+id/fromDateEdit"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:background="@drawable/ic_date_range"
+                                android:layout_marginLeft="8dp"
+                                android:id="@+id/fromDatePickerText"
+                                android:layout_height="wrap_content"/>
 
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="To :"
-                                    android:layout_marginRight="15dp"
-                                    android:textColor="@color/black" />
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="tap to enter"
-                                    android:id="@+id/toDateInputText"/>
+                        </LinearLayout>
 
-                            </LinearLayout>
 
-                        </RelativeLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_alignParentRight="true"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_weight="3"
+                                android:layout_height="wrap_content"
+                                android:text="To"
+                                android:layout_marginRight="8dp"
+                                android:textColor="@color/black" />
+                            <EditText
+                                android:layout_width="0dp"
+                                android:layout_weight="6"
+                                android:layout_height="wrap_content"
+                                android:hint="dd/MM/yyyy"
+                                android:paddingRight="15dp"
+                                android:gravity="end"
+                                android:ellipsize="end"
+                                android:id="@+id/toDateEdit"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:background="@drawable/ic_date_range"
+                                android:layout_marginLeft="8dp"
+                                android:id="@+id/toDatePickerText"
+                                android:layout_height="wrap_content"/>
+
+                        </LinearLayout>
 
                         <RelativeLayout
                             android:layout_width="match_parent"
-                            android:layout_gravity="center"
                             android:layout_height="wrap_content">
 
                             <RadioButton
@@ -130,27 +157,15 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Earning"
+                                android:layout_alignParentRight="true"
                                 android:layout_centerHorizontal="true"
                                 android:paddingTop="5dp"
                                 android:gravity="left"
                                 android:layout_marginRight="8dp"
                                 android:id="@+id/earningTableRadioButton"/>
 
-                            <RelativeLayout
-                                android:layout_width="wrap_content"
-                                android:layout_alignParentRight="true"
-                                android:layout_marginRight="10dp"
-                                android:layout_height="wrap_content">
-                                <RadioButton
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:paddingTop="5dp"
-                                    android:gravity="left"
-                                    android:text="Combined"/>
-                            </RelativeLayout>
-
                         </RelativeLayout>
-                        
+
                     </LinearLayout>
 
                 </net.cachapa.expandablelayout.ExpandableLayout>
@@ -163,11 +178,26 @@
             android:layout_width="match_parent"
             android:layout_margin="5dp"
             android:layout_height="wrap_content">
-            <com.github.mikephil.charting.charts.BarChart
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:id="@+id/dataViewerBarChart"
-                android:layout_margin="10dp"
-                android:layout_height="250dp"/>
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Graph"
+                    android:textSize="18dp"
+                    android:textColor="@color/white"
+                    android:background="@color/green"
+                    android:padding="10dp"/>
+
+                <com.github.mikephil.charting.charts.BarChart
+                    android:layout_width="match_parent"
+                    android:id="@+id/dataViewerBarChart"
+                    android:layout_margin="10dp"
+                    android:layout_height="275dp"/>
+
+            </LinearLayout>
         </android.support.v7.widget.CardView>
 
         <android.support.v7.widget.CardView
@@ -175,11 +205,25 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp">
 
-            <android.support.v7.widget.RecyclerView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:id="@+id/dataViewerRecyclerView"/>
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Report"
+                    android:textSize="18dp"
+                    android:textColor="@color/white"
+                    android:background="@color/green"
+                    android:padding="10dp"/>
+
+                <android.support.v7.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:id="@+id/dataViewerRecyclerView"/>
+            </LinearLayout>
         </android.support.v7.widget.CardView>
 
     </LinearLayout>
