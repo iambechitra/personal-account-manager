@@ -29,12 +29,12 @@
             android:layout_centerHorizontal="true"/>
     </RelativeLayout>
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_margin="10dp"
         android:scrollbars="vertical"
         android:id="@+id/recyclerView"
         android:layout_height="wrap_content">
-    </android.support.v7.widget.RecyclerView>
+    </androidx.recyclerview.widget.RecyclerView>
 
 </LinearLayout>

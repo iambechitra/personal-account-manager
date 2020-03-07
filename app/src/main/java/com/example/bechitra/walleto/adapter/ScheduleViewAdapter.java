@@ -1,10 +1,9 @@
 package com.example.bechitra.walleto.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.widget.RecyclerView;
+
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +13,6 @@ import android.widget.TextView;
 import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.activity.ScheduleManagementActivity;
-import com.example.bechitra.walleto.dialog.RowDeleteDialog;
-import com.example.bechitra.walleto.dialog.listener.OnCloseDialogListener;
 import com.example.bechitra.walleto.table.Schedule;
 import com.example.bechitra.walleto.utility.DateManager;
 import com.example.bechitra.walleto.dialog.listener.OnDeleteItem;

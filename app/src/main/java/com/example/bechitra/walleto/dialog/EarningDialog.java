@@ -16,6 +16,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.fragment.app.DialogFragment;
+
 import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.utility.DateManager;
@@ -30,7 +32,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class EarningDialog extends android.support.v4.app.DialogFragment{
+public class EarningDialog extends DialogFragment {
     @BindView(R.id.earningDateText) TextView earningDateText;
     @BindView(R.id.earningAmountEdit) EditText earningAmountEdit;
     @BindView(R.id.earningCatagorySpinner) Spinner earningCatagorySpinner;

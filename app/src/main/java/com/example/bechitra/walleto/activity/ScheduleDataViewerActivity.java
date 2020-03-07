@@ -1,17 +1,15 @@
 package com.example.bechitra.walleto.activity;
 
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.View;
 import android.widget.TextView;
 import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.adapter.ScheduleViewAdapter;
-import com.example.bechitra.walleto.dialog.listener.OnDeleteItem;
-import com.example.bechitra.walleto.dialog.listener.OnSaveInstanceState;
 import com.example.bechitra.walleto.table.Schedule;
 
 import java.util.ArrayList;

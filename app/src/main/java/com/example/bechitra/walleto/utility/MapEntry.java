@@ -1,6 +1,6 @@
 package com.example.bechitra.walleto.utility;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import com.example.bechitra.walleto.table.PrimeTable;
 import java.util.List;
 

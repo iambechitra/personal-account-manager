@@ -2,9 +2,9 @@ package com.example.bechitra.walleto.framents;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;

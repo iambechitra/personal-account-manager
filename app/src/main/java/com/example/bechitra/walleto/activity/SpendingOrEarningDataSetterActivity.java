@@ -1,15 +1,12 @@
 package com.example.bechitra.walleto.activity;
 
-import android.support.v4.app.Fragment;
-import android.content.Intent;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.IntentCompat;
-import android.support.v7.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.core.content.IntentCompat;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;;
 
-import com.example.bechitra.walleto.MainActivity;
 import com.example.bechitra.walleto.R;
-import com.example.bechitra.walleto.dialog.listener.OnSaveInstanceState;
 import com.example.bechitra.walleto.framents.EarningSetterFragment;
 import com.example.bechitra.walleto.framents.SpendingSetterFragment;
 

@@ -1,20 +1,15 @@
 package com.example.bechitra.walleto.activity;
 
-import android.content.Intent;
-import android.support.v4.widget.NestedScrollView;
-import android.support.v7.app.AppCompatActivity;
+import androidx.core.widget.NestedScrollView;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.bechitra.walleto.DatabaseHelper;
-import com.example.bechitra.walleto.MainActivity;
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.adapter.WalletCreatorAdapter;
 import com.example.bechitra.walleto.dialog.WalletCreatorDialog;

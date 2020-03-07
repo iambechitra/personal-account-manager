@@ -3,7 +3,7 @@ package com.example.bechitra.walleto.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +15,6 @@ import butterknife.ButterKnife;
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.activity.CategorisedDataViewerActivity;
 import com.example.bechitra.walleto.utility.*;
-import com.example.bechitra.walleto.activity.DataEditorActivity;
-import com.example.bechitra.walleto.table.PrimeTable;
 
 import java.util.List;
 
