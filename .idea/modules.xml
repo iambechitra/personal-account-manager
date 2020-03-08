@@ -2,10 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/AndroidStudioProjects-personal-account-manager.iml" filepath="$PROJECT_DIR$/AndroidStudioProjects-personal-account-manager.iml" group="personal-account-manager" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/personal-account-manager.iml" filepath="$PROJECT_DIR$/personal-account-manager.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/personal-account-manager-app.iml" filepath="$PROJECT_DIR$/app/personal-account-manager-app.iml" group="personal-account-manager/app" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="personal-account-manager/app" />
+      <module fileurl="file://$PROJECT_DIR$/personal-account-manager.iml" filepath="$PROJECT_DIR$/personal-account-manager.iml" group="personal-account-manager" />
     </modules>
   </component>
 </project>
