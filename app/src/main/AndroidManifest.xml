@@ -14,7 +14,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="fullSensor">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -23,7 +23,7 @@
         </activity>
         <activity
             android:name=".activity.SpendingOrEarningDataSetterActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="fullSensor"/>
 
         <receiver android:name=".AlertManager"/>
 

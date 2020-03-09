@@ -51,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         onSetAlarmManager(1, 1, this);
+
+        getBaseContext().getTheme().applyStyle(R.style.Theme_AppCompat_Light, true);
         attachFragment(new HomeFragment());
         //dashboardBack.setBackgroundColor(view.getResources().getColor(R.color.tab_selected));
 
