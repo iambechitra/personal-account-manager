@@ -19,22 +19,24 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 public class DatabaseHelper extends SQLiteOpenHelper{
-    final static String DB_NAME = "account.db";
-    final static String SPENDING_TABLE = "SPENDING";
-    final static String ST_COL1 = "ID";
-    final static String ST_COL2 = "CATEGORY";
-    final static String ST_COL3 = "AMOUNT";
-    final static String ST_COL4 = "NOTE";
-    final static String ST_COL5 = "DATE";
-    final static String ST_COL6 = "WALLET_ID";
+    private final static String DB_NAME = "account.db";
+    private final static String EVENT_TABLE = "event";
+    private final static String ST_COL1 = "ID";
+    private final static String ST_COL2 = "CATEGORY";
+    private final static String ST_COL3 = "AMOUNT";
+    private final static String ST_COL4 = "NOTE";
+    private final static String ST_COL5 = "DATE";
+    private final static String ST_COL6 = "WALLET_ID";
+    private final static String ST_COL7 = "payee";
+    private final static String ST_COL8 = "payment_method";
+    private final static String ST_COL9 = "status";
+    private final static String ST_COL10 = "ref_check_no";
+    private final static String ST_COL11 = "tax";
+    private final static String ST_COL12 = "quantity";
+    private final static String ST_COL13 = "tag";
+    private final static String ST_TYPE = "type"; // spending/earning
+    private final static String RECEIPT_IMAGE = "receipt_image";
 
-    final static String EARNING_TABLE = "EARNING";
-    final static String ET_COL1 = "ID";
-    final static String ET_COL2 = "CATEGORY";
-    final static String ET_COL3 = "AMOUNT";
-    final static String ET_COL4 = "NOTE";
-    final static String ET_COL5 = "DATE";
-    final static String ET_COL6 = "WALLET_ID";
 
     final static String WALLET_TABLE = "WALLET";
     final static String WT_COL1 = "WALLET_ID";
@@ -283,8 +285,8 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         }
         else
             graphData.add(new EntrySet("Spending", 100.0));
-        
-        
+
+
         return graphData;
     }
 
