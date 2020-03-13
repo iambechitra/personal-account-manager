@@ -20,7 +20,7 @@ import java.util.*;
 
 public class DatabaseHelper extends SQLiteOpenHelper{
     private final static String DB_NAME = "account.db";
-    private final static String EVENT_TABLE = "event";
+    private final static String EVENT_TABLE = "transaction";
     private final static String ST_COL1 = "ID";
     private final static String ST_COL2 = "CATEGORY";
     private final static String ST_COL3 = "AMOUNT";
