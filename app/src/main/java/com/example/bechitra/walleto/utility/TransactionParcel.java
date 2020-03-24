@@ -3,26 +3,29 @@ package com.example.bechitra.walleto.utility;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.example.bechitra.walleto.room.entity.Transaction;
 import com.example.bechitra.walleto.table.PrimeTable;
 
-public class DataParser implements Parcelable{
-    String tableName, ID, category, amount, note, date, walletID;
-    int flag;
+public class TransactionParcel implements Parcelable{
+    private String tag,category, note, date;
+    private long id, walletID;
+    private double amount;
+    private int flag;
 
-    protected DataParser(Parcel in) {
-        tableName = in.readString();
-        ID = in.readString();
+    protected TransactionParcel(Parcel in) {
+        tag = in.readString();
+        id = in.readLong();
         category = in.readString();
-        amount = in.readString();
+        amount = in.readDouble();
         note = in.readString();
         date = in.readString();
-        walletID = in.readString();
+        walletID = in.readLong();
         flag = in.readInt();
     }
 
-    public DataParser(String tableName, PrimeTable data, int flag) {
-        this.tableName = tableName;
-        this.ID = data.getID();
+    public TransactionParcel(String tag, Transaction data, int flag) {
+        this.tag = tag;
+        this.id = data.getId();
         this.category = data.getCategory();
         this.amount = data.getAmount();
         this.note = data.getNote();
@@ -31,27 +34,27 @@ public class DataParser implements Parcelable{
         this.flag = flag;
     }
 
-    public static final Creator<DataParser> CREATOR = new Creator<DataParser>() {
+    public static final Creator<TransactionParcel> CREATOR = new Creator<TransactionParcel>() {
         @Override
-        public DataParser createFromParcel(Parcel in) {
-            return new DataParser(in);
+        public TransactionParcel createFromParcel(Parcel in) {
+            return new TransactionParcel(in);
         }
 
         @Override
-        public DataParser[] newArray(int size) {
-            return new DataParser[size];
+        public TransactionParcel[] newArray(int size) {
+            return new TransactionParcel[size];
         }
     };
 
-    public String getID() {
-        return ID;
+    public long getID() {
+        return id;
     }
 
     public String getCategory() {
         return category;
     }
 
-    public String getAmount() {
+    public double getAmount() {
         return amount;
     }
 
@@ -63,9 +66,9 @@ public class DataParser implements Parcelable{
         return date;
     }
 
-    public String getWalletID(){ return walletID; }
+    public long getWalletID(){ return walletID; }
 
-    public String getTableName() { return tableName; }
+    public String getTag() { return tag; }
 
     public int getFlag() { return flag; }
 
@@ -76,13 +79,13 @@ public class DataParser implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(tableName);
-        dest.writeString(ID);
+        dest.writeString(tag);
+        dest.writeLong(id);
         dest.writeString(category);
-        dest.writeString(amount);
+        dest.writeDouble(amount);
         dest.writeString(note);
         dest.writeString(date);
-        dest.writeString(walletID);
+        dest.writeLong(walletID);
         dest.writeInt(flag);
     }
 }

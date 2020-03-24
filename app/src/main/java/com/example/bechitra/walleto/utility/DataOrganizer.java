@@ -1,11 +1,12 @@
 package com.example.bechitra.walleto.utility;
 
+import com.example.bechitra.walleto.room.entity.Transaction;
 import com.example.bechitra.walleto.table.PrimeTable;
 
 public class DataOrganizer {
     private CategoryProcessor processor;
     private DataLabel label;
-    private PrimeTable data;
+    private Transaction data;
     private String table;
     boolean isDataLabel;
 
@@ -14,7 +15,7 @@ public class DataOrganizer {
         this.isDataLabel = isDataLabel;
     }
 
-    public DataOrganizer(PrimeTable data, String table, boolean isDataLabel) {
+    public DataOrganizer(Transaction data, String table, boolean isDataLabel) {
         this.label = null;
         this.data = data;
         this.table = table;
@@ -33,7 +34,7 @@ public class DataOrganizer {
     public CategoryProcessor getCategoryProcessor() {
         return processor;
     }
-    public PrimeTable getData() {
+    public Transaction getData() {
         return data;
     }
     public String getTable() { return table; }

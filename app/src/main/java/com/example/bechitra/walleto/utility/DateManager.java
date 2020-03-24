@@ -35,6 +35,22 @@ public class DateManager {
         return df.format(cal.getTime());
     }
 
+    public boolean isDateWithinRange(String date, String lowerBound, String upperBound) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+        try {
+            Date baseDate = dateFormat.parse(date);
+            Date lower = dateFormat.parse(lowerBound);
+            Date upper = dateFormat.parse(upperBound);
+            if((baseDate.compareTo(lower) > 0 || baseDate.compareTo(lower) == 0) &&
+                    (baseDate.compareTo(upper) < 0 || baseDate.compareTo(upper) == 0))
+
+                return true;
+        } catch (Exception e) {}
+
+        return false;
+    }
+
     public long dateDifference(String dateOne, String dateTwo) {
         SimpleDateFormat myFormat = new SimpleDateFormat("dd/MM/yyyy");
 

@@ -8,6 +8,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.core.widget.NestedScrollView;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelStoreOwner;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,12 +25,14 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.example.bechitra.walleto.DataRepository;
 import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.R;
+import com.example.bechitra.walleto.room.entity.Schedule;
+import com.example.bechitra.walleto.room.entity.Transaction;
 import com.example.bechitra.walleto.utility.DateManager;
 import com.example.bechitra.walleto.dialog.CategoryCreatorDialog;
 import com.example.bechitra.walleto.dialog.listener.DialogListener;
-import com.example.bechitra.walleto.table.Schedule;
 import com.example.bechitra.walleto.table.PrimeTable;
 import com.example.bechitra.walleto.adapter.SpinnerAdapter;
 
@@ -41,6 +46,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.example.bechitra.walleto.utility.SaveInstanceState;
+import com.example.bechitra.walleto.viewmodel.SpendingSetterViewModel;
 
 public class SpendingSetterFragment extends Fragment{
     @BindView(R.id.catagorySpinner)
@@ -62,8 +68,10 @@ public class SpendingSetterFragment extends Fragment{
     private View view;
     private List<String> spinnerItem;
     private SpinnerAdapter spinnerAdapter;
-    private DatabaseHelper db;
+    //private DatabaseHelper db;
+    private SpendingSetterViewModel spendingSetterViewModel;
     private int pos = 0;
+
 
     @Nullable
     @Override
@@ -75,19 +83,24 @@ public class SpendingSetterFragment extends Fragment{
         scrollView.setFocusableInTouchMode(true);
         scrollView.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
 
-        db = new DatabaseHelper(view.getContext());
+        //db = new DatabaseHelper(view.getContext());
+        spendingSetterViewModel = new ViewModelProvider(requireActivity()).get(SpendingSetterViewModel.class);
 
         List<String>categoryItems = Arrays.asList(getResources().getStringArray(R.array.SCATEGORY));
         spinnerItem = new ArrayList<>();
         for(String str : categoryItems)
             spinnerItem.add(str);
+/*
+        try {
+            List<String> dbCategory = repository.getDistinctCategory(DataRepository.SPENDING_TAG);
 
-        List<String> dbCategory = db.getDistinctCategory(db.getSpendingTable());
+            for (String s : dbCategory)
+                if (!spinnerItem.contains(s))
+                    spinnerItem.add(s);
+        } catch (Exception e) {}
 
-        for(String s : dbCategory)
-            if(!spinnerItem.contains(s))
-                spinnerItem.add(s);
 
+ */
         spinnerAdapter = new SpinnerAdapter(spinnerItem, view.getContext());
         categorySpinner.setAdapter(spinnerAdapter);
 
@@ -157,16 +170,25 @@ public class SpendingSetterFragment extends Fragment{
                         else
                             date = new DateManager().getCurrentDate();
 
-                        PrimeTable spending = new PrimeTable(null, category, spendingAmountEdit.getText().toString(),
+                        /*PrimeTable spending = new PrimeTable(null, category, spendingAmountEdit.getText().toString(),
                                 stk.stringFormatter(additionalNoteEdit.getText().toString().toUpperCase()).trim(),
-                                    date, db.getActivatedWalletID());
+                                    date, db.getActivatedWalletID()); */
+                        Transaction spending = new Transaction(category, Double.parseDouble(spendingAmountEdit.getText().toString()),
+                                stk.stringFormatter(additionalNoteEdit.getText().toString().toUpperCase()).trim(),
+                                date, DataRepository.SPENDING_TAG, spendingSetterViewModel.getActivatedWalletID());
 
-                        db.insertOnTable(db.getSpendingTable(), spending);
+                        //db.insertOnTable(db.getSpendingTable(), spending);
+                        spendingSetterViewModel.insertTransaction(spending);
+                        double bal = Double.parseDouble(spendingAmountEdit.getText().toString());
+                        Log.d("sbal", "non -> "+bal);
+                        //spendingSetterViewModel.updateWalletBalance(bal);
 
                         if(autoRepetitionCheckBox.isChecked())
-                            db.insertNewSchedule(new Schedule(null,db.getSpendingTable(), category,
+                            /*db.insertNewSchedule(new Schedule(null,db.getSpendingTable(), category,
                                     spendingAmountEdit.getText().toString(), additionalNoteEdit.getText().toString(),
-                                        date, getRepeat(), db.getActivatedWalletID(), "1"));
+                                        date, getRepeat(), db.getActivatedWalletID(), "1"));*/
+                            spendingSetterViewModel.insertSchedule(new Schedule(DataRepository.SPENDING_TAG, category, Double.parseDouble(spendingAmountEdit.getText().toString()),
+                                    stk.stringFormatter(additionalNoteEdit.getText().toString().toUpperCase()).trim(), date, getRepeat(),spendingSetterViewModel.getActivatedWalletID(), true));
 
                         getActivity().finish();
                     }
@@ -198,7 +220,7 @@ public class SpendingSetterFragment extends Fragment{
                         }
                     }
                 });
-                dialog.show(getFragmentManager(), "OK");
+                dialog.show(getActivity().getSupportFragmentManager(), "OK");
             }
         });
 

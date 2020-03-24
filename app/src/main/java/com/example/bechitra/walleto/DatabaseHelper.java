@@ -20,6 +20,7 @@ import java.util.*;
 
 public class DatabaseHelper extends SQLiteOpenHelper{
     private final static String DB_NAME = "account.db";
+    /*
     private final static String EVENT_TABLE = "transaction";
     private final static String ST_COL1 = "ID";
     private final static String ST_COL2 = "CATEGORY";
@@ -36,6 +37,24 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     private final static String ST_COL13 = "tag";
     private final static String ST_TYPE = "type"; // spending/earning
     private final static String RECEIPT_IMAGE = "receipt_image";
+    */
+
+
+    private final static String SPENDING_TABLE = "SPENDING";
+    private final static String ST_COL1 = "ID";
+    private final static String ST_COL2 = "CATEGORY";
+    private final static String ST_COL3 = "AMOUNT";
+    private final static String ST_COL4 = "NOTE";
+    private final static String ST_COL5 = "DATE";
+    private final static String ST_COL6 = "WALLET_ID";
+
+    private final static String EARNING_TABLE = "EARNING";
+    private final static String ET_COL1 = "ID";
+    private final static String ET_COL2 = "CATEGORY";
+    private final static String ET_COL3 = "AMOUNT";
+    private final static String ET_COL4 = "NOTE";
+    private final static String ET_COL5 = "DATE";
+    private final static String ET_COL6 = "WALLET_ID";
 
 
     final static String WALLET_TABLE = "WALLET";
@@ -276,12 +295,8 @@ public class DatabaseHelper extends SQLiteOpenHelper{
                 double value = Double.parseDouble(getTotalAmountFromAList(amount));
                 graphData.add(new EntrySet(str, value));
             }
-            Collections.sort(graphData, new Comparator<EntrySet>() {
-                @Override
-                public int compare(EntrySet o1, EntrySet o2) {
-                    return compareValue(o1.getValue(), o2.getValue());
-                }
-            });
+
+            Collections.sort(graphData, (objectOne, objectTwo) -> compareValue(objectOne.getValue(), objectTwo.getValue()));
         }
         else
             graphData.add(new EntrySet("Spending", 100.0));

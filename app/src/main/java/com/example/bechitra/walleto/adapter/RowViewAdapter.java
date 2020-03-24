@@ -1,8 +1,9 @@
 package com.example.bechitra.walleto.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,23 +12,21 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.bechitra.walleto.R;
-import com.example.bechitra.walleto.utility.DateManager;
 import com.example.bechitra.walleto.activity.DataEditorActivity;
-import com.example.bechitra.walleto.table.PrimeTable;
-import com.example.bechitra.walleto.utility.DataParser;
+import com.example.bechitra.walleto.room.entity.Transaction;
+import com.example.bechitra.walleto.utility.TransactionParcel;
+import com.example.bechitra.walleto.utility.DateManager;
 
 import java.util.List;
 
 public class RowViewAdapter extends RecyclerView.Adapter<RowViewAdapter.RowViewer>{
     Context context;
-    List<PrimeTable> data;
+    List<Transaction> data;
     RelativeLayout.LayoutParams params;
     String tableName;
 
-    public RowViewAdapter(Context context, List<PrimeTable> data, String tableName) {
+    public RowViewAdapter(Context context) {
         this.context = context;
-        this.data = data;
-        this.tableName = tableName;
         this.params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
     }
 
@@ -42,7 +41,7 @@ public class RowViewAdapter extends RecyclerView.Adapter<RowViewAdapter.RowViewe
 
     @Override
     public void onBindViewHolder(RowViewer holder, int position) {
-        PrimeTable tData = data.get(position);
+        Transaction tData = data.get(position);
 
         if(!tData.getNote().equals(""))
             holder.note.setText(tData.getNote());
@@ -55,7 +54,12 @@ public class RowViewAdapter extends RecyclerView.Adapter<RowViewAdapter.RowViewe
 
     @Override
     public int getItemCount() {
-        return data.size();
+        return data != null ? data.size() : 0;
+    }
+
+    public void setData(List<Transaction> transactions) {
+        this.data = transactions;
+        notifyDataSetChanged();
     }
 
     class RowViewer extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -72,9 +76,10 @@ public class RowViewAdapter extends RecyclerView.Adapter<RowViewAdapter.RowViewe
         @Override
         public void onClick(View v) {
             Log.d("table", tableName);
-            DataParser d = new DataParser(tableName, data.get(getAdapterPosition()), 0);
+            Transaction transaction = data.get(getAdapterPosition());
+            TransactionParcel parcelTransaction = new TransactionParcel(transaction.getTag(), transaction, 0);
             Intent intent = new Intent(context, DataEditorActivity.class);
-            intent.putExtra("data", d);
+            intent.putExtra("data", parcelTransaction);
             context.startActivity(intent);
         }
     }

@@ -4,6 +4,8 @@ import android.os.Build;
 import androidx.core.widget.NestedScrollView;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,11 +18,13 @@ import android.widget.TextView;
 
 import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.R;
+import com.example.bechitra.walleto.room.entity.Transaction;
 import com.example.bechitra.walleto.utility.DataProcessor;
 import com.example.bechitra.walleto.utility.DateManager;
 import com.example.bechitra.walleto.adapter.RowViewAdapter;
 import com.example.bechitra.walleto.table.PrimeTable;
 import com.example.bechitra.walleto.utility.ColorUtility;
+import com.example.bechitra.walleto.viewmodel.CategoryItemViewerViewModel;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
@@ -57,6 +61,7 @@ public class CategoryItemViewerActivity extends AppCompatActivity {
     DatabaseHelper db;
     DataProcessor dataProcessor;
     DateManager dateManager;
+    CategoryItemViewerViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +74,11 @@ public class CategoryItemViewerActivity extends AppCompatActivity {
         scrollView.setFocusableInTouchMode(true);
         scrollView.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
 
-        db = new DatabaseHelper(this);
+        //db = new DatabaseHelper(this);
+        viewModel = new ViewModelProvider(this).get(CategoryItemViewerViewModel.class);
+        viewModel.getAllTransaction().observe(this, transactions -> {
+            
+        });
         String date = dateManager.getCurrentDate();
         ArrayList<BarEntry> barEntries = new ArrayList<>();
         String category = getIntent().getExtras().getString("category");
@@ -89,12 +98,12 @@ public class CategoryItemViewerActivity extends AppCompatActivity {
             }
         });
 
-        Map<String, List<PrimeTable>> map = dataProcessor.getMonthlyData(table, "01/01/"+dateManager.getYearFromDate(date), date);
+        Map<String, List<Transaction>> map = dataProcessor.getMonthlyData(new ArrayList<>(), "01/01/"+dateManager.getYearFromDate(date), date);
 
         //Balance Preparation of BarChart
         Map<Integer, Float> balance = new HashMap<>();
         int[] monthCount = new int[13];
-        for(Map.Entry<String, List<PrimeTable>> entry : map.entrySet()) {
+        for(Map.Entry<String, List<Transaction>> entry : map.entrySet()) {
             float amount = Float.parseFloat(dataProcessor.getBalanceCalculation(entry.getValue()));
             StringTokenizer stk = new StringTokenizer(entry.getKey());
             String monthName = stk.nextToken();
@@ -134,7 +143,7 @@ public class CategoryItemViewerActivity extends AppCompatActivity {
 
         List<PrimeTable> row = db.getAllRowOfACategory(table, category);
         recordCount.setText(""+row.size());
-        RowViewAdapter adapter = new RowViewAdapter(this, row, table);
+        RowViewAdapter adapter = new RowViewAdapter(this);
         rowDataViewRecycler.setAdapter(adapter);
     }
 

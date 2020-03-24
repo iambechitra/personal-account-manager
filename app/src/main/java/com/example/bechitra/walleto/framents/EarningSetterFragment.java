@@ -9,6 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.core.widget.NestedScrollView;
+import androidx.lifecycle.ViewModelProvider;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,15 +25,18 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.example.bechitra.walleto.DataRepository;
 import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.MainActivity;
 import com.example.bechitra.walleto.R;
+import com.example.bechitra.walleto.room.entity.Schedule;
+import com.example.bechitra.walleto.room.entity.Transaction;
 import com.example.bechitra.walleto.utility.DateManager;
 import com.example.bechitra.walleto.dialog.CategoryCreatorDialog;
 import com.example.bechitra.walleto.dialog.listener.DialogListener;
 import com.example.bechitra.walleto.adapter.SpinnerAdapter;
-import com.example.bechitra.walleto.table.Schedule;
 import com.example.bechitra.walleto.table.PrimeTable;
+import com.example.bechitra.walleto.viewmodel.EarningSetterViewModel;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -66,10 +71,12 @@ public class EarningSetterFragment extends Fragment {
     @BindView(R.id.earningNoteEdit) EditText earningNoteEdit;
 
     private DatePickerDialog.OnDateSetListener dateSetListener;
-    private DatabaseHelper db;
+    //private DatabaseHelper db;
+    DataRepository repository;
     private List<String> spinnerItem;
     private SpinnerAdapter spinnerAdapter;
     private int itemSelected = 0;
+    EarningSetterViewModel earningSetterViewModel;
 
     @Nullable
     @Override
@@ -80,18 +87,24 @@ public class EarningSetterFragment extends Fragment {
         scrollView.setFocusableInTouchMode(true);
         scrollView.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
 
-        db = new DatabaseHelper(getActivity());
+        //db = new DatabaseHelper(getActivity());
+        earningSetterViewModel = new ViewModelProvider(requireActivity()).get(EarningSetterViewModel.class);
+
+        repository = new DataRepository(getActivity().getApplication());
 
         List<String>items  = Arrays.asList(getResources().getStringArray(R.array.ECATEGORY));
         spinnerItem = new ArrayList<>();
         for(String str : items)
             spinnerItem.add(str);
 
-        List<String> dbCategory = db.getDistinctCategory(db.getEarningTable());
+        //List<String> dbCategory = db.getDistinctCategory(db.getEarningTable());
+        try {
+            List<String> dbCategory = repository.getDistinctCategory(DataRepository.EARNING_TAG);
 
-        for(String s : dbCategory)
-            if(!spinnerItem.contains(s))
-                spinnerItem.add(s);
+            for (String s : dbCategory)
+                if (!spinnerItem.contains(s))
+                    spinnerItem.add(s);
+        } catch (Exception e) {}
 
         spinnerAdapter = new SpinnerAdapter(spinnerItem, view.getContext());
         earningCatagorySpinner.setAdapter(spinnerAdapter);
@@ -152,7 +165,7 @@ public class EarningSetterFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 CategoryCreatorDialog dialog = new CategoryCreatorDialog();
-                dialog.show(getFragmentManager(), "OK");
+                dialog.show(getActivity().getSupportFragmentManager(), "OK");
                 dialog.setOnAddCategory(new DialogListener() {
                     boolean flag = false;
                     @Override
@@ -191,14 +204,22 @@ public class EarningSetterFragment extends Fragment {
                         else
                             date = stk.getCurrentDate();
 
-                        PrimeTable earning = new PrimeTable(null, category, earningAmountEdit.getText().toString(),
-                                                         earningNoteEdit.getText().toString(), date, db.getActivatedWalletID());
-                        db.insertOnTable(db.getEarningTable(), earning);
+                        /*PrimeTable earning = new PrimeTable(null, category, earningAmountEdit.getText().toString(),
+                                                         earningNoteEdit.getText().toString(), date, db.getActivatedWalletID());*/
+                        Transaction earning = new Transaction(category, Double.parseDouble(earningAmountEdit.getText().toString()), stk.stringFormatter(earningNoteEdit.getText().toString().toUpperCase()).trim(),
+                                date, DataRepository.EARNING_TAG, repository.getActiveWalletID());
+                        //db.insertOnTable(db.getEarningTable(), earning);
+                        earningSetterViewModel.insertTransaction(earning);
+                        //earningSetterViewModel.updateWalletBalance(Double.parseDouble(earningAmountEdit.getText().toString()));
 
                         if(autoRepetitionCheckBox.isChecked()) {
-                            db.insertNewSchedule(new Schedule(null, db.getEarningTable(), category,
+                            /*db.insertNewSchedule(new Schedule(null, db.getEarningTable(), category,
                                     earningAmountEdit.getText().toString(), earningNoteEdit.getText().toString(), date,
-                                            getRepeat(), db.getActivatedWalletID(), "1"));
+                                            getRepeat(), db.getActivatedWalletID(), "1"));*/
+
+                            earningSetterViewModel.insertSchedule(new Schedule(DataRepository.EARNING_TAG, category,
+                                    Double.parseDouble(earningAmountEdit.getText().toString()), stk.stringFormatter(earningNoteEdit.getText().toString().toUpperCase()).trim(),
+                                    date, getRepeat(), repository.getActiveWalletID(), true));
                         }
 
                         getActivity().finish();

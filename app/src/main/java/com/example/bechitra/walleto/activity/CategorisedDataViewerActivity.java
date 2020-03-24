@@ -4,6 +4,8 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
@@ -16,10 +18,12 @@ import butterknife.ButterKnife;
 import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.adapter.RowViewAdapter;
+import com.example.bechitra.walleto.room.entity.Transaction;
 import com.example.bechitra.walleto.table.PrimeTable;
 import com.example.bechitra.walleto.utility.CategorisedDataParcel;
 import com.example.bechitra.walleto.utility.ColorUtility;
 import com.example.bechitra.walleto.utility.DateManager;
+import com.example.bechitra.walleto.viewmodel.CategorisedDataViewerViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,16 +38,30 @@ public class CategorisedDataViewerActivity extends AppCompatActivity {
     @BindView(R.id.backText) TextView backText;
 
     RowViewAdapter adapter;
-    DatabaseHelper db;
+    //DatabaseHelper db;
     CategorisedDataParcel parcel;
     int color = 0;
+    CategorisedDataViewerViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_categorised_data_viewer);
         ButterKnife.bind(this);
-        db = new DatabaseHelper(this);
+        //db = new DatabaseHelper(this);
+        viewModel = new ViewModelProvider(this).get(CategorisedDataViewerViewModel.class);
+        viewModel.getAllTransaction().observe(this, transactions -> {
+            List<Transaction> filteredData = viewModel.getTransactionByTag(transactions, parcel.getTable());
+
+            adapter.setData(
+                    viewModel.getCategorisedTransactionWithinBound(
+                            filteredData,
+                            parcel.getCategory(),
+                            parcel.getLowerbound(),
+                            parcel.getUpperbound())
+            );
+        });
+
         parcel = getIntent().getParcelableExtra("category");
         color = new ColorUtility().getColors(parcel.getCategory());
         recordBarText.setBackgroundColor(new ColorUtility().getLighterColor(color, 0.8f));
@@ -57,7 +75,7 @@ public class CategorisedDataViewerActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
-        adapter = new RowViewAdapter(this, getDataOnCategory(), parcel.getTable());
+        adapter = new RowViewAdapter(this);
         recyclerView.setAdapter(adapter);
         recyclerView.setNestedScrollingEnabled(false);
 
@@ -85,6 +103,7 @@ public class CategorisedDataViewerActivity extends AppCompatActivity {
         }
     }
 
+/*
     private List<PrimeTable> getDataOnCategory() {
         List<PrimeTable> list = db.getDataWithinARange(parcel.getTable(), parcel.getLowerbound(), parcel.getUpperbound());
         List<PrimeTable> filtered = new ArrayList<>();
@@ -95,4 +114,6 @@ public class CategorisedDataViewerActivity extends AppCompatActivity {
 
         return  filtered;
     }
+
+ */
 }

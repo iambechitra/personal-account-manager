@@ -25,8 +25,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     Context context;
     RelativeLayout.LayoutParams params;
 
-    public RecyclerViewAdapter(List<CategoryProcessor> list, Context context) {
-        this.list = list;
+    public RecyclerViewAdapter(Context context) {
         this.context = context;
         this.params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
     }
@@ -65,9 +64,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.category.setText(categoryProcessor.getCategory());
     }
 
+    public void setData(List<CategoryProcessor> data) {
+        this.list = data;
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemCount() {
-        return list.size();
+        if (list != null)
+            return list.size();
+        return 0;
     }
 
     class RecyclerViewHolder extends RecyclerView.ViewHolder {

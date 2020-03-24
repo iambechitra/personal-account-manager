@@ -1,22 +1,20 @@
 package com.example.bechitra.walleto.activity;
 
-import androidx.core.widget.NestedScrollView;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.view.View;
+
+import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.adapter.WalletCreatorAdapter;
 import com.example.bechitra.walleto.dialog.WalletCreatorDialog;
-import com.example.bechitra.walleto.dialog.listener.DialogListener;
-import com.example.bechitra.walleto.dialog.listener.OnItemClick;
-import com.example.bechitra.walleto.dialog.listener.OnLongClickItem;
-import com.example.bechitra.walleto.table.Wallet;
+import com.example.bechitra.walleto.room.entity.Wallet;
+import com.example.bechitra.walleto.viewmodel.AccountManagementActivityViewModel;
 
 import java.util.List;
 
@@ -32,87 +30,68 @@ public class AccountManagementActivity extends AppCompatActivity {
     @BindView(R.id.newWalletCreatorLayout) LinearLayout newWalletCreatorLayout;
     @BindView(R.id.recyclerView) RecyclerView recyclerView;
 
-    DatabaseHelper db;
     Wallet wallet;
     WalletCreatorAdapter adapter;
     List<Wallet> data;
+    AccountManagementActivityViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_management);
         ButterKnife.bind(this);
+        viewModel = new ViewModelProvider(this).get(AccountManagementActivityViewModel.class);
 
-        db = new DatabaseHelper(this);
-        data = db.getInactivateWallet();
-
-        adapter = new WalletCreatorAdapter(data, this);
+        adapter = new WalletCreatorAdapter(this);
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(adapter);
 
-        wallet = db.getActivatedWallet();
-        setActivatedWalletInfo();
+        viewModel.getWalletList().observe(this, walletList -> {
+            data = viewModel.getInactiveWallet(walletList);
+            adapter.setData(data);
+            wallet = viewModel.getActiveWallet(walletList);
+            activeWalletName.setText(wallet.getName());
+        });
 
-        newWalletCreatorLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                WalletCreatorDialog dialog = new WalletCreatorDialog();
-                dialog.show(getSupportFragmentManager(), "OK");
-                dialog.setDialogListener(new DialogListener() {
-                    @Override
-                    public void onSetDialog(String regex, boolean flag) {
-                        if(flag) {
-                            db.updateWalletTable(wallet.getID(), "ACTIVATED", "0");
-                            db.insertNewWallet(regex.toUpperCase(), flag);
-                            setActivatedWalletInfo();
+        viewModel.getAllTransaction().observe(this, transactions -> {
+
+        });
+
+        newWalletCreatorLayout.setOnClickListener(view-> {
+            WalletCreatorDialog dialog = new WalletCreatorDialog();
+            dialog.show(getSupportFragmentManager(), "OK");
+            dialog.setDialogListener((regex, flag) -> {
+                        if (flag) {
+                            wallet.setActive(false);
+                            viewModel.updateWallet(wallet);
+                            wallet = new Wallet(regex.toUpperCase(), 0, true);
+                            viewModel.insertNewWallet(wallet);
                         } else
-                            db.insertNewWallet(regex.toUpperCase(), flag);
-                        reloadDataToRecycler();
+                            viewModel.insertNewWallet(new Wallet(regex.toUpperCase(), 0, false));
+
                     }
-                });
-            }
+            );
+
         });
 
-        adapter.setOnItemClickedListener(new OnItemClick() {
-            @Override
-            public void onClick(int flag, boolean status) {
-                db.updateWalletTable(wallet.getID(), "ACTIVATED", "0");
-                db.updateWalletTable(data.get(flag).getID(), "ACTIVATED", "1");
-                setActivatedWalletInfo();
-                reloadDataToRecycler();
-            }
+        adapter.setOnActiveClickedListener((flag, status) -> {
+            Wallet active = wallet;
+            wallet.setActive(false);
+            Log.d("id", "activeWalletID "+active.getId());
+            viewModel.updateWallet(wallet);
+            wallet = data.get(flag);
+            Log.d("id", "updateWalletID "+wallet.getId());
+            wallet.setActive(true);
+            viewModel.updateWallet(wallet);
         });
 
-        adapter.setOnLongClickedListener(new OnLongClickItem() {
-            @Override
-            public void onLongClick(String tag, int flag) {
-                db.deleteRowFromTable(db.getWalletTable(),"WALLET_ID",  data.get(flag).getID());
-                db.deleteRowFromTable(db.getSpendingTable(), "WALLET_ID", data.get(flag).getID());
-                db.deleteRowFromTable(db.getEarningTable(), "WALLET_ID", data.get(flag).getID());
-                reloadDataToRecycler();
-            }
+        adapter.setOnDeleteClickedListener((tag, flag) -> {
+            viewModel.deleteTransactionByID(data.get(flag).getId());
+            viewModel.deleteWallet(data.get(flag));
         });
 
-    }
-
-    private void reloadDataToRecycler() {
-        data = db.getInactivateWallet();
-        adapter.setData(data);
-        adapter.notifyDataSetChanged();
-    }
-
-    private void setActivatedWalletInfo() {
-        wallet = db.getActivatedWallet();
-        String balance = db.getCurrentBalance(wallet.getID());
-        String earning = db.getTotalAmount(db.getEarningTable(), wallet.getID());
-        String spending = db.getTotalAmount(db.getSpendingTable(), wallet.getID());
-
-        activeWalletName.setText(wallet.getName());
-        activeWalletCurrentBalance.setText("$"+balance);
-        activeWalletTotalEarning.setText("$"+earning);
-        activeWalletTotalSpending.setText("$"+spending);
     }
 
     @Override

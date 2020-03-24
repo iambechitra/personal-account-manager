@@ -1,106 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/drawerLayout"
-    android:fitsSystemWindows="true"
-    tools:context="com.example.bechitra.walleto.MainActivity"
-    tools:openDrawer="end">
-
-    <RelativeLayout
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <androidx.drawerlayout.widget.DrawerLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <LinearLayout
+        android:layout_height="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/drawerLayout"
+        android:fitsSystemWindows="true"
+        tools:context="com.example.bechitra.walleto.MainActivity"
+        tools:openDrawer="end">
+
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:id="@+id/customActionBar"
-            android:background="@color/green"
-            android:baselineAligned="false" android:orientation="horizontal">
-
+            android:layout_height="match_parent">
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp">
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:id="@+id/customActionBar"
+                android:background="@color/green"
+                android:baselineAligned="false" android:orientation="horizontal">
 
-                <TextView
+                <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:id="@+id/navigationDrawerIconText"
-                    android:background="@drawable/ic_navigation_bar"
-                    />
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:id="@+id/navigationDrawerIconText"
+                        android:background="@drawable/ic_navigation_bar"
+                        />
+
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:id="@+id/dashboardBack"
+                    android:background="@drawable/ic_background_custom"
+                    android:layout_weight="4">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        android:textColor="#FFF"
+                        android:textSize="20sp"
+                        android:id="@+id/dashboard"
+                        android:text="Dashboard"/>
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:id="@+id/overviewBack"
+                    android:layout_weight="4">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        android:textColor="#FFF"
+                        android:id="@+id/overview"
+                        android:textSize="20sp"
+                        android:text="Overview"/>
+
+                </RelativeLayout>
 
             </LinearLayout>
 
-            <RelativeLayout
-                android:layout_width="0dp"
+            <FrameLayout
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/dashboardBack"
-                android:background="@drawable/ic_background_custom"
-                android:layout_weight="4">
+                android:id="@+id/mainFrame"
+                android:layout_margin="5dp"
+                android:layout_below="@id/customActionBar">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_centerVertical="true"
-                    android:textColor="#FFF"
-                    android:textSize="20sp"
-                    android:id="@+id/dashboard"
-                    android:text="Dashboard"/>
+            </FrameLayout>
 
-            </RelativeLayout>
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="12dp"
+                android:id="@+id/rootFloatingButton"
+                android:layout_marginRight="12dp"
+                android:src="@drawable/ic_add_black_24dp"/>
+        </RelativeLayout>
 
-            <RelativeLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:id="@+id/overviewBack"
-                android:layout_weight="4">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_centerVertical="true"
-                    android:textColor="#FFF"
-                    android:id="@+id/overview"
-                    android:textSize="20sp"
-                    android:text="Overview"/>
-
-            </RelativeLayout>
-
-        </LinearLayout>
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/mainFrame"
-            android:layout_margin="5dp"
-            android:layout_below="@id/customActionBar">
-
-        </FrameLayout>
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
+        <com.google.android.material.navigation.NavigationView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="12dp"
-            android:id="@+id/rootFloatingButton"
-            android:layout_marginRight="12dp"
-            android:src="@drawable/ic_add_black_24dp"/>
-    </RelativeLayout>
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:id="@+id/nav_view"
+            app:headerLayout="@layout/navigation_header"
+            app:menu="@menu/drawer_menu">
+        </com.google.android.material.navigation.NavigationView>
 
-    <com.google.android.material.navigation.NavigationView
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:id="@+id/nav_view"
-        app:headerLayout="@layout/navigation_header"
-        app:menu="@menu/drawer_menu">
-    </com.google.android.material.navigation.NavigationView>
-
-</androidx.drawerlayout.widget.DrawerLayout>
+    </androidx.drawerlayout.widget.DrawerLayout>
+</layout>

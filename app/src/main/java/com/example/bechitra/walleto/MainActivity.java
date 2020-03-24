@@ -5,58 +5,53 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import androidx.annotation.NonNull;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import com.example.bechitra.walleto.databinding.ActivityMainBinding;
+import com.example.bechitra.walleto.framents.OverviewFragment;
 import com.google.android.material.navigation.NavigationView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.example.bechitra.walleto.activity.*;
 import com.example.bechitra.walleto.framents.HomeFragment;
-import com.example.bechitra.walleto.framents.SpendingOverviewFragment;
 
 import java.util.Calendar;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public class MainActivity extends AppCompatActivity {
 
-    @BindView(R.id.drawerLayout)
-    DrawerLayout drawerLayout;
-    @BindView(R.id.nav_view) NavigationView navigationView;
-    @BindView(R.id.rootFloatingButton)
-    FloatingActionButton rootFloatingButton;
-    @BindView(R.id.dashboard)
-    TextView dashboardTextView;
-    @BindView(R.id.dashboardBack) RelativeLayout dashboardBack;
-    @BindView(R.id.overviewBack) RelativeLayout overviewBack;
+    //@BindView(R.id.drawerLayout)
+   // DrawerLayout drawerLayout;
+    //@BindView(R.id.nav_view) NavigationView navigationView;
+   // @BindView(R.id.rootFloatingButton)
+    //FloatingActionButton rootFloatingButton;
+    //@BindView(R.id.dashboard)
+    //TextView dashboardTextView;
+    //@BindView(R.id.dashboardBack) RelativeLayout dashboardBack;
+    //@BindView(R.id.overviewBack) RelativeLayout overviewBack;
 
-    @BindView(R.id.navigationDrawerIconText) TextView navDrawerIconText;
+    //@BindView(R.id.navigationDrawerIconText) TextView navDrawerIconText;
 
-    @BindView(R.id.overview) TextView overviewTextView;
+    //@BindView(R.id.overview) TextView overviewTextView;
     AlarmManager alarmManager;
     PendingIntent pendingIntent;
+    ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         onSetAlarmManager(1, 1, this);
 
-        getBaseContext().getTheme().applyStyle(R.style.Theme_AppCompat_Light, true);
         attachFragment(new HomeFragment());
         //dashboardBack.setBackgroundColor(view.getResources().getColor(R.color.tab_selected));
 
-        rootFloatingButton.setOnClickListener(new View.OnClickListener() {
+        binding.rootFloatingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), SpendingOrEarningDataSetterActivity.class);
@@ -64,32 +59,32 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        dashboardTextView.setOnClickListener(new View.OnClickListener() {
+        binding.dashboard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 attachFragment(new HomeFragment());
-                dashboardBack.setBackgroundResource(R.drawable.ic_background_custom);
-                overviewBack.setBackgroundResource(R.color.green);
+                binding.dashboardBack.setBackgroundResource(R.drawable.ic_background_custom);
+                binding.overviewBack.setBackgroundResource(R.color.green);
             }
         });
 
-        overviewTextView.setOnClickListener(new View.OnClickListener() {
+        binding.overview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                attachFragment(new SpendingOverviewFragment());
-                overviewBack.setBackgroundResource(R.drawable.ic_background_custom);
-                dashboardBack.setBackgroundResource(R.color.green);
+                attachFragment(new OverviewFragment());
+                binding.overviewBack.setBackgroundResource(R.drawable.ic_background_custom);
+                binding.dashboardBack.setBackgroundResource(R.color.green);
             }
         });
 
-        navDrawerIconText.setOnClickListener(new View.OnClickListener() {
+        binding.navigationDrawerIconText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                drawerLayout.openDrawer(GravityCompat.START);
+                binding.drawerLayout.openDrawer(GravityCompat.START);
             }
         });
 
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+        binding.navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
@@ -133,8 +128,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if(drawerLayout.isDrawerOpen(GravityCompat.START))
-            drawerLayout.closeDrawer(GravityCompat.START);
+        if(binding.drawerLayout.isDrawerOpen(GravityCompat.START))
+            binding.drawerLayout.closeDrawer(GravityCompat.START);
         else
             super.onBackPressed();
     }

@@ -1,30 +1,32 @@
 package com.example.bechitra.walleto.framents;
 
 import android.graphics.Color;
-import androidx.fragment.app.Fragment;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.core.widget.NestedScrollView;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import com.example.bechitra.walleto.utility.EntrySet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
-import android.widget.TextView;
 
-import com.example.bechitra.walleto.DatabaseHelper;;
-import com.example.bechitra.walleto.R;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
+import com.example.bechitra.walleto.DataRepository;
+import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.adapter.DataOrganizerAdapter;
-import com.example.bechitra.walleto.utility.DataOrganizer;
+import com.example.bechitra.walleto.databinding.FragmentHomeBinding;
+import com.example.bechitra.walleto.room.entity.Transaction;
 import com.example.bechitra.walleto.utility.DataProcessor;
 import com.example.bechitra.walleto.utility.DateManager;
+import com.example.bechitra.walleto.utility.EntrySet;
+import com.example.bechitra.walleto.viewmodel.HomeFragmentViewModel;
 import com.github.mikephil.charting.animation.Easing;
-import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
@@ -35,38 +37,32 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
+;
 
 public class HomeFragment extends Fragment{
-    @BindView(R.id.mainBalance) TextView mainBalance;
-    @BindView(R.id.earnBalanceText) TextView earnBalanceText;
-    @BindView(R.id.spendBalanceText) TextView spendBalanceText;
-    @BindView(R.id.halfPieChart) PieChart pieChart;
-    @BindView(R.id.relativeChart) RelativeLayout clickView;
-    @BindView(R.id.mainActivityLayout) NestedScrollView scrollView;
-    @BindView(R.id.currentMonthRecycler) RecyclerView currentRecycler;
-    @BindView(R.id.tableSelectorSpinner) Spinner tableSelectorSpinner;
-
     DataOrganizerAdapter adapter;
     DatabaseHelper db;
-    List<DataOrganizer>list;
-    DataProcessor dataProcessor;
-    DateManager dateManager;
+    FragmentHomeBinding binding;
+    HomeFragmentViewModel homeFragmentViewModel;
+    private List<Transaction> transactions;
+    boolean tableFlag = false;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_home, null);
-        ButterKnife.bind(this, view);
-        scrollView.setFocusableInTouchMode(true);
-        scrollView.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
+        binding = FragmentHomeBinding.inflate(inflater, container, false);
+        View view = binding.getRoot();
+        binding.mainActivityLayout.setFocusableInTouchMode(true);
+        binding.mainActivityLayout.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
+        homeFragmentViewModel = new ViewModelProvider(requireActivity(), new ViewModelProvider.Factory() {
+            @NonNull
+            @Override
+            public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+                return (T) new HomeFragmentViewModel(requireActivity().getApplication());
+            }
+        }).get(HomeFragmentViewModel.class);
 
-        db = new DatabaseHelper(view.getContext());
-        dateManager = new DateManager();
-
-        showPieChart();
+        //showPieChart();
 
         String[] array = {"Spending", "Earning"};
         ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>
@@ -75,31 +71,36 @@ public class HomeFragment extends Fragment{
         spinnerArrayAdapter.setDropDownViewResource(android.R.layout
                 .simple_spinner_dropdown_item);
 
-        tableSelectorSpinner.setAdapter(spinnerArrayAdapter);
+        binding.tableSelectorSpinner.setAdapter(spinnerArrayAdapter);
 
-        currentRecycler.setHasFixedSize(true);
-        currentRecycler.setLayoutManager(new LinearLayoutManager(view.getContext(), LinearLayoutManager.VERTICAL, false));
+        binding.currentMonthRecycler.setHasFixedSize(true);
+        binding.currentMonthRecycler.setLayoutManager(
+                new LinearLayoutManager(view.getContext(),
+                        LinearLayoutManager.VERTICAL, false));
 
-        dataProcessor = new DataProcessor(view.getContext());
-        list = dataProcessor.getProcessedDataCurrentMonth(db.getSpendingTable());
+        homeFragmentViewModel.getTransactionData().observe(getViewLifecycleOwner(), (transactionList)->{
+            transactions = transactionList;
+            showPieChart(transactions);
+            refreshView(homeFragmentViewModel.getTransactionByTag(transactions, DataRepository.SPENDING_TAG));
 
-        adapter = new DataOrganizerAdapter(view.getContext(), list);
-        currentRecycler.setAdapter(adapter);
-        currentRecycler.setNestedScrollingEnabled(false);
+        });
 
-        tableSelectorSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        adapter = new DataOrganizerAdapter(requireContext());
+        binding.currentMonthRecycler.setAdapter(adapter);
+        binding.currentMonthRecycler.setNestedScrollingEnabled(false);
+
+
+        binding.tableSelectorSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if(position == 0) {
-                    list.clear();
-                    list = dataProcessor.getProcessedDataCurrentMonth(db.getSpendingTable());
-                    adapter.setData(list);
-                    adapter.notifyDataSetChanged();
+                    tableFlag = false;
+                    adapter.setData(new DataProcessor(homeFragmentViewModel.getTransactionData().getValue())
+                            .getProcessedTransactionOfCurrentMonth(transactions, DataRepository.SPENDING_TAG));
                 } else {
-                    list.clear();
-                    list = dataProcessor.getProcessedDataCurrentMonth(db.getEarningTable());
-                    adapter.setData(list);
-                    adapter.notifyDataSetChanged();
+                    tableFlag = true;
+                    adapter.setData(new DataProcessor(homeFragmentViewModel.getTransactionData().getValue())
+                            .getProcessedTransactionOfCurrentMonth(transactions, DataRepository.EARNING_TAG));
                 }
             }
 
@@ -109,55 +110,48 @@ public class HomeFragment extends Fragment{
             }
         });
 
-        earnBalanceText.setText("$"+db.getCalculationOfCurrentMonth(db.getEarningTable(), db.getActivatedWalletID()));
-        spendBalanceText.setText("$"+db.getCalculationOfCurrentMonth(db.getSpendingTable(), db.getActivatedWalletID()));
-
-        mainBalance.setText("$"+db.getCurrentBalance(db.getActivatedWalletID()));
-
         return view;
     }
 
-    private void dataLoader() {
-        list.clear();
-        showPieChart();
-        list = dataProcessor.getProcessedDataCurrentMonth(tableSelectorSpinner.getSelectedItem().toString().toUpperCase());
-        earnBalanceText.setText("$"+db.getCalculationOfCurrentMonth(db.getEarningTable(), db.getActivatedWalletID()));
-        spendBalanceText.setText("$"+db.getCalculationOfCurrentMonth(db.getSpendingTable(), db.getActivatedWalletID()));
-        mainBalance.setText("$"+db.getCurrentBalance(db.getActivatedWalletID()));
+    private void refreshView(List<Transaction> transactions) {
+        adapter.setData(new DataProcessor(transactions).getProcessedTransactionOfCurrentMonth( transactions,
+                (tableFlag) ? DataRepository.EARNING_TAG :DataRepository.SPENDING_TAG));
 
-        adapter.setData(list);
-        adapter.notifyDataSetChanged();
+        double earning = new DataProcessor().getAmountByTag(transactions, DataRepository.EARNING_TAG);
+        double spending = new DataProcessor().getAmountByTag(transactions, DataRepository.SPENDING_TAG);
+        binding.earnBalanceText.setText(""+earning);
+        binding.spendBalanceText.setText(""+spending);
+        binding.mainBalance.setText(""+(earning-spending));
     }
 
-
-    private void showPieChart() {
-        setPieData();
+    private void showPieChart(List<Transaction> transactions) {
+        setPieData(transactions);
         loadPieScreen();
 
-        pieChart.setBackgroundColor(Color.WHITE);
-        pieChart.setUsePercentValues(true);
-        pieChart.getDescription().setEnabled(false);
-        pieChart.setDrawHoleEnabled(true);
+        binding.halfPieChart.setBackgroundColor(Color.WHITE);
+        binding.halfPieChart.setUsePercentValues(true);
+        binding.halfPieChart.getDescription().setEnabled(false);
+        binding.halfPieChart.setDrawHoleEnabled(true);
 
-        pieChart.setRotationAngle(180);
-        pieChart.animateY(1000, Easing.EasingOption.EaseInOutCubic);
-        pieChart.setRotationEnabled(false);
-        pieChart.setDrawSliceText(false);
+        binding.halfPieChart.setRotationAngle(180);
+        binding.halfPieChart.animateY(1000, Easing.EasingOption.EaseInOutCubic);
+        binding.halfPieChart.setRotationEnabled(false);
+        binding.halfPieChart.setDrawEntryLabels(false);
 
-        pieChart.setCenterText("Top Category");
-        pieChart.setCenterTextSize(10);
-        pieChart.setTransparentCircleRadius(56f);
+        binding.halfPieChart.setCenterText("Top Category");
+        binding.halfPieChart.setCenterTextSize(10);
+        binding.halfPieChart.setTransparentCircleRadius(56f);
     }
 
     private void loadPieScreen() {
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)pieChart.getLayoutParams();
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)binding.halfPieChart.getLayoutParams();
         params.setMargins(0,0,0,0);
-        pieChart.setLayoutParams(params);
+        binding.halfPieChart.setLayoutParams(params);
     }
 
-    private void setPieData() {
+    private void setPieData(List<Transaction> data) {
         ArrayList<PieEntry> valu = new ArrayList<>();
-        List<EntrySet> val = db.getPieChartData(4);
+        List<EntrySet> val = homeFragmentViewModel.getPieChartData(data);
         ArrayList<PieEntry> value = new ArrayList<>();
         for(EntrySet d : val)
             valu.add(new PieEntry((float) d.getValue(), d.getKey()));
@@ -174,23 +168,22 @@ public class HomeFragment extends Fragment{
         dataSet.setAutomaticallyDisableSliceSpacing(false);
         dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
 
-        PieData data = new PieData(dataSet);
-        data.setValueFormatter(new PercentFormatter());
-        data.setValueTextSize(10f);
-        data.setValueTextColor(Color.WHITE);
-        Legend legend = pieChart.getLegend();
+        PieData pieData = new PieData(dataSet);
+        pieData.setValueFormatter(new PercentFormatter());
+        pieData.setValueTextSize(10f);
+        pieData.setValueTextColor(Color.WHITE);
+        Legend legend = binding.halfPieChart.getLegend();
         legend.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
         legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
         legend.setOrientation(Legend.LegendOrientation.HORIZONTAL);
         legend.setForm(Legend.LegendForm.CIRCLE);
 
-        pieChart.setData(data);
-        pieChart.invalidate();
+        binding.halfPieChart.setData(pieData);
+        binding.halfPieChart.invalidate();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        dataLoader();
     }
 }

@@ -11,12 +11,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.bechitra.walleto.R;
+import com.example.bechitra.walleto.room.entity.Transaction;
 import com.example.bechitra.walleto.utility.DateManager;
 import com.example.bechitra.walleto.activity.DataEditorActivity;
-import com.example.bechitra.walleto.table.PrimeTable;
 import com.example.bechitra.walleto.utility.ColorUtility;
 import com.example.bechitra.walleto.utility.DataOrganizer;
-import com.example.bechitra.walleto.utility.DataParser;
 
 import java.util.List;
 
@@ -26,7 +25,7 @@ public class DataOrganizerAdapter extends RecyclerView.Adapter<RecyclerView.View
     RelativeLayout.LayoutParams params;
     DateManager spc;
 
-    public DataOrganizerAdapter(Context context, List<DataOrganizer> list) {
+    public DataOrganizerAdapter(Context context) {
         this.context = context;
         this.list = list;
         spc = new DateManager();
@@ -87,7 +86,9 @@ public class DataOrganizerAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public int getItemCount() {
-        return list.size();
+        if(list != null)
+            return list.size();
+        return 0;
     }
 
     @Override
@@ -100,6 +101,7 @@ public class DataOrganizerAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     public void setData(List<DataOrganizer> data) {
         this.list = data;
+        notifyDataSetChanged();
     }
 
     class LabelViewer extends RecyclerView.ViewHolder {
@@ -135,12 +137,12 @@ public class DataOrganizerAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     public void itemClickEvent(int adapterPosition) {
         Intent intent = new Intent(context, DataEditorActivity.class);
-        PrimeTable primeTable = list.get(adapterPosition).getData();
+        Transaction primeTable = list.get(adapterPosition).getData();
         String tableName = list.get(adapterPosition).getTable();
 
-        DataParser parser = new DataParser(tableName, primeTable, 1);
+        //DataParser parser = new DataParser(tableName, primeTable, 1);
 
-        intent.putExtra("data", parser);
-        context.startActivity(intent);
+        //intent.putExtra("data", parser);
+        //context.startActivity(intent);
     }
 }

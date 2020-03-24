@@ -24,9 +24,8 @@ public class OrganisedDataViewerAdapter extends RecyclerView.Adapter<RecyclerVie
     RelativeLayout.LayoutParams params;
     DateManager spc;
 
-    public OrganisedDataViewerAdapter(Context context, List<DataOrganizer> list) {
+    public OrganisedDataViewerAdapter(Context context) {
         this.context = context;
-        this.list = list;
         spc = new DateManager();
         this.params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
     }
@@ -78,9 +77,7 @@ public class OrganisedDataViewerAdapter extends RecyclerView.Adapter<RecyclerVie
     }
 
     @Override
-    public int getItemCount() {
-        return list.size();
-    }
+    public int getItemCount() { return list != null ? list.size() : 0; }
 
     @Override
     public int getItemViewType(int position) {
@@ -92,6 +89,7 @@ public class OrganisedDataViewerAdapter extends RecyclerView.Adapter<RecyclerVie
 
     public void setData(List<DataOrganizer> data) {
         this.list = data;
+        notifyDataSetChanged();
     }
 
     class LabelViewer extends RecyclerView.ViewHolder {

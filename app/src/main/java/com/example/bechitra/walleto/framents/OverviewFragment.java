@@ -1,14 +1,15 @@
 package com.example.bechitra.walleto.framents;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.core.widget.NestedScrollView;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.util.Log;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,21 +17,15 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.example.bechitra.walleto.DataRepository;
 import com.example.bechitra.walleto.R;
+import com.example.bechitra.walleto.room.entity.Transaction;
 import com.example.bechitra.walleto.utility.DataProcessor;
 import com.example.bechitra.walleto.utility.DateManager;
 import com.example.bechitra.walleto.adapter.RecyclerViewAdapter;
-import com.example.bechitra.walleto.table.PrimeTable;
 import com.example.bechitra.walleto.utility.CategoryProcessor;
-import com.example.bechitra.walleto.utility.MapHelper;
+import com.example.bechitra.walleto.viewmodel.OverviewFragmentViewModel;
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.AxisBase;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import java.util.*;
 
@@ -41,7 +36,7 @@ import butterknife.ButterKnife;
  * Created by bechitra on 3/26/2018.
  */
 
-public class SpendingOverviewFragment extends Fragment{
+public class OverviewFragment extends Fragment{
 
     @BindView(R.id.spendingOrEarningRecyclerView)
     RecyclerView spendingRecyclerView;
@@ -78,6 +73,7 @@ public class SpendingOverviewFragment extends Fragment{
     List<CategoryProcessor> list;
     RecyclerViewAdapter recyclerViewAdapter;
     View view;
+    OverviewFragmentViewModel viewModel;
 
     @Nullable
     @Override
@@ -86,6 +82,7 @@ public class SpendingOverviewFragment extends Fragment{
         ButterKnife.bind(this, view);
         scrollView.setFocusableInTouchMode(true);
         scrollView.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
+        viewModel = new ViewModelProvider(requireActivity()).get(OverviewFragmentViewModel.class);
         dataProcessor = new DataProcessor(view.getContext());
         dateManager = new DateManager();
 
@@ -102,24 +99,41 @@ public class SpendingOverviewFragment extends Fragment{
         spendingRecyclerView.setHasFixedSize(true);
         spendingRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext(), LinearLayoutManager.VERTICAL, false));
 
-        reloadData();
-        loadGraphData();
+        viewModel.getAllTransactionData().observe(getViewLifecycleOwner(), transactions -> {
+            double spend = viewModel.getLifeTimeCalculationByTag(transactions, DataRepository.SPENDING_TAG);
+            double earn = viewModel.getLifeTimeCalculationByTag(transactions, DataRepository.EARNING_TAG);
+
+            lifeTimeEarnText.setText(""+earn);
+            lifeTimeSpendText.setText(""+spend);
+            amountText.setText(""+(earn+spend));
+
+            recyclerViewAdapter.setData(viewModel.getRecyclerData(transactions));
+
+        });
+
+        recyclerViewAdapter = new RecyclerViewAdapter(getActivity());
+        spendingRecyclerView.setAdapter(recyclerViewAdapter);
+        spendingRecyclerView.setNestedScrollingEnabled(false);
+
+        //reloadData();
+        //loadGraphData();
 
         return view;
     }
 
+    /*
     private void loadGraphData() {
         ArrayList<Entry> earningEntry = new ArrayList<>();
         ArrayList<Entry> spendingEntry = new ArrayList<>();
         String upperBound = dateManager.getCurrentDate();
         String year = dateManager.getYearFromDate(upperBound);
         String lowerBound = "01/01/"+ year;
-        Map<String, List<PrimeTable>> mapEarning = dataProcessor.getMonthlyData("EARNING", lowerBound, upperBound);
-        Map<String, List<PrimeTable>> mapSpending = dataProcessor.getMonthlyData("SPENDING", lowerBound, upperBound);
+        Map<String, List<Transaction>> mapEarning = dataProcessor.getMonthlyData("EARNING", lowerBound, upperBound);
+        Map<String, List<Transaction>> mapSpending = dataProcessor.getMonthlyData("SPENDING", lowerBound, upperBound);
 
         Map<Integer, Float> balance = new HashMap<>();
         int[] monthCount = new int[13];
-        for(Map.Entry<String, List<PrimeTable>> entry : mapSpending.entrySet()) {
+        for(Map.Entry<String, List<Transaction>> entry : mapSpending.entrySet()) {
             float amount = Float.parseFloat(dataProcessor.getBalanceCalculation(entry.getValue()));
             StringTokenizer stk = new StringTokenizer(entry.getKey());
             String monthName = stk.nextToken();
@@ -137,7 +151,7 @@ public class SpendingOverviewFragment extends Fragment{
 
         balance.clear();
         Arrays.fill(monthCount, 0);
-        for(Map.Entry<String, List<PrimeTable>> entry : mapEarning.entrySet()) {
+        for(Map.Entry<String, List<Transaction>> entry : mapEarning.entrySet()) {
             float amount = Float.parseFloat(dataProcessor.getBalanceCalculation(entry.getValue()));
             StringTokenizer stk = new StringTokenizer(entry.getKey());
             String monthName = stk.nextToken();
@@ -185,12 +199,12 @@ public class SpendingOverviewFragment extends Fragment{
         String upperBound = dateManager.getCurrentDate();
         String year = dateManager.getYearFromDate(upperBound);
         String lowerBound = "01/01/"+ year;
-        Map<String, List<PrimeTable>> mapEarning = dataProcessor.getYearlyData("EARNING", lowerBound, upperBound);
-        Map<String, List<PrimeTable>> mapSpending = dataProcessor.getYearlyData("SPENDING", lowerBound, upperBound);
+        Map<String, List<Transaction>> mapEarning = dataProcessor.getYearlyData("EARNING", lowerBound, upperBound);
+        Map<String, List<Transaction>> mapSpending = dataProcessor.getYearlyData("SPENDING", lowerBound, upperBound);
         list = new ArrayList<>();
 
         double totalEarn = 0;
-        for(Map.Entry<String, List<PrimeTable>> entry : mapEarning.entrySet()) {
+        for(Map.Entry<String, List<Transaction>> entry : mapEarning.entrySet()) {
             List<MapHelper> map = dataProcessor.getCategorisedData(entry.getValue());
             totalEarn = Double.parseDouble(dataProcessor.getBalanceCalculation(entry.getValue()));
 
@@ -199,7 +213,7 @@ public class SpendingOverviewFragment extends Fragment{
         }
 
         double totalSpend = 0;
-        for(Map.Entry<String, List<PrimeTable>> entry : mapSpending.entrySet()) {
+        for(Map.Entry<String, List<Transaction>> entry : mapSpending.entrySet()) {
             List<MapHelper> map = dataProcessor.getCategorisedData(entry.getValue());
             totalSpend = Double.parseDouble(dataProcessor.getBalanceCalculation(entry.getValue()));
             for(MapHelper m : map)
@@ -219,6 +233,8 @@ public class SpendingOverviewFragment extends Fragment{
         getFragmentManager().beginTransaction().detach(this).attach(this).commit();
     }
 
+
+     */
     private void dataViewMonthly() {
 
     }
@@ -254,7 +270,7 @@ public class SpendingOverviewFragment extends Fragment{
     @Override
     public void onResume() {
         super.onResume();
-        reloadData();
-        loadGraphData();
+        //reloadData();
+        //loadGraphData();
     }
 }

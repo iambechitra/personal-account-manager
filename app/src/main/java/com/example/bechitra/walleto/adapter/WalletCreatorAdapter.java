@@ -14,7 +14,6 @@ import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.dialog.WalletManagementDialog;
 import com.example.bechitra.walleto.dialog.listener.DialogListener;
 import com.example.bechitra.walleto.dialog.listener.OnLongClickItem;
-import com.example.bechitra.walleto.table.Wallet;
 import com.example.bechitra.walleto.dialog.listener.OnItemClick;
 
 import java.util.ArrayList;
@@ -22,6 +21,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import com.example.bechitra.walleto.room.entity.Wallet;
 import com.example.bechitra.walleto.utility.ColorUtility;
 
 public class WalletCreatorAdapter extends RecyclerView.Adapter<WalletCreatorAdapter.WalletCreatorViewHolder>{
@@ -34,17 +35,12 @@ public class WalletCreatorAdapter extends RecyclerView.Adapter<WalletCreatorAdap
     ColorUtility colorUtility;
     OnLongClickItem longClickListener;
 
-    public WalletCreatorAdapter(List<Wallet> data, Context context) {
-        this.data = data;
+    public WalletCreatorAdapter(Context context) {
         this.context = context;
         this.colorUtility = new ColorUtility();
         this.params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        db = new DatabaseHelper(context);
+        //db = new DatabaseHelper(context);
         balance = new ArrayList<>();
-
-        if(this.data.size() > 0)
-            for(Wallet w : data)
-                balance.add(db.getCurrentBalance(w.getID()));
     }
 
     @Override
@@ -68,16 +64,21 @@ public class WalletCreatorAdapter extends RecyclerView.Adapter<WalletCreatorAdap
 
     @Override
     public int getItemCount() {
-        return data.size();
+        if (data != null)
+            return data.size();
+
+        return 0;
     }
 
     public void setData(List<Wallet> data) {
         this.data = data;
         balance.clear();
 
-        if(this.data.size() > 0)
-            for(Wallet w : data)
-                balance.add(db.getCurrentBalance(w.getID()));
+        if (this.data.size() > 0)
+            for (Wallet w : data)
+                balance.add(""+w.getBalance());
+
+        notifyDataSetChanged();
     }
 
     class WalletCreatorViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -102,9 +103,9 @@ public class WalletCreatorAdapter extends RecyclerView.Adapter<WalletCreatorAdap
                 public void onSetDialog(String regex, boolean flag) {
                     if(flag) {
                         if(regex.equals("1"))
-                            listener.onClick(getAdapterPosition(), true);
+                            listener.onActiveClick(getAdapterPosition(), true);
                         else
-                            longClickListener.onLongClick("TAG", getAdapterPosition());
+                            longClickListener.onDeleteClick("TAG", getAdapterPosition());
                     }
                 }
             });
@@ -112,11 +113,11 @@ public class WalletCreatorAdapter extends RecyclerView.Adapter<WalletCreatorAdap
         }
     }
 
-    public void setOnItemClickedListener(OnItemClick listener) {
+    public void setOnActiveClickedListener(OnItemClick listener) {
         this.listener = listener;
     }
 
-    public void setOnLongClickedListener(OnLongClickItem listener) {
+    public void setOnDeleteClickedListener(OnLongClickItem listener) {
         this.longClickListener = listener;
     }
 

@@ -27,6 +27,7 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.example.bechitra.walleto.DataRepository;
 import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.MainActivity;
 import com.example.bechitra.walleto.R;
@@ -35,7 +36,7 @@ import com.example.bechitra.walleto.dialog.RowDeleteDialog;
 import com.example.bechitra.walleto.dialog.listener.OnCloseDialogListener;
 import com.example.bechitra.walleto.table.Schedule;
 import com.example.bechitra.walleto.utility.ColorUtility;
-import com.example.bechitra.walleto.utility.DataParser;
+import com.example.bechitra.walleto.utility.TransactionParcel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,7 +74,7 @@ public class DataEditorActivity extends AppCompatActivity {
     private DatePickerDialog.OnDateSetListener dateSetListener;
 
     boolean editable = false;
-    DataParser data;
+    TransactionParcel data;
 
     private List<String> spinnerItem;
     DatabaseHelper db;
@@ -113,10 +114,10 @@ public class DataEditorActivity extends AppCompatActivity {
 
         // hideSoftKey(amountEt);
 
-        schedule = db.getScheduledData(data.getTableName(), data.getCategory(), data.getAmount(),
-                data.getNote(), data.getWalletID());
+        schedule = db.getScheduledData(data.getTag(), data.getCategory(), ""+data.getAmount(),
+                data.getNote(), data.getWalletID()+"");
 
-        Log.d("information", data.getTableName()+" "+data.getCategory()+" "+
+        Log.d("information", data.getTag()+" "+data.getCategory()+" "+
                     data.getAmount()+" "+data.getNote()+" "+data.getWalletID());
 
         if(schedule != null) {
@@ -168,12 +169,12 @@ public class DataEditorActivity extends AppCompatActivity {
         circleBack.setBackground(getOvalShape(data.getCategory()));
         circleIcon.setBackgroundResource(new ColorUtility().getResource(data.getCategory()));
 
-        amountEt.setText(data.getAmount());
+        amountEt.setText(""+data.getAmount());
         dateText.setText(data.getDate());
         note.setText(data.getNote());
 
         List<String> temp;
-        if(data.getTableName().equals("EARNING"))
+        if(data.getTag().equals(DataRepository.EARNING_TAG))
             temp = Arrays.asList(getResources().getStringArray(R.array.ECATEGORY));
         else
             temp = Arrays.asList(getResources().getStringArray(R.array.SCATEGORY));
@@ -247,7 +248,7 @@ public class DataEditorActivity extends AppCompatActivity {
                 d.setOnCloseDialogManager(new OnCloseDialogListener() {
                     @Override
                     public void onClose(boolean flag) {
-                        db.deleteRowFromTable(data.getTableName(), data.getID());
+                        db.deleteRowFromTable(data.getTag(), ""+data.getID());
                         if(schedule != null)
                             db.deleteRowFromTable("SCHEDULE", schedule.getID());
                         if(data.getFlag() == 1)
@@ -255,7 +256,7 @@ public class DataEditorActivity extends AppCompatActivity {
                         else {
                            Bundle bundle = new Bundle();
                            bundle.putString("category", data.getCategory());
-                           bundle.putString("table", data.getTableName());
+                           bundle.putString("table", data.getTag());
                            reloadActivity(CategoryItemViewerActivity.class, bundle);
                         }
 
@@ -286,18 +287,18 @@ public class DataEditorActivity extends AppCompatActivity {
         updateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String itemID = data.getID();
+                String itemID = ""+data.getID();
                 String category = categorySpinner.getSelectedItem().toString();
                 String date = dateText.getText().toString();
                 String notes = note.getText().toString();
                 String amount = amountEt.getText().toString();
                 String repeat = count.get(autoRepetitionSpinner.getSelectedItem().toString());
-                db.updateRowFromTable(data.getTableName(), itemID, category, amountEt.getText().toString(), note.getText().toString(), date);
+                db.updateRowFromTable(data.getTag(), itemID, category, amountEt.getText().toString(), note.getText().toString(), date);
                 if(repeatCheckbox.isChecked()) {
                     if(schedule != null) {
                         if(!data.getCategory().equals(category))
                             db.updateRowFromTable("SCHEDULE", schedule.getID(), "CATEGORY", category);
-                        if(!data.getAmount().equals(amount))
+                        if(!(""+data.getAmount()).equals(amount))
                             db.updateRowFromTable("SCHEDULE", schedule.getID(), "AMOUNT", amount);
                         //if(!data.getDate().equals(date))
                             //db.updateRowFromTable("SCHEDULE", schedule.getID(), "DATE", date);
@@ -306,7 +307,7 @@ public class DataEditorActivity extends AppCompatActivity {
                         if(!schedule.getRepeat().equals(repeat))
                             db.updateRowFromTable("SCHEDULE", schedule.getID(), "REPEAT", repeat);
                     } else
-                        db.insertNewSchedule(new Schedule(null, data.getTableName(), category, amount, notes, date, repeat, data.getWalletID(), "1"));
+                        db.insertNewSchedule(new Schedule(null, data.getTag(), category, ""+amount, notes, date, repeat, ""+data.getWalletID(), "1"));
                 }
                 if(data.getFlag() == 1) {
                     reloadActivity(MainActivity.class, new Bundle());
@@ -314,7 +315,7 @@ public class DataEditorActivity extends AppCompatActivity {
                 else {
                     Bundle bundle = new Bundle();
                     bundle.putString("category", data.getCategory());
-                    bundle.putString("table", data.getTableName());
+                    bundle.putString("table", data.getTag());
                     reloadActivity(CategoryItemViewerActivity.class, bundle);
                 }
             }

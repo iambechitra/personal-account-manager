@@ -7,6 +7,7 @@ import androidx.core.widget.NestedScrollView;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,13 +19,17 @@ import android.view.animation.AnimationUtils;
 import android.widget.*;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import com.example.bechitra.walleto.DataRepository;
 import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.adapter.OrganisedDataViewerAdapter;
+import com.example.bechitra.walleto.room.entity.Transaction;
 import com.example.bechitra.walleto.table.PrimeTable;
 import com.example.bechitra.walleto.utility.DataOrganizer;
 import com.example.bechitra.walleto.utility.DataProcessor;
 import com.example.bechitra.walleto.utility.DateManager;
+import com.example.bechitra.walleto.viewmodel.DataQueryActivityViewModel;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
@@ -54,10 +59,12 @@ public class DataQueryActivity extends AppCompatActivity{
     OrganisedDataViewerAdapter adapter;
     DataProcessor dataProcessor;
     DateManager dateManager;
-    DatabaseHelper db;
+    DataQueryActivityViewModel viewModel;
     private DatePickerDialog.OnDateSetListener dateSetListener1;
     private DatePickerDialog.OnDateSetListener dateSetListener2;
     private float ROTATION_ANGLE = 0;
+
+    static List<Transaction> transactions;
 
     String START;
     String END;
@@ -67,7 +74,24 @@ public class DataQueryActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_data_query);
         ButterKnife.bind(this);
-        db = new DatabaseHelper(this);
+        //db = new DatabaseHelper(this);
+        viewModel = new ViewModelProvider(this).get(DataQueryActivityViewModel.class);
+        transactions = viewModel.getAllTransaction().getValue();
+
+        viewModel.getAllTransaction().observe(this, transactions1 -> {
+            transactions = transactions1;
+
+            adapter.setData(viewModel.getMonthlyTransaction(viewModel.getTransactionByTag(transactions,
+                    DataRepository.SPENDING_TAG), "22/8/2015", dateManager.getCurrentDate()));
+
+            generateBarChart(viewModel.getMonthlyDataMap(viewModel.getTransactionByTag(transactions, DataRepository.SPENDING_TAG), "01/01/"+
+                     dateManager.getYearFromDate(dateManager.getCurrentDate()), dateManager.getCurrentDate()));
+            barChart.notifyDataSetChanged();
+            barChart.invalidate();
+        });
+
+        //transactions = viewModel.getAllTransaction().getValue();
+
         dateManager = new DateManager();
 
         final Animation rotateIn = AnimationUtils.loadAnimation(this, R.anim.rotate_in);
@@ -91,12 +115,9 @@ public class DataQueryActivity extends AppCompatActivity{
 
         dataViewerRecycler.setHasFixedSize(true);
         dataViewerRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        List<DataOrganizer> data = dataProcessor.getProcessedMonthlyData("SPENDING", "22/8/2015", dateManager.getCurrentDate());
-        adapter = new OrganisedDataViewerAdapter(this, data);
+        adapter = new OrganisedDataViewerAdapter(this);
         dataViewerRecycler.setAdapter(adapter);
         dataViewerRecycler.setNestedScrollingEnabled(false);
-        generateBarChart(dataProcessor.getMonthlyData("SPENDING", "01/01/"+
-                dateManager.getYearFromDate(dateManager.getCurrentDate()), dateManager.getCurrentDate()));
 
         dataViewTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -124,6 +145,7 @@ public class DataQueryActivity extends AppCompatActivity{
                 }
             }
         });
+
     }
 
     private void DefaultSettingsView() {
@@ -192,21 +214,18 @@ public class DataQueryActivity extends AppCompatActivity{
                 if(isChecked) {
                     earningTableRadioButton.setChecked(false);
                     refreshRecyclerView(startDateEditText.getText().toString(), endDateEditText.getText().toString(), true);
-                    resetChartData(dataProcessor.getMonthlyData("SPENDING", "01/01/"+
+                    resetChartData(dataProcessor.getMonthlyData(viewModel.getTransactionByTag(transactions, DataRepository.SPENDING_TAG), "01/01/"+
                             dateManager.getYearFromDate(dateManager.getCurrentDate()), dateManager.getCurrentDate()), true);
                 }
             }
         });
 
-        earningTableRadioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) {
-                    spendingTableRadioButton.setChecked(false);
-                    refreshRecyclerView(startDateEditText.getText().toString() ,endDateEditText.getText().toString(), true);
-                    resetChartData(dataProcessor.getMonthlyData("EARNING", "01/01/"+
-                            dateManager.getYearFromDate(dateManager.getCurrentDate()), dateManager.getCurrentDate()), true);
-                }
+        earningTableRadioButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(isChecked) {
+                spendingTableRadioButton.setChecked(false);
+                refreshRecyclerView(startDateEditText.getText().toString() ,endDateEditText.getText().toString(), true);
+                resetChartData(dataProcessor.getMonthlyData(viewModel.getTransactionByTag(transactions, DataRepository.EARNING_TAG), "01/01/"+
+                        dateManager.getYearFromDate(dateManager.getCurrentDate()), dateManager.getCurrentDate()), true);
             }
         });
     }
@@ -225,16 +244,14 @@ public class DataQueryActivity extends AppCompatActivity{
     private void refreshRecyclerView(String start, String end, boolean flag) {
         if(dateManager.dateDifference(start, end) >= 0) {
             if(earningTableRadioButton.isChecked()) {
-                List<DataOrganizer> organizerList = requestDataAccess("EARNING", start, end);
+                List<DataOrganizer> organizerList = requestDataAccess(viewModel.getTransactionByTag(transactions, DataRepository.EARNING_TAG), start, end);
 
                 adapter.setData(organizerList);
-                adapter.notifyDataSetChanged();
 
             } else {
-                List<DataOrganizer> organizerList = requestDataAccess("SPENDING", start, end);
+                List<DataOrganizer> organizerList = requestDataAccess(viewModel.getTransactionByTag(transactions, DataRepository.SPENDING_TAG), start, end);
 
                 adapter.setData(organizerList);
-                adapter.notifyDataSetChanged();
             }
         }else
             if(flag)
@@ -243,23 +260,25 @@ public class DataQueryActivity extends AppCompatActivity{
 
     }
 
-    private List<DataOrganizer> requestDataAccess(String table, String lowerBound, String upperBound) {
+    private List<DataOrganizer> requestDataAccess(List<Transaction> transactions, String lowerBound, String upperBound) {
         String type = dataViewTypeSpinner.getSelectedItem().toString();
 
         if(type.equals("Daily"))
-            return dataProcessor.getProcessedDailyData(table, lowerBound, upperBound);
+            return viewModel.getDailyTransaction(transactions, lowerBound, upperBound);
 
         else if(type.equals("Weekly"))
-            return dataProcessor.getProcessedWeeklyData(table, lowerBound, upperBound);
+            return viewModel.getWeeklyTransaction(transactions, lowerBound, upperBound);
 
         else if(type.equals("Monthly"))
-            return dataProcessor.getProcessedMonthlyData(table, lowerBound, upperBound);
+            return viewModel.getMonthlyTransaction(transactions, lowerBound, upperBound);
 
         else
-            return dataProcessor.getProcessedYearlyData(table, lowerBound, upperBound);
+            return viewModel.getYearlyTransaction(transactions, lowerBound, upperBound);
     }
 
-    private void generateBarChart(Map<String, List<PrimeTable>> map) {
+
+
+    private void generateBarChart(Map<String, List<Transaction>> map) {
         resetChartData(map, false);
         barChart.setPinchZoom(false);
         barChart.setDrawValueAboveBar(true);
@@ -273,11 +292,11 @@ public class DataQueryActivity extends AppCompatActivity{
         xAxis.setCenterAxisLabels(true);
     }
 
-    private void resetChartData (Map<String, List<PrimeTable>> map, boolean flag) {
+    private void resetChartData (Map<String, List<Transaction>> map, boolean flag) {
         ArrayList<BarEntry> barEntries = new ArrayList<>();
         Map<Integer, Float> balance = new HashMap<>();
         int[] monthCount = new int[13];
-        for(Map.Entry<String, List<PrimeTable>> entry : map.entrySet()) {
+        for(Map.Entry<String, List<Transaction>> entry : map.entrySet()) {
             float amount = Float.parseFloat(dataProcessor.getBalanceCalculation(entry.getValue()));
             StringTokenizer stk = new StringTokenizer(entry.getKey());
             String monthName = stk.nextToken();
@@ -317,5 +336,7 @@ public class DataQueryActivity extends AppCompatActivity{
             return name[(int)value];
         }
     }
+
+
 
 }

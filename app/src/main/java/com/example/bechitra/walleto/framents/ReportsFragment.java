@@ -53,7 +53,7 @@ public class ReportsFragment extends Fragment{
         final View view = inflater.inflate(R.layout.report_fragment, null);
         ButterKnife.bind(this, view);
 
-       db = new DatabaseHelper(getContext());
+       //db = new DatabaseHelper(getContext());
 
      //  if(!db.getOnAlertPercentage().equals("0"))
       //      excessSpendingAlert.setChecked(true);
@@ -79,12 +79,12 @@ public class ReportsFragment extends Fragment{
                 }
             }
         });
-        setBarChart();
+       // setBarChart();
 
         return view;
     }
 
-
+/*
     private void setBarChart() {
         ArrayList<BarEntry> entries = new ArrayList<>();
         map = new HashMap<>();
@@ -117,4 +117,6 @@ public class ReportsFragment extends Fragment{
         });
         //horizontalBarChart.getXAxis().setPosition(XAxis.XAxisPosition.TOP_INSIDE);
     }
+
+ */
 }

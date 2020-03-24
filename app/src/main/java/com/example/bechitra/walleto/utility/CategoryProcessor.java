@@ -3,11 +3,11 @@ package com.example.bechitra.walleto.utility;
 public class CategoryProcessor {
     private String category, amount, length, table, lowerBound, upperBound;
 
-    public CategoryProcessor(MapHelper mapHelper, String table) {
+    public CategoryProcessor(MapHelper mapHelper, String tag) {
         this.category = mapHelper.getKey();
         this.amount = mapHelper.getAmount();
         this.length = mapHelper.getHit();
-        this.table = table;
+        this.table = tag;
         this.lowerBound = mapHelper.getLowerBound();
         this.upperBound = mapHelper.getUpperBound();
     }
