@@ -12,6 +12,7 @@ import com.example.bechitra.walleto.utility.DataProcessor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class CategoryItemViewerViewModel extends AndroidViewModel {
     private DataRepository repository;
@@ -45,6 +46,10 @@ public class CategoryItemViewerViewModel extends AndroidViewModel {
 
     public List<Transaction> getTransactionByTag(List<Transaction> transactions, String tag) {
         return processor.getTransactionsByTag(transactions, tag);
+    }
+
+    public Map<String, List<Transaction>> getMonthlyData(List<Transaction> transactions, String lowerBound, String upperBound) {
+        return processor.getMonthlyData(transactions, lowerBound, upperBound);
     }
 
 }

@@ -58,10 +58,12 @@ public class CategoryItemViewerActivity extends AppCompatActivity {
 
     @BindView(R.id.backButton) TextView backButton;
 
-    DatabaseHelper db;
+    //DatabaseHelper db;
+    RowViewAdapter adapter;
     DataProcessor dataProcessor;
     DateManager dateManager;
     CategoryItemViewerViewModel viewModel;
+    List<Transaction> transactionList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,15 +75,19 @@ public class CategoryItemViewerActivity extends AppCompatActivity {
 
         scrollView.setFocusableInTouchMode(true);
         scrollView.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
-
+        String date = dateManager.getCurrentDate();
+        String category = getIntent().getExtras().getString("category");
         //db = new DatabaseHelper(this);
         viewModel = new ViewModelProvider(this).get(CategoryItemViewerViewModel.class);
         viewModel.getAllTransaction().observe(this, transactions -> {
-            
+            transactionList = viewModel.getTransactionByTag(transactions, getIntent().getExtras().getString("table"));
+            List<Transaction> filteredData = viewModel.getCategorisedTransactionWithinBound(transactionList, category,"01/01/"+dateManager.getYearFromDate(date), date);
+            adapter.setData(filteredData);
+            graphPreset(viewModel.getMonthlyData(filteredData, "01/01/"+dateManager.getYearFromDate(date), date), category);
         });
-        String date = dateManager.getCurrentDate();
-        ArrayList<BarEntry> barEntries = new ArrayList<>();
-        String category = getIntent().getExtras().getString("category");
+
+
+
         categoryName.setText(category);
         int color = new ColorUtility().getColors(category);
         statusBarColorChanger(color);
@@ -98,9 +104,21 @@ public class CategoryItemViewerActivity extends AppCompatActivity {
             }
         });
 
-        Map<String, List<Transaction>> map = dataProcessor.getMonthlyData(new ArrayList<>(), "01/01/"+dateManager.getYearFromDate(date), date);
-
         //Balance Preparation of BarChart
+
+
+        rowDataViewRecycler.setNestedScrollingEnabled(false);
+        rowDataViewRecycler.setHasFixedSize(true);
+        rowDataViewRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+
+        //List<PrimeTable> row = db.getAllRowOfACategory(table, category);
+        //recordCount.setText(""+row.size());
+        adapter = new RowViewAdapter(this);
+        rowDataViewRecycler.setAdapter(adapter);
+    }
+
+    private void graphPreset(Map<String, List<Transaction>> map, String category) {
+        ArrayList<BarEntry> barEntries = new ArrayList<>();
         Map<Integer, Float> balance = new HashMap<>();
         int[] monthCount = new int[13];
         for(Map.Entry<String, List<Transaction>> entry : map.entrySet()) {
@@ -136,15 +154,6 @@ public class CategoryItemViewerActivity extends AppCompatActivity {
         xAxis.setValueFormatter(new ValueFormatter(str));
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setCenterAxisLabels(true);
-
-        rowDataViewRecycler.setNestedScrollingEnabled(false);
-        rowDataViewRecycler.setHasFixedSize(true);
-        rowDataViewRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-
-        List<PrimeTable> row = db.getAllRowOfACategory(table, category);
-        recordCount.setText(""+row.size());
-        RowViewAdapter adapter = new RowViewAdapter(this);
-        rowDataViewRecycler.setAdapter(adapter);
     }
 
     class ValueFormatter implements IAxisValueFormatter {
