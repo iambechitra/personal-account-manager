@@ -2,6 +2,7 @@ package com.example.bechitra.walleto.room.entity;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "transaction")
@@ -33,6 +34,17 @@ public class Transaction {
     private long walletID;
 
     public Transaction(String category, double amount, String note, String date, String tag, long walletID) {
+        this.category = category;
+        this.amount = amount;
+        this.note = note;
+        this.date = date;
+        this.tag = tag;
+        this.walletID = walletID;
+    }
+
+    @Ignore
+    public Transaction(long id, String category, double amount, String note, String date, String tag, long walletID) {
+        this.id = id;
         this.category = category;
         this.amount = amount;
         this.note = note;

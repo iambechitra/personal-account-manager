@@ -9,6 +9,8 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+
 import android.os.Bundle;
 import android.text.method.KeyListener;
 import android.util.Log;
@@ -34,6 +36,7 @@ import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.adapter.DefaultSpinnerAdapter;
 import com.example.bechitra.walleto.dialog.RowDeleteDialog;
 import com.example.bechitra.walleto.dialog.listener.OnCloseDialogListener;
+import com.example.bechitra.walleto.room.entity.Transaction;
 import com.example.bechitra.walleto.table.Schedule;
 import com.example.bechitra.walleto.utility.ColorUtility;
 import com.example.bechitra.walleto.utility.TransactionParcel;
@@ -48,6 +51,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.example.bechitra.walleto.utility.DateManager;
+import com.example.bechitra.walleto.viewmodel.DataEditorActivityViewModel;
 
 public class DataEditorActivity extends AppCompatActivity {
 
@@ -79,6 +83,7 @@ public class DataEditorActivity extends AppCompatActivity {
     private List<String> spinnerItem;
     DatabaseHelper db;
     Schedule schedule;
+    DataEditorActivityViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +100,8 @@ public class DataEditorActivity extends AppCompatActivity {
       //  actionBar.setDisplayHomeAsUpEnabled(true);
 
         ButterKnife.bind(this);
-        db = new DatabaseHelper(this);
+        //db = new DatabaseHelper(this);
+        viewModel = new ViewModelProvider(this).get(DataEditorActivityViewModel.class);
 
         String[] array = {"Daily", "Weekly", "Monthly", "Yearly"};
         ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>
@@ -114,8 +120,8 @@ public class DataEditorActivity extends AppCompatActivity {
 
         // hideSoftKey(amountEt);
 
-        schedule = db.getScheduledData(data.getTag(), data.getCategory(), ""+data.getAmount(),
-                data.getNote(), data.getWalletID()+"");
+        //schedule = db.getScheduledData(data.getTag(), data.getCategory(), ""+data.getAmount(),
+          //      data.getNote(), data.getWalletID()+"");
 
         Log.d("information", data.getTag()+" "+data.getCategory()+" "+
                     data.getAmount()+" "+data.getNote()+" "+data.getWalletID());
@@ -248,9 +254,16 @@ public class DataEditorActivity extends AppCompatActivity {
                 d.setOnCloseDialogManager(new OnCloseDialogListener() {
                     @Override
                     public void onClose(boolean flag) {
-                        db.deleteRowFromTable(data.getTag(), ""+data.getID());
+                        viewModel.deleteTransaction(new Transaction(
+                                data.getID(), data.getCategory(), data.getAmount(), data.getNote(),
+                                data.getDate(), data.getTag(), data.getWalletID()
+                        ));
+                        finish();
+                        //db.deleteRowFromTable(data.getTag(), ""+data.getID());
                         if(schedule != null)
-                            db.deleteRowFromTable("SCHEDULE", schedule.getID());
+                            //db.deleteRowFromTable("SCHEDULE", schedule.getID());
+
+
                         if(data.getFlag() == 1)
                             reloadActivity(MainActivity.class, new Bundle());
                         else {
@@ -287,13 +300,15 @@ public class DataEditorActivity extends AppCompatActivity {
         updateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String itemID = ""+data.getID();
                 String category = categorySpinner.getSelectedItem().toString();
                 String date = dateText.getText().toString();
                 String notes = note.getText().toString();
                 String amount = amountEt.getText().toString();
                 String repeat = count.get(autoRepetitionSpinner.getSelectedItem().toString());
-                db.updateRowFromTable(data.getTag(), itemID, category, amountEt.getText().toString(), note.getText().toString(), date);
+                viewModel.updateTransaction(new Transaction(
+                        data.getID(), category, Double.parseDouble(amount), notes, date, data.getTag(), data.getWalletID()
+                ));
+                //db.updateRowFromTable(data.getTag(), itemID, category, amountEt.getText().toString(), note.getText().toString(), date);
                 if(repeatCheckbox.isChecked()) {
                     if(schedule != null) {
                         if(!data.getCategory().equals(category))
@@ -306,8 +321,8 @@ public class DataEditorActivity extends AppCompatActivity {
                             db.updateRowFromTable("SCHEDULE", schedule.getID(), "NOTE", notes);
                         if(!schedule.getRepeat().equals(repeat))
                             db.updateRowFromTable("SCHEDULE", schedule.getID(), "REPEAT", repeat);
-                    } else
-                        db.insertNewSchedule(new Schedule(null, data.getTag(), category, ""+amount, notes, date, repeat, ""+data.getWalletID(), "1"));
+                    } //else
+                        //db.insertNewSchedule(new Schedule(null, data.getTag(), category, ""+amount, notes, date, repeat, ""+data.getWalletID(), "1"));
                 }
                 if(data.getFlag() == 1) {
                     reloadActivity(MainActivity.class, new Bundle());

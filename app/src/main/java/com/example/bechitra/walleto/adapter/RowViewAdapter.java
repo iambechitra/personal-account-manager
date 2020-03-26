@@ -75,7 +75,7 @@ public class RowViewAdapter extends RecyclerView.Adapter<RowViewAdapter.RowViewe
 
         @Override
         public void onClick(View v) {
-            Log.d("table", tableName);
+            //Log.d("table", tableName);
             Transaction transaction = data.get(getAdapterPosition());
             TransactionParcel parcelTransaction = new TransactionParcel(transaction.getTag(), transaction, 0);
             Intent intent = new Intent(context, DataEditorActivity.class);
