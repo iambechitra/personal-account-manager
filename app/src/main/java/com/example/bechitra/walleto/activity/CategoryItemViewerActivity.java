@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.R;
+import com.example.bechitra.walleto.databinding.ActivityCategoryViewBinding;
 import com.example.bechitra.walleto.room.entity.Transaction;
 import com.example.bechitra.walleto.utility.DataProcessor;
 import com.example.bechitra.walleto.utility.DateManager;
@@ -40,41 +41,44 @@ import butterknife.ButterKnife;
 
 public class CategoryItemViewerActivity extends AppCompatActivity {
 
-    @BindView(R.id.barchartCategory)
-    BarChart barChart;
-    @BindView(R.id.categoryNameInDialog)
-    TextView categoryName;
-    @BindView(R.id.recordCountCategoryText) TextView recordCount;
-    @BindView(R.id.rowDataViewRecycler)
-    RecyclerView rowDataViewRecycler;
+   // @BindView(R.id.barchartCategory)
+    //BarChart barChart;
+    //@BindView(R.id.categoryNameInDialog)
+    //TextView categoryName;
+    //@BindView(R.id.recordCountCategoryText) TextView recordCount;
+    //@BindView(R.id.rowDataViewRecycler)
+    //RecyclerView rowDataViewRecycler;
 
-    @BindView(R.id.rowViewScrollView)
-    NestedScrollView scrollView;
+    //@BindView(R.id.rowViewScrollView)
+    //NestedScrollView scrollView;
 
-    @BindView(R.id.labelLayout)
-    RelativeLayout labelLayout;
+    //@BindView(R.id.labelLayout)
+    //RelativeLayout labelLayout;
 
-    @BindView(R.id.recordBar) RelativeLayout recordBar;
+    //@BindView(R.id.recordBar) RelativeLayout recordBar;
 
-    @BindView(R.id.backButton) TextView backButton;
+    //@BindView(R.id.backButton) TextView backButton;
 
     //DatabaseHelper db;
     RowViewAdapter adapter;
     DataProcessor dataProcessor;
     DateManager dateManager;
     CategoryItemViewerViewModel viewModel;
+    ActivityCategoryViewBinding viewBind;
     List<Transaction> transactionList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_category_view);
+        viewBind = ActivityCategoryViewBinding.inflate(getLayoutInflater());
+        setContentView(viewBind.getRoot());
+        //setContentView(R.layout.activity_category_view);
         ButterKnife.bind(this);
         dataProcessor = new DataProcessor(this);
         dateManager = new DateManager();
 
-        scrollView.setFocusableInTouchMode(true);
-        scrollView.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
+        viewBind.rowViewScrollView.setFocusableInTouchMode(true);
+        viewBind.rowViewScrollView.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
         String date = dateManager.getCurrentDate();
         String category = getIntent().getExtras().getString("category");
         //db = new DatabaseHelper(this);
@@ -83,38 +87,34 @@ public class CategoryItemViewerActivity extends AppCompatActivity {
             transactionList = viewModel.getTransactionByTag(transactions, getIntent().getExtras().getString("table"));
             List<Transaction> filteredData = viewModel.getCategorisedTransactionWithinBound(transactionList, category,"01/01/"+dateManager.getYearFromDate(date), date);
             adapter.setData(filteredData);
+            viewBind.recordCountCategoryText.setText(""+filteredData.size());
             graphPreset(viewModel.getMonthlyData(filteredData, "01/01/"+dateManager.getYearFromDate(date), date), category);
+            viewBind.barchartCategory.invalidate();
         });
 
 
 
-        categoryName.setText(category);
+        viewBind.categoryNameInDialog.setText(category);
         int color = new ColorUtility().getColors(category);
         statusBarColorChanger(color);
-        String table = getIntent().getExtras().getString("table");
 
-        recordBar.setBackgroundColor(new ColorUtility().getLighterColor(color, 0.8f));
+        viewBind.recordBar.setBackgroundColor(new ColorUtility().getLighterColor(color, 0.8f));
 
-        labelLayout.setBackgroundColor(new ColorUtility().getColors(category));
+        viewBind.labelLayout.setBackgroundColor(new ColorUtility().getColors(category));
 
-        backButton.setOnClickListener(new View.OnClickListener() {
+        viewBind.backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
             }
         });
 
-        //Balance Preparation of BarChart
+        viewBind.rowDataViewRecycler.setNestedScrollingEnabled(false);
+        viewBind.rowDataViewRecycler.setHasFixedSize(true);
+        viewBind.rowDataViewRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
-
-        rowDataViewRecycler.setNestedScrollingEnabled(false);
-        rowDataViewRecycler.setHasFixedSize(true);
-        rowDataViewRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-
-        //List<PrimeTable> row = db.getAllRowOfACategory(table, category);
-        //recordCount.setText(""+row.size());
         adapter = new RowViewAdapter(this);
-        rowDataViewRecycler.setAdapter(adapter);
+        viewBind.rowDataViewRecycler.setAdapter(adapter);
     }
 
     private void graphPreset(Map<String, List<Transaction>> map, String category) {
@@ -143,13 +143,13 @@ public class CategoryItemViewerActivity extends AppCompatActivity {
         dataSet.setColors(new ColorUtility().getColors(category));
 
         BarData data = new BarData(dataSet);
-        barChart.setData(data);
-        barChart.setPinchZoom(false);
-        barChart.setDrawValueAboveBar(true);
-        barChart.setDoubleTapToZoomEnabled(false);
-        barChart.getDescription().setEnabled(false);
+        viewBind.barchartCategory.setData(data);
+        viewBind.barchartCategory.setPinchZoom(false);
+        viewBind.barchartCategory.setDrawValueAboveBar(true);
+        viewBind.barchartCategory.setDoubleTapToZoomEnabled(false);
+        viewBind.barchartCategory.getDescription().setEnabled(false);
 
-        XAxis xAxis = barChart.getXAxis();
+        XAxis xAxis = viewBind.barchartCategory.getXAxis();
         String [] str = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC", "DEC", "FEB", "MAR", "APR"};
         xAxis.setValueFormatter(new ValueFormatter(str));
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);

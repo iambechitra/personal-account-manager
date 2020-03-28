@@ -16,6 +16,7 @@ import com.example.bechitra.walleto.utility.DateManager;
 import com.example.bechitra.walleto.activity.DataEditorActivity;
 import com.example.bechitra.walleto.utility.ColorUtility;
 import com.example.bechitra.walleto.utility.DataOrganizer;
+import com.example.bechitra.walleto.utility.TransactionParcel;
 
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class DataOrganizerAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     public DataOrganizerAdapter(Context context) {
         this.context = context;
-        this.list = list;
+
         spc = new DateManager();
         this.params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
     }
@@ -121,12 +122,7 @@ public class DataOrganizerAdapter extends RecyclerView.Adapter<RecyclerView.View
         public DataViewer(View itemView) {
             super(itemView);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    itemClickEvent(getAdapterPosition());
-                }
-            });
+            itemView.setOnClickListener(view -> itemClickEvent(getAdapterPosition()));
 
             icon = itemView.findViewById(R.id.cicularIconText);
             category = itemView.findViewById(R.id.categoryItemText);
@@ -140,9 +136,9 @@ public class DataOrganizerAdapter extends RecyclerView.Adapter<RecyclerView.View
         Transaction primeTable = list.get(adapterPosition).getData();
         String tableName = list.get(adapterPosition).getTable();
 
-        //DataParser parser = new DataParser(tableName, primeTable, 1);
+        TransactionParcel parser = new TransactionParcel(tableName, primeTable, 1);
 
-        //intent.putExtra("data", parser);
-        //context.startActivity(intent);
+        intent.putExtra("data", parser);
+        context.startActivity(intent);
     }
 }

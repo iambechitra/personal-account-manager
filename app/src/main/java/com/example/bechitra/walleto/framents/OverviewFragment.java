@@ -1,88 +1,64 @@
 package com.example.bechitra.walleto.framents;
 
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.core.widget.NestedScrollView;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Spinner;
-import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.bechitra.walleto.DataRepository;
-import com.example.bechitra.walleto.R;
+import com.example.bechitra.walleto.adapter.RecyclerViewAdapter;
+import com.example.bechitra.walleto.databinding.FragmentSpendingEarningBinding;
 import com.example.bechitra.walleto.room.entity.Transaction;
+import com.example.bechitra.walleto.utility.CategoryProcessor;
 import com.example.bechitra.walleto.utility.DataProcessor;
 import com.example.bechitra.walleto.utility.DateManager;
-import com.example.bechitra.walleto.adapter.RecyclerViewAdapter;
-import com.example.bechitra.walleto.utility.CategoryProcessor;
 import com.example.bechitra.walleto.viewmodel.OverviewFragmentViewModel;
-import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
-import java.util.*;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by bechitra on 3/26/2018.
  */
 
 public class OverviewFragment extends Fragment{
-
-    @BindView(R.id.spendingOrEarningRecyclerView)
-    RecyclerView spendingRecyclerView;
-
-    @BindView(R.id.amountEntryTransaction) TextView amountText;
-
-    @BindView(R.id.lineChart)
-    LineChart lineChart;
-
-    @BindView(R.id.lifeTimeEarnText) TextView lifeTimeEarnText;
-    @BindView(R.id.lifeTimeSpendText) TextView lifeTimeSpendText;
-
-    @BindView(R.id.nestedScroll)
-    NestedScrollView scrollView;
-
-    @BindView(R.id.resultSelectorSpinner)
-    Spinner resultSelectorSpinner;
-
     DateManager dateManager;
     DataProcessor dataProcessor;
-
-   // @BindView(R.id.spendingOrEarningFilterSwitch)
-   // Switch filterByCurrentMonth;
-
-   // @BindView(R.id.expandableLayout) ExpandableLayout expandableLayout;
-    //@BindView(R.id.toggleView) RelativeLayout toggleView;
-
-   // @BindView(R.id.advanceFilterText)
-   // CheckBox advanceFilterText;
-
-   // @BindView(R.id.calculateAmountCheckBox) CheckBox calculateAmountCheck;
-   // @BindView(R.id.calculateAmountTextView) TextView calculateAmountText;
 
     List<CategoryProcessor> list;
     RecyclerViewAdapter recyclerViewAdapter;
     View view;
     OverviewFragmentViewModel viewModel;
+    FragmentSpendingEarningBinding viewBind;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_spending_earning, container, false);
-        ButterKnife.bind(this, view);
-        scrollView.setFocusableInTouchMode(true);
-        scrollView.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
-        viewModel = new ViewModelProvider(requireActivity()).get(OverviewFragmentViewModel.class);
+        viewBind = FragmentSpendingEarningBinding.inflate(inflater, container, false);
+        view = viewBind.getRoot();
+
+        viewBind.nestedScroll.setFocusableInTouchMode(true);
+        viewBind.nestedScroll.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
+
+        viewModel = new ViewModelProvider(requireActivity(), new ViewModelProvider.Factory() {
+            @NonNull
+            @Override
+            public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+                return (T) new OverviewFragmentViewModel(requireActivity().getApplication());
+            }
+        }).get(OverviewFragmentViewModel.class);
+
         dataProcessor = new DataProcessor(view.getContext());
         dateManager = new DateManager();
 
@@ -93,171 +69,44 @@ public class OverviewFragment extends Fragment{
                         array); //selected item will look like a spinner set from XML
         spinnerArrayAdapter.setDropDownViewResource(android.R.layout
                 .simple_spinner_dropdown_item);
-        resultSelectorSpinner.setAdapter(spinnerArrayAdapter);
+        viewBind.resultSelectorSpinner.setAdapter(spinnerArrayAdapter);
 
 
-        spendingRecyclerView.setHasFixedSize(true);
-        spendingRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext(), LinearLayoutManager.VERTICAL, false));
+        viewBind.spendingOrEarningRecyclerView.setHasFixedSize(true);
+        viewBind.spendingOrEarningRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext(), LinearLayoutManager.VERTICAL, false));
 
         viewModel.getAllTransactionData().observe(getViewLifecycleOwner(), transactions -> {
             double spend = viewModel.getLifeTimeCalculationByTag(transactions, DataRepository.SPENDING_TAG);
             double earn = viewModel.getLifeTimeCalculationByTag(transactions, DataRepository.EARNING_TAG);
 
-            lifeTimeEarnText.setText(""+earn);
-            lifeTimeSpendText.setText(""+spend);
-            amountText.setText(""+(earn+spend));
+            viewBind.lifeTimeEarnText.setText(""+earn);
+            viewBind.lifeTimeSpendText.setText(""+spend);
+            viewBind.amountEntryTransaction.setText(""+(earn+spend));
 
             recyclerViewAdapter.setData(viewModel.getRecyclerData(transactions));
+            setGraphData(transactions);
 
         });
 
         recyclerViewAdapter = new RecyclerViewAdapter(getActivity());
-        spendingRecyclerView.setAdapter(recyclerViewAdapter);
-        spendingRecyclerView.setNestedScrollingEnabled(false);
+        viewBind.spendingOrEarningRecyclerView.setAdapter(recyclerViewAdapter);
+        viewBind.spendingOrEarningRecyclerView.setNestedScrollingEnabled(false);
 
-        //reloadData();
-        //loadGraphData();
 
         return view;
     }
 
-    /*
-    private void loadGraphData() {
-        ArrayList<Entry> earningEntry = new ArrayList<>();
-        ArrayList<Entry> spendingEntry = new ArrayList<>();
-        String upperBound = dateManager.getCurrentDate();
-        String year = dateManager.getYearFromDate(upperBound);
-        String lowerBound = "01/01/"+ year;
-        Map<String, List<Transaction>> mapEarning = dataProcessor.getMonthlyData("EARNING", lowerBound, upperBound);
-        Map<String, List<Transaction>> mapSpending = dataProcessor.getMonthlyData("SPENDING", lowerBound, upperBound);
-
-        Map<Integer, Float> balance = new HashMap<>();
-        int[] monthCount = new int[13];
-        for(Map.Entry<String, List<Transaction>> entry : mapSpending.entrySet()) {
-            float amount = Float.parseFloat(dataProcessor.getBalanceCalculation(entry.getValue()));
-            StringTokenizer stk = new StringTokenizer(entry.getKey());
-            String monthName = stk.nextToken();
-            int monthID = dateManager.getMonthID(monthName);
-            balance.put(monthID, amount);
-            monthCount[monthID] = 1;
-        }
-
-        for(int i = 1; i < monthCount.length; i++) {
-            if (monthCount[i] != 1)
-                spendingEntry.add(new Entry(i, 0f));
-            else
-                spendingEntry.add(new Entry(i, balance.get(i)));
-        }
-
-        balance.clear();
-        Arrays.fill(monthCount, 0);
-        for(Map.Entry<String, List<Transaction>> entry : mapEarning.entrySet()) {
-            float amount = Float.parseFloat(dataProcessor.getBalanceCalculation(entry.getValue()));
-            StringTokenizer stk = new StringTokenizer(entry.getKey());
-            String monthName = stk.nextToken();
-            int monthID = dateManager.getMonthID(monthName);
-            balance.put(monthID, amount);
-            monthCount[monthID] = 1;
-        }
-
-        for(int i = 1; i < monthCount.length; i++) {
-            if (monthCount[i] != 1)
-                earningEntry.add(new Entry(i, 0f));
-            else
-                earningEntry.add(new Entry(i, balance.get(i)));
-        }
-
-        LineDataSet set1 = new LineDataSet(spendingEntry, "Spending");
-        set1.setColor(Color.RED);
-        set1.setLineWidth(2f);
-        set1.setValueTextSize(7f);
-        set1.setValueTextColor(Color.BLACK);
-        LineDataSet set2 = new LineDataSet(earningEntry, "Earning");
-        set2.setColor(Color.GREEN);
-        set2.setLineWidth(2f);
-        set2.setValueTextColor(Color.BLACK);
-        set2.setValueTextSize(7f);
-        ArrayList<ILineDataSet> data = new ArrayList<>();
-        data.add(set1);
-        data.add(set2);
-        lineChart.setData(new LineData(data));
-        lineChart.getDescription().setEnabled(false);
-        XAxis xAxis = lineChart.getXAxis();
+    private void setGraphData(List<Transaction> transactions) {
+        ArrayList<ILineDataSet> data = viewModel.getLineChartData(transactions);
+        viewBind.lineChart.setData(new LineData(data));
+        viewBind.lineChart.getDescription().setEnabled(false);
+        XAxis xAxis = viewBind.lineChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        viewBind.lineChart.invalidate();
 
         final String [] string = {"JAN", "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC", "JAN", "FEB", "MAR", "DEC"};
-        xAxis.setValueFormatter(new IAxisValueFormatter() {
-            @Override
-            public String getFormattedValue(float value, AxisBase axis) {
-                Log.d("Value DD", ""+value);
-                return string[(int)value];
-            }
-        });
+        xAxis.setValueFormatter((value, axis) -> string[(int)value]);
     }
-
-    private void reloadData() {
-        String upperBound = dateManager.getCurrentDate();
-        String year = dateManager.getYearFromDate(upperBound);
-        String lowerBound = "01/01/"+ year;
-        Map<String, List<Transaction>> mapEarning = dataProcessor.getYearlyData("EARNING", lowerBound, upperBound);
-        Map<String, List<Transaction>> mapSpending = dataProcessor.getYearlyData("SPENDING", lowerBound, upperBound);
-        list = new ArrayList<>();
-
-        double totalEarn = 0;
-        for(Map.Entry<String, List<Transaction>> entry : mapEarning.entrySet()) {
-            List<MapHelper> map = dataProcessor.getCategorisedData(entry.getValue());
-            totalEarn = Double.parseDouble(dataProcessor.getBalanceCalculation(entry.getValue()));
-
-            for(MapHelper m : map)
-                list.add(new CategoryProcessor(m, "EARNING"));
-        }
-
-        double totalSpend = 0;
-        for(Map.Entry<String, List<Transaction>> entry : mapSpending.entrySet()) {
-            List<MapHelper> map = dataProcessor.getCategorisedData(entry.getValue());
-            totalSpend = Double.parseDouble(dataProcessor.getBalanceCalculation(entry.getValue()));
-            for(MapHelper m : map)
-                list.add(new CategoryProcessor(m, "SPENDING"));
-        }
-
-        lifeTimeEarnText.setText("$"+totalEarn);
-        lifeTimeSpendText.setText("$"+totalSpend);
-        amountText.setText("$"+(totalEarn+totalSpend));
-
-        recyclerViewAdapter = new RecyclerViewAdapter(list, view.getContext());
-        spendingRecyclerView.setAdapter(recyclerViewAdapter);
-        spendingRecyclerView.setNestedScrollingEnabled(false);
-    }
-
-    private void reloadFragment() {
-        getFragmentManager().beginTransaction().detach(this).attach(this).commit();
-    }
-
-
-     */
-    private void dataViewMonthly() {
-
-    }
-/*
-    private void setViewExpandable()
-    {
-        toggleView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                expandableLayout.toggle();
-
-                if(ROTATION_ANGLE == 0) {
-                    Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.rotate_in);
-                    toggleView.startAnimation(animation);
-                    ROTATION_ANGLE = 180;
-                } else {
-                    Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.rotate_out);
-                    toggleView.startAnimation(animation);
-                    ROTATION_ANGLE = 0;
-                }
-            }
-        });
-    }*/
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -265,12 +114,5 @@ public class OverviewFragment extends Fragment{
         ViewGroup vg = (ViewGroup) view;
         vg.setClipChildren(false);
         vg.setClipToPadding(false);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        //reloadData();
-        //loadGraphData();
     }
 }

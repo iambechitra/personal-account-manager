@@ -31,10 +31,21 @@ public class Schedule {
     @ColumnInfo(name = "wallet_id")
     private long walletID;
 
+    @ColumnInfo(name = "transaction_id")
+    private long transactionID;
+
     @ColumnInfo(name = "is_active")
     private boolean isActive;
 
-    public Schedule(String tag, String category, double amount, String note, String date, String repeat, long walletID, boolean isActive) {
+    public long getTransactionID() {
+        return transactionID;
+    }
+
+    public void setTransactionID(long transactionID) {
+        this.transactionID = transactionID;
+    }
+
+    public Schedule(String tag, String category, double amount, String note, String date, String repeat, long walletID, long transactionID, boolean isActive) {
         this.tag = tag;
         this.category = category;
         this.amount = amount;
@@ -42,6 +53,7 @@ public class Schedule {
         this.date = date;
         this.repeat = repeat;
         this.walletID = walletID;
+        this.transactionID = transactionID;
         this.isActive = isActive;
     }
 

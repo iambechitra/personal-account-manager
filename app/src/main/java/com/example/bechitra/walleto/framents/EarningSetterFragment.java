@@ -87,7 +87,6 @@ public class EarningSetterFragment extends Fragment {
         scrollView.setFocusableInTouchMode(true);
         scrollView.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
 
-        //db = new DatabaseHelper(getActivity());
         earningSetterViewModel = new ViewModelProvider(requireActivity()).get(EarningSetterViewModel.class);
 
         repository = new DataRepository(getActivity().getApplication());
@@ -97,7 +96,6 @@ public class EarningSetterFragment extends Fragment {
         for(String str : items)
             spinnerItem.add(str);
 
-        //List<String> dbCategory = db.getDistinctCategory(db.getEarningTable());
         try {
             List<String> dbCategory = repository.getDistinctCategory(DataRepository.EARNING_TAG);
 
@@ -140,102 +138,77 @@ public class EarningSetterFragment extends Fragment {
         });
 
 
-        earningDateText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Calendar calendar = Calendar.getInstance();
-                DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
-                        R.style.Theme_AppCompat_Light_Dialog, dateSetListener, calendar.get(Calendar.YEAR),
-                        calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+        earningDateText.setOnClickListener(views -> {
+            Calendar calendar = Calendar.getInstance();
+            DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
+                    R.style.Theme_AppCompat_Light_Dialog, dateSetListener, calendar.get(Calendar.YEAR),
+                    calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
 
-                datePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FFFFFF")));
-                datePickerDialog.show();
-            }
+            datePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FFFFFF")));
+            datePickerDialog.show();
         });
 
-        dateSetListener = new DatePickerDialog.OnDateSetListener()
-        {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                earningDateText.setText( new DateManager().getDate(dayOfMonth, month+1, year) );
-            }
-        };
+        dateSetListener = (view1, year, month, dayOfMonth) -> earningDateText.setText( new DateManager().getDate(dayOfMonth, month+1, year) );
 
-        earningCatagoryCreatorText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CategoryCreatorDialog dialog = new CategoryCreatorDialog();
-                dialog.show(getActivity().getSupportFragmentManager(), "OK");
-                dialog.setOnAddCategory(new DialogListener() {
-                    boolean flag = false;
-                    @Override
-                    public void onSetDialog(String regex, boolean flag) {
-                        if(!regex.equals("NULL")) {
-                            for (String str : spinnerItem) {
-                                if (str.equals(regex))
-                                    flag = true;
-                            }
+        earningCatagoryCreatorText.setOnClickListener(views -> {
+            CategoryCreatorDialog dialog = new CategoryCreatorDialog();
+            dialog.show(getActivity().getSupportFragmentManager(), "OK");
+            dialog.setOnAddCategory(new DialogListener() {
+                boolean flag = false;
+                @Override
+                public void onSetDialog(String regex, boolean flag) {
+                    if(!regex.equals("NULL")) {
+                        for (String str : spinnerItem) {
+                            if (str.equals(regex))
+                                flag = true;
+                        }
 
-                            if (!flag) {
-                                spinnerItem.add(regex);
-                                spinnerAdapter.setData(spinnerItem);
-                                spinnerAdapter.notifyDataSetChanged();
-                                earningCatagorySpinner.setSelection(spinnerItem.size() - 1);
-                            }
+                        if (!flag) {
+                            spinnerItem.add(regex);
+                            spinnerAdapter.setData(spinnerItem);
+                            spinnerAdapter.notifyDataSetChanged();
+                            earningCatagorySpinner.setSelection(spinnerItem.size() - 1);
                         }
                     }
-                });
+                }
+            });
 
-            }
         });
 
-        confirmButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(earningCatagorySpinner.getSelectedItem() != null && !earningAmountEdit.getText().toString().equals("")) {
-                    DateManager stk = new DateManager();
-                    BigDecimal big = new BigDecimal(earningAmountEdit.getText().toString());
-                    if(big.compareTo(BigDecimal.ZERO) == 1) {
-                        String date = "";
-                        String category = stk.stringFormatter(spinnerItem.get(itemSelected)).trim();
+        confirmButton.setOnClickListener(views -> {
+            if(earningCatagorySpinner.getSelectedItem() != null && !earningAmountEdit.getText().toString().equals("")) {
+                DateManager stk = new DateManager();
+                BigDecimal big = new BigDecimal(earningAmountEdit.getText().toString());
+                if(big.compareTo(BigDecimal.ZERO) == 1) {
+                    String date = "";
+                    String category = stk.stringFormatter(spinnerItem.get(itemSelected)).trim();
 
-                        if (!earningDateText.getText().equals("TODAY"))
-                            date = earningDateText.getText().toString();
-                        else
-                            date = stk.getCurrentDate();
+                    if (!earningDateText.getText().equals("TODAY"))
+                        date = earningDateText.getText().toString();
+                    else
+                        date = stk.getCurrentDate();
 
-                        /*PrimeTable earning = new PrimeTable(null, category, earningAmountEdit.getText().toString(),
-                                                         earningNoteEdit.getText().toString(), date, db.getActivatedWalletID());*/
-                        Transaction earning = new Transaction(category, Double.parseDouble(earningAmountEdit.getText().toString()), stk.stringFormatter(earningNoteEdit.getText().toString().toUpperCase()).trim(),
-                                date, DataRepository.EARNING_TAG, repository.getActiveWalletID());
-                        //db.insertOnTable(db.getEarningTable(), earning);
-                        earningSetterViewModel.insertTransaction(earning);
-                        //earningSetterViewModel.updateWalletBalance(Double.parseDouble(earningAmountEdit.getText().toString()));
+                    Transaction earning = new Transaction(category, Double.parseDouble(earningAmountEdit.getText().toString()), stk.stringFormatter(earningNoteEdit.getText().toString().toUpperCase()).trim(),
+                            date, DataRepository.EARNING_TAG, repository.getActiveWalletID());
 
-                        if(autoRepetitionCheckBox.isChecked()) {
-                            /*db.insertNewSchedule(new Schedule(null, db.getEarningTable(), category,
-                                    earningAmountEdit.getText().toString(), earningNoteEdit.getText().toString(), date,
-                                            getRepeat(), db.getActivatedWalletID(), "1"));*/
+                    long rowID = earningSetterViewModel.insertTransaction(earning);
 
-                            earningSetterViewModel.insertSchedule(new Schedule(DataRepository.EARNING_TAG, category,
-                                    Double.parseDouble(earningAmountEdit.getText().toString()), stk.stringFormatter(earningNoteEdit.getText().toString().toUpperCase()).trim(),
-                                    date, getRepeat(), repository.getActiveWalletID(), true));
-                        }
-
-                        getActivity().finish();
+                    if(autoRepetitionCheckBox.isChecked()) {
+                        earningSetterViewModel.insertSchedule(new Schedule(DataRepository.EARNING_TAG, category,
+                                Double.parseDouble(earningAmountEdit.getText().toString()), stk.stringFormatter(earningNoteEdit.getText().toString().toUpperCase()).trim(),
+                                date, getRepeat(), earning.getWalletID(), rowID, true));
                     }
+
+                    getActivity().finish();
                 }
             }
         });
 
-        autoRepetitionCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked)
-                    autoRepetitionSpinner.setVisibility(View.VISIBLE);
-                else
-                    autoRepetitionSpinner.setVisibility(View.INVISIBLE);
-            }
+        autoRepetitionCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(isChecked)
+                autoRepetitionSpinner.setVisibility(View.VISIBLE);
+            else
+                autoRepetitionSpinner.setVisibility(View.INVISIBLE);
         });
 
         return view;

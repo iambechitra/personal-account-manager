@@ -56,10 +56,8 @@ public class DataRepository {
         return scheduleOfActivatedWallet;
     }
 
-    public void insertTransaction(Transaction transaction) {
-        DatabaseRoom.databaseWriteExecutor.execute(() -> {
-            transactionDao.insert(transaction);
-        });
+    public long insertTransaction(Transaction transaction) {
+            return transactionDao.insert(transaction);
     }
 
     public void insertSchedule(Schedule schedule) {

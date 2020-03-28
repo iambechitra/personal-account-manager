@@ -18,8 +18,8 @@ public class EarningSetterViewModel extends AndroidViewModel {
         repository = new DataRepository(application);
     }
 
-    public void insertTransaction(Transaction transaction) {
-        repository.insertTransaction(transaction);
+    public long insertTransaction(Transaction transaction) {
+        return repository.insertTransaction(transaction);
     }
 
     public void insertSchedule(Schedule schedule) {

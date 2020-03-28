@@ -81,12 +81,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         RelativeLayout layout;
         public RecyclerViewHolder(final View itemView) {
             super(itemView);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onClickAction(getAdapterPosition());
-                }
-            });
+            itemView.setOnClickListener( view -> onClickAction(getAdapterPosition()) );
             icon = itemView.findViewById(R.id.cicularIconText);
             category = itemView.findViewById(R.id.categoryItemText);
             amount = itemView.findViewById(R.id.categoryAmountText);

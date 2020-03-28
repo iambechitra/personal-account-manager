@@ -1,96 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <RelativeLayout
+    <data>
+
+    </data>
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:background="@color/blue"
-        android:id="@+id/labelLayout"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <TextView
-            android:layout_width="27dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
-            android:id="@+id/backButton"
-            android:layout_centerVertical="true"
-            android:background="@drawable/ic_back"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:background="@color/blue"
+            android:id="@+id/labelLayout"
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:text="Category"
-            android:textColor="#FFF"
-            android:textSize="25sp"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true"
-            android:id="@+id/categoryNameInDialog" />
-    </RelativeLayout>
+            <TextView
+                android:layout_width="27dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:id="@+id/backButton"
+                android:layout_centerVertical="true"
+                android:background="@drawable/ic_back" />
 
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/rowViewScrollView"
-        android:scrollbars="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="Category"
+                android:textColor="#FFF"
+                android:textSize="25sp"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:id="@+id/categoryNameInDialog" />
+        </RelativeLayout>
 
-        <LinearLayout
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:id="@+id/rowViewScrollView"
+            android:scrollbars="vertical">
 
-            <com.github.mikephil.charting.charts.BarChart
-                android:layout_width="match_parent"
-                android:id="@+id/barchartCategory"
-                android:layout_height="250dp"
-                android:layout_margin="15dp">
-
-            </com.github.mikephil.charting.charts.BarChart>
-
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="15dp"
-                android:paddingRight="15dp"
-                android:paddingBottom="8dp"
-                android:paddingTop="8dp"
-                android:id="@+id/recordBar"
-                android:background="#E8F5E9">
+                android:orientation="vertical">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <com.github.mikephil.charting.charts.BarChart
+                    android:layout_width="match_parent"
+                    android:id="@+id/barchartCategory"
+                    android:layout_height="250dp"
+                    android:layout_margin="15dp">
+
+                </com.github.mikephil.charting.charts.BarChart>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="18sp"
-                    android:text="Records"
-                    android:layout_alignParentLeft="true"
-                    android:textColor="@color/black"/>
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:paddingBottom="8dp"
+                    android:paddingTop="8dp"
+                    android:id="@+id/recordBar"
+                    android:background="#E8F5E9">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:text="Records"
+                        android:layout_alignParentLeft="true"
+                        android:textColor="@color/black" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:text="0"
+                        android:id="@+id/recordCountCategoryText"
+                        android:layout_alignParentRight="true"
+                        android:textColor="@color/black" />
+
+                </RelativeLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="18sp"
-                    android:text="0"
-                    android:id="@+id/recordCountCategoryText"
-                    android:layout_alignParentRight="true"
-                    android:textColor="@color/black"/>
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginBottom="10dp"
+                    android:id="@+id/rowDataViewRecycler">
 
-            </RelativeLayout>
+                </androidx.recyclerview.widget.RecyclerView>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginBottom="10dp"
-                android:id="@+id/rowDataViewRecycler">
-
-            </androidx.recyclerview.widget.RecyclerView>
-
-        </LinearLayout>
+            </LinearLayout>
 
 
-    </androidx.core.widget.NestedScrollView>
+        </androidx.core.widget.NestedScrollView>
 
-</LinearLayout>
+    </LinearLayout>
+</layout>

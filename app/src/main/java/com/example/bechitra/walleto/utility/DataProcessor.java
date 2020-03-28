@@ -1,6 +1,7 @@
 package com.example.bechitra.walleto.utility;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.room.entity.Transaction;
@@ -39,7 +40,7 @@ public class DataProcessor {
         String lowerBound = "01/"+date[1]+"/"+date[2];
 
         List<DataOrganizer> data = new ArrayList<>();
-        List<Transaction> row = getTransactionsByRange(transactions, lowerBound, upperBound);
+        List<Transaction> row = getTransactionsByRange(getTransactionsByTag(transactions, tag), lowerBound, upperBound);
 
         Map<String, List<Transaction>> map = getDailyData(row);
 
@@ -181,7 +182,7 @@ public class DataProcessor {
             if(map.containsKey(sortedList.get(i).getDate()))
                 map.get(sortedList.get(i).getDate()).add(sortedList.get(i));
             else {
-                map.put(sortedList.get(i).getDate(), new ArrayList<Transaction>());
+                map.put(sortedList.get(i).getDate(), new ArrayList<>());
                 map.get(sortedList.get(i).getDate()).add(sortedList.get(i));
             }
         }
@@ -216,10 +217,11 @@ public class DataProcessor {
             for(Transaction p : rowData) {
                 if(p.getDate().contains(pattern)) {
                     String date = dateManager.getMonthNameWithYear(p.getDate());
-                    if(map.containsKey(date))
+                    if(map.containsKey(date)) {
                         map.get(date).add(p);
+                    }
                     else {
-                        map.put(date, new ArrayList<Transaction>());
+                        map.put(date, new ArrayList<>());
                         map.get(date).add(p);
                     }
                 }
