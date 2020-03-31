@@ -19,7 +19,7 @@ import com.example.bechitra.walleto.room.entity.Wallet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {Transaction.class, Schedule.class, Wallet.class}, version = 1, exportSchema = false)
+@Database(entities = {Transaction.class, Schedule.class, Wallet.class}, version = 2, exportSchema = false)
 public abstract class DatabaseRoom extends RoomDatabase {
     private static volatile DatabaseRoom instance;
     private static final int threads = 4;
@@ -52,7 +52,9 @@ public abstract class DatabaseRoom extends RoomDatabase {
                 if(instance == null) {
                     instance = Room.databaseBuilder(context.getApplicationContext(), DatabaseRoom.class, "store")
                             .allowMainThreadQueries()
-                            .addCallback(databaseCallback).build();
+                            .addCallback(databaseCallback)
+                            .fallbackToDestructiveMigration()
+                            .build();
                 }
             }
         }

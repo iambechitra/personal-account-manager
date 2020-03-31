@@ -12,11 +12,11 @@ repositories {
 
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     defaultConfig {
         applicationId "com.example.bechitra.walleto"
         minSdkVersion 26
-        targetSdkVersion 27
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -51,7 +51,7 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.0'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
     implementation 'net.cachapa.expandablelayout:expandablelayout:2.9.2'
-    implementation 'com.github.ceryle:SegmentedButton:v1.0'
+    implementation 'com.github.ceryle:SegmentedButton:v2.0.2'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     annotationProcessor 'androidx.lifecycle:lifecycle-compiler:2.2.0'
     implementation 'androidx.lifecycle:lifecycle-runtime:2.2.0'
