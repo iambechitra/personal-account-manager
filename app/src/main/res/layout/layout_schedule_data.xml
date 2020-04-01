@@ -46,6 +46,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:textColor="@color/red"
                         android:id="@+id/itemAmountText"
                         android:text="3000$"/>
                 </LinearLayout>
@@ -61,13 +62,14 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:drawableLeft="@drawable/ic_table_small"
-                        android:text="Table : "/>
+                        android:text="Type : "/>
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:id="@+id/tableName"
+                        android:textAllCaps="true"
                         android:text="Earning"/>
                 </LinearLayout>
             </LinearLayout>

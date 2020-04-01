@@ -1,20 +1,20 @@
 package com.example.bechitra.walleto.activity;
 
+import android.os.Bundle;
+import android.widget.Button;
+
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;;
 
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.framents.EarningSetterFragment;
 import com.example.bechitra.walleto.framents.SpendingSetterFragment;
-import com.example.bechitra.walleto.utility.ColorUtility;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import co.ceryle.segmentedbutton.SegmentedButtonGroup;
+
+;
 
 public class SpendingOrEarningDataSetterActivity extends AppCompatActivity {
     SpendingSetterFragment spendingSetterFragment;

@@ -1,9 +1,10 @@
 package com.example.bechitra.walleto.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,16 +14,16 @@ import android.widget.TextView;
 import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.activity.ScheduleManagementActivity;
-import com.example.bechitra.walleto.table.Schedule;
+import com.example.bechitra.walleto.room.entity.Schedule;
 import com.example.bechitra.walleto.utility.DateManager;
 import com.example.bechitra.walleto.dialog.listener.OnDeleteItem;
+import com.example.bechitra.walleto.utility.ScheduleParcel;
 
 import java.text.ParseException;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import com.example.bechitra.walleto.utility.ScheduleParser;
 
 public class ScheduleViewAdapter extends RecyclerView.Adapter<ScheduleViewAdapter.DataBinder>{
     Context context;
@@ -32,8 +33,7 @@ public class ScheduleViewAdapter extends RecyclerView.Adapter<ScheduleViewAdapte
 
     OnDeleteItem listener;
 
-    public ScheduleViewAdapter(Context context, List<Schedule> data) {
-        this.data = data;
+    public ScheduleViewAdapter(Context context) {
         this.context = context;
         db = new DatabaseHelper(context);
         this.params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -48,14 +48,17 @@ public class ScheduleViewAdapter extends RecyclerView.Adapter<ScheduleViewAdapte
         return new DataBinder(view);
     }
 
-    public void setData(List<Schedule> list) { this.data = list; }
+    public void setData(List<Schedule> list) {
+        this.data = list;
+        notifyDataSetChanged();
+    }
 
     @Override
     public void onBindViewHolder(DataBinder holder, int position) {
         Schedule schedule = data.get(position);
         holder.categoryText.setText(schedule.getCategory());
         holder.itemAmountText.setText(schedule.getAmount()+"$");
-        holder.tableName.setText(schedule.getTableName());
+        holder.tableName.setText(schedule.getTag());
         holder.lastRepeatDateText.setText(schedule.getDate());
 
         if(schedule.getRepeat().equals("1"))
@@ -76,7 +79,7 @@ public class ScheduleViewAdapter extends RecyclerView.Adapter<ScheduleViewAdapte
 
     @Override
     public int getItemCount() {
-        return data.size();
+        return (data == null) ? 0 : data.size();
     }
 
     class DataBinder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -96,8 +99,8 @@ public class ScheduleViewAdapter extends RecyclerView.Adapter<ScheduleViewAdapte
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(context, ScheduleManagementActivity.class);
-            ScheduleParser scheduleParser = new ScheduleParser(data.get(getAdapterPosition()));
-            intent.putExtra("schedule", scheduleParser);
+            ScheduleParcel parcelSchedule = new ScheduleParcel(data.get(getAdapterPosition()));
+            intent.putExtra("schedule", parcelSchedule);
             context.startActivity(intent);
         }
     }

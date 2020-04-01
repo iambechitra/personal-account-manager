@@ -9,6 +9,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Bundle;
@@ -34,10 +35,11 @@ import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.MainActivity;
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.adapter.DefaultSpinnerAdapter;
+import com.example.bechitra.walleto.databinding.ActivityDataEditorBinding;
 import com.example.bechitra.walleto.dialog.RowDeleteDialog;
 import com.example.bechitra.walleto.dialog.listener.OnCloseDialogListener;
+import com.example.bechitra.walleto.room.entity.Schedule;
 import com.example.bechitra.walleto.room.entity.Transaction;
-import com.example.bechitra.walleto.table.Schedule;
 import com.example.bechitra.walleto.utility.ColorUtility;
 import com.example.bechitra.walleto.utility.TransactionParcel;
 
@@ -55,25 +57,25 @@ import com.example.bechitra.walleto.viewmodel.DataEditorActivityViewModel;
 
 public class DataEditorActivity extends AppCompatActivity {
 
-    @BindView(R.id.amountEdit)
-    EditText amountEt;
-    @BindView(R.id.noteEdit) EditText note;
-    @BindView(R.id.updateButton)
-    Button updateButton;
-    @BindView(R.id.categorySpinner)
-    Spinner categorySpinner;
-    @BindView(R.id.circleBack)
-    RelativeLayout circleBack;
-    @BindView(R.id.circleIcon)
-    TextView circleIcon;
-    @BindView(R.id.repeatCheck)
-    CheckBox repeatCheckbox;
-    @BindView(R.id.dateText) TextView dateText;
-    @BindView(R.id.backText) TextView back;
-    @BindView(R.id.deleteText) TextView delete;
-    @BindView(R.id.editText) TextView edit;
-    @BindView(R.id.titleBar) RelativeLayout titleBarLayout;
-    @BindView(R.id.repeatStatusSpinner) Spinner autoRepetitionSpinner;
+    //@BindView(R.id.amountEdit)
+    //EditText amountEt;
+    //@BindView(R.id.noteEdit) EditText note;
+    //@BindView(R.id.updateButton)
+    //Button updateButton;
+    //@BindView(R.id.categorySpinner)
+    //Spinner categorySpinner;
+    //@BindView(R.id.circleBack)
+    //RelativeLayout circleBack;
+    //@BindView(R.id.circleIcon)
+    //TextView circleIcon;
+    //@BindView(R.id.repeatCheck)
+    //CheckBox repeatCheckbox;
+    //@BindView(R.id.dateText) TextView dateText;
+    //@BindView(R.id.backText) TextView back;
+    //@BindView(R.id.deleteText) TextView delete;
+    //@BindView(R.id.editText) TextView edit;
+    //@BindView(R.id.titleBar) RelativeLayout titleBarLayout;
+    //@BindView(R.id.repeatStatusSpinner) Spinner autoRepetitionSpinner;
 
     private DatePickerDialog.OnDateSetListener dateSetListener;
 
@@ -84,33 +86,17 @@ public class DataEditorActivity extends AppCompatActivity {
     DatabaseHelper db;
     Schedule schedule;
     DataEditorActivityViewModel viewModel;
-
+    ActivityDataEditorBinding viewBind;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        viewBind = ActivityDataEditorBinding.inflate(getLayoutInflater());
 
-        setContentView(R.layout.activity_data_editor);
-
-       // android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        setContentView(viewBind.getRoot());
 
         data = getIntent().getParcelableExtra("data");
 
         statusBarColorChanger(new ColorUtility().getColors(data.getCategory()));
-
-      //  actionBar.setDisplayHomeAsUpEnabled(true);
-
-        ButterKnife.bind(this);
-        //db = new DatabaseHelper(this);
-        viewModel = new ViewModelProvider(this).get(DataEditorActivityViewModel.class);
-
-        String[] array = {"Daily", "Weekly", "Monthly", "Yearly"};
-        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>
-                (this, android.R.layout.simple_spinner_item,
-                        array); //selected item will look like a spinner set from XML
-        spinnerArrayAdapter.setDropDownViewResource(android.R.layout
-                .simple_spinner_dropdown_item);
-        autoRepetitionSpinner.setAdapter(spinnerArrayAdapter);
-        autoRepetitionSpinner.setVisibility(View.INVISIBLE);
 
         final Map<String, String> count = new HashMap<>();
         count.put("Daily", "1");
@@ -118,66 +104,31 @@ public class DataEditorActivity extends AppCompatActivity {
         count.put("Monthly", "30");
         count.put("Yearly", "365");
 
-        // hideSoftKey(amountEt);
+        viewModel = new ViewModelProvider(this).get(DataEditorActivityViewModel.class);
+        schedule = viewModel.getScheduleByTransaction(data.getID());
 
-        //schedule = db.getScheduledData(data.getTag(), data.getCategory(), ""+data.getAmount(),
-          //      data.getNote(), data.getWalletID()+"");
+        scheduleRepeatSet(count);
 
-        Log.d("information", data.getTag()+" "+data.getCategory()+" "+
-                    data.getAmount()+" "+data.getNote()+" "+data.getWalletID());
+        viewBind.repeatCheck.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(isChecked)
+                viewBind.repeatStatusSpinner.setVisibility(View.VISIBLE);
+            else
+                viewBind.repeatStatusSpinner.setVisibility(View.INVISIBLE);
 
-        if(schedule != null) {
-            autoRepetitionSpinner.setVisibility(View.VISIBLE);
-            for(Map.Entry<String, String> map : count.entrySet()) {
-                Log.d("schedule key", map.getValue()+" "+schedule.getRepeat());
-                if(map.getValue().equals(schedule.getRepeat())){
-                    Log.d("map item", map.getKey());
-
-                    for(int i = 0; i < array.length; i++)
-                        if(array[i].equals(map.getKey())) {
-                        Log.d("auto repeat", array[i]);
-                            autoRepetitionSpinner.setSelection(i);
-                        }
-
-                    break;
-                }
-            }
-            repeatCheckbox.setChecked(true);
-            autoRepetitionSpinner.setEnabled(false);
-            autoRepetitionSpinner.setVisibility(View.VISIBLE);
-            repeatCheckbox.setEnabled(false);
-         } else
-             Log.d("schedule", "null");
-
-
-
-        repeatCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked)
-                    autoRepetitionSpinner.setVisibility(View.VISIBLE);
-                else
-                    autoRepetitionSpinner.setVisibility(View.INVISIBLE);
-
-            }
         });
 
-        setNotEditable(amountEt);
-        setNotEditable(note);
-        repeatCheckbox.setEnabled(false);
+        setNotEditable(viewBind.amountEdit);
+        setNotEditable(viewBind.noteEdit);
+        viewBind.repeatCheck.setEnabled(false);
 
-       // actionBar.setBackgroundDrawable(new ColorDrawable(new ColorUtility().getColors(categoryString)));
+        viewBind.updateButton.setBackgroundColor(new ColorUtility().getColors(data.getCategory()));
+        viewBind.titleBar.setBackgroundColor(new ColorUtility().getColors(data.getCategory()));
 
-        updateButton.setBackgroundColor(new ColorUtility().getColors(data.getCategory()));
-        titleBarLayout.setBackgroundColor(new ColorUtility().getColors(data.getCategory()));
-
-
-        circleBack.setBackground(getOvalShape(data.getCategory()));
-        circleIcon.setBackgroundResource(new ColorUtility().getResource(data.getCategory()));
-
-        amountEt.setText(""+data.getAmount());
-        dateText.setText(data.getDate());
-        note.setText(data.getNote());
+        viewBind.circleBack.setBackground(getOvalShape(data.getCategory()));
+        viewBind.circleIcon.setBackgroundResource(new ColorUtility().getResource(data.getCategory()));
+        viewBind.amountEdit.setText(""+data.getAmount());
+        viewBind.dateText.setText(data.getDate());
+        viewBind.noteEdit.setText(data.getNote());
 
         List<String> temp;
         if(data.getTag().equals(DataRepository.EARNING_TAG))
@@ -198,96 +149,77 @@ public class DataEditorActivity extends AppCompatActivity {
             }
         }
         DefaultSpinnerAdapter adapter = new DefaultSpinnerAdapter(this, spinnerItem);
-        categorySpinner.setAdapter(adapter);
-        categorySpinner.setSelection(position);
-        categorySpinner.setEnabled(false);
+        viewBind.categorySpinner.setAdapter(adapter);
+        viewBind.categorySpinner.setSelection(position);
+        viewBind.categorySpinner.setEnabled(false);
 
 
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
+        viewBind.backText.setOnClickListener(view -> finish());
+
+        viewBind.editText.setOnClickListener(view -> {
+            editable = true;
+            setEditable(viewBind.amountEdit);
+            setEditable(viewBind.noteEdit);
+            viewBind.repeatStatusSpinner.setEnabled(true);
+            viewBind.repeatCheck.setEnabled(true);
+            viewBind.categorySpinner.setEnabled(true);
+            viewBind.updateButton.setVisibility(View.VISIBLE);
+        });
+
+        viewBind.dateText.setOnClickListener(view -> {
+            if(editable) {
+                Calendar calendar = Calendar.getInstance();
+                DatePickerDialog datePickerDialog = new DatePickerDialog(DataEditorActivity.this,
+                        R.style.Theme_AppCompat_Light_Dialog, dateSetListener, calendar.get(Calendar.YEAR),
+                        calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+
+                datePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FFFFFF")));
+                datePickerDialog.show();
             }
         });
 
-        edit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                editable = true;
-                setEditable(amountEt);
-                setEditable(note);
-                autoRepetitionSpinner.setEnabled(true);
-                repeatCheckbox.setEnabled(true);
-                categorySpinner.setEnabled(true);
-                updateButton.setVisibility(View.VISIBLE);
-            }
-        });
-
-        dateText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(editable) {
-                    Calendar calendar = Calendar.getInstance();
-                    DatePickerDialog datePickerDialog = new DatePickerDialog(DataEditorActivity.this,
-                            R.style.Theme_AppCompat_Light_Dialog, dateSetListener, calendar.get(Calendar.YEAR),
-                            calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-
-                    datePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FFFFFF")));
-                    datePickerDialog.show();
-                }
-            }
-        });
-
-        dateSetListener = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                String d = new DateManager().getDate(dayOfMonth, month+1, year);
-                dateText.setText(d);
-            }
+        dateSetListener = (view, year, month, dayOfMonth) -> {
+            String d = new DateManager().getDate(dayOfMonth, month+1, year);
+            viewBind.dateText.setText(d);
         };
 
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                RowDeleteDialog d = new RowDeleteDialog();
-                d.show(getSupportFragmentManager(), "TAG");
-                d.setOnCloseDialogManager(new OnCloseDialogListener() {
-                    @Override
-                    public void onClose(boolean flag) {
-                        viewModel.deleteTransaction(new Transaction(
-                                data.getID(), data.getCategory(), data.getAmount(), data.getNote(),
-                                data.getDate(), data.getTag(), data.getWalletID()
-                        ));
-                        finish();
-                        //db.deleteRowFromTable(data.getTag(), ""+data.getID());
-                        if(schedule != null)
-                            //db.deleteRowFromTable("SCHEDULE", schedule.getID());
+        viewBind.deleteText.setOnClickListener(view -> {
+            RowDeleteDialog d = new RowDeleteDialog();
+            d.show(getSupportFragmentManager(), "TAG");
+            d.setOnCloseDialogManager(new OnCloseDialogListener() {
+                @Override
+                public void onClose(boolean flag) {
+                    viewModel.deleteTransaction(new Transaction(
+                            data.getID(), data.getCategory(), data.getAmount(), data.getNote(),
+                            data.getDate(), data.getTag(), data.getWalletID()
+                    ));
+                    if(schedule != null)
+                        viewModel.deleteSchedule(schedule);
 
 
-                        if(data.getFlag() == 1)
-                            reloadActivity(MainActivity.class, new Bundle());
-                        else {
-                           Bundle bundle = new Bundle();
-                           bundle.putString("category", data.getCategory());
-                           bundle.putString("table", data.getTag());
-                           reloadActivity(CategoryItemViewerActivity.class, bundle);
-                        }
-
+                    if(data.getFlag() == 1)
+                        reloadActivity(MainActivity.class, new Bundle());
+                    else {
+                       Bundle bundle = new Bundle();
+                       bundle.putString("category", data.getCategory());
+                       bundle.putString("table", data.getTag());
+                       reloadActivity(CategoryItemViewerActivity.class, bundle);
                     }
-                });
-            }
 
+                    finish();
+                }
+            });
         });
 
-        categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        viewBind.categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 int color = new ColorUtility().getColors(spinnerItem.get(position));
                 int icon = new ColorUtility().getResource(spinnerItem.get(position));
-                circleBack.setBackground(getOvalShape(spinnerItem.get(position)));
-                circleIcon.setBackgroundResource(icon);
-                updateButton.setBackgroundColor(color);
-                titleBarLayout.setBackgroundColor(color);
+                viewBind.circleBack.setBackground(getOvalShape(spinnerItem.get(position)));
+                viewBind.circleIcon.setBackgroundResource(icon);
+                viewBind.updateButton.setBackgroundColor(color);
+                viewBind.titleBar.setBackgroundColor(color);
                 statusBarColorChanger(color);
             }
 
@@ -297,44 +229,75 @@ public class DataEditorActivity extends AppCompatActivity {
             }
         });
 
-        updateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String category = categorySpinner.getSelectedItem().toString();
-                String date = dateText.getText().toString();
-                String notes = note.getText().toString();
-                String amount = amountEt.getText().toString();
-                String repeat = count.get(autoRepetitionSpinner.getSelectedItem().toString());
-                viewModel.updateTransaction(new Transaction(
-                        data.getID(), category, Double.parseDouble(amount), notes, date, data.getTag(), data.getWalletID()
-                ));
-                //db.updateRowFromTable(data.getTag(), itemID, category, amountEt.getText().toString(), note.getText().toString(), date);
-                if(repeatCheckbox.isChecked()) {
-                    if(schedule != null) {
-                        if(!data.getCategory().equals(category))
-                            db.updateRowFromTable("SCHEDULE", schedule.getID(), "CATEGORY", category);
-                        if(!(""+data.getAmount()).equals(amount))
-                            db.updateRowFromTable("SCHEDULE", schedule.getID(), "AMOUNT", amount);
-                        //if(!data.getDate().equals(date))
-                            //db.updateRowFromTable("SCHEDULE", schedule.getID(), "DATE", date);
-                        if(!data.getNote().equals(notes))
-                            db.updateRowFromTable("SCHEDULE", schedule.getID(), "NOTE", notes);
-                        if(!schedule.getRepeat().equals(repeat))
-                            db.updateRowFromTable("SCHEDULE", schedule.getID(), "REPEAT", repeat);
-                    } //else
-                        //db.insertNewSchedule(new Schedule(null, data.getTag(), category, ""+amount, notes, date, repeat, ""+data.getWalletID(), "1"));
-                }
-                if(data.getFlag() == 1) {
-                    reloadActivity(MainActivity.class, new Bundle());
+        viewBind.updateButton.setOnClickListener(view -> {
+            String category = viewBind.categorySpinner.getSelectedItem().toString();
+            String date = viewBind.dateText.getText().toString();
+            String notes = viewBind.noteEdit.getText().toString();
+            String amount = viewBind.amountEdit.getText().toString();
+            String repeat = count.get(viewBind.repeatStatusSpinner.getSelectedItem().toString());
+
+            Schedule uSchedule = new Schedule(
+                    data.getTag(), category, Double.parseDouble(amount), notes,
+                    date, repeat, data.getWalletID(), data.getID(), true
+            );
+
+            viewModel.updateTransaction(new Transaction(
+                    data.getID(), category, Double.parseDouble(amount), notes, date, data.getTag(), data.getWalletID()
+            ));
+
+            if(viewBind.repeatCheck.isChecked()) {
+                if (schedule != null) {
+                    uSchedule.setId(schedule.getId());
+                    viewModel.updateSchedule(uSchedule);
+                    Log.d("tag", "update Schedule");
                 }
                 else {
-                    Bundle bundle = new Bundle();
-                    bundle.putString("category", data.getCategory());
-                    bundle.putString("table", data.getTag());
-                    reloadActivity(CategoryItemViewerActivity.class, bundle);
+                    Log.d("tag", "new Schedule "+uSchedule.getTransactionID()+" "+data.getID());
+                    viewModel.insertSchedule(uSchedule);
                 }
+
+            }
+            if(data.getFlag() == 1) {
+                reloadActivity(MainActivity.class, new Bundle());
+            }
+            else {
+                Bundle bundle = new Bundle();
+                bundle.putString("category", data.getCategory());
+                bundle.putString("table", data.getTag());
+                reloadActivity(CategoryItemViewerActivity.class, bundle);
             }
         });
+
+    }
+
+    private void scheduleRepeatSet(Map<String, String> count) {
+        String[] array = {"Daily", "Weekly", "Monthly", "Yearly"};
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>
+                (this, android.R.layout.simple_spinner_item,
+                        array); //selected item will look like a spinner set from XML
+        spinnerArrayAdapter.setDropDownViewResource(android.R.layout
+                .simple_spinner_dropdown_item);
+        viewBind.repeatStatusSpinner.setAdapter(spinnerArrayAdapter);
+        viewBind.repeatStatusSpinner.setVisibility(View.INVISIBLE);
+
+        if(schedule != null) {
+            viewBind.repeatStatusSpinner.setVisibility(View.VISIBLE);
+            for(Map.Entry<String, String> map : count.entrySet()) {
+                if(map.getValue().equals(schedule.getRepeat())){
+                    for(int i = 0; i < array.length; i++)
+                        if(array[i].equals(map.getKey()))
+                            viewBind.repeatStatusSpinner.setSelection(i);
+
+
+                    break;
+                }
+            }
+            viewBind.repeatCheck.setChecked(true);
+            viewBind.repeatStatusSpinner.setEnabled(false);
+            viewBind.repeatStatusSpinner.setVisibility(View.VISIBLE);
+            viewBind.repeatCheck.setEnabled(false);
+        } else
+            Log.d("schedule", "null");
 
     }
 
@@ -378,14 +341,4 @@ public class DataEditorActivity extends AppCompatActivity {
             window.setStatusBarColor(color);
         }
     }
-
-/*
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        if(item.getItemId() == android.R.id.home)
-            finish();
-
-        return true;
-    }*/
 }

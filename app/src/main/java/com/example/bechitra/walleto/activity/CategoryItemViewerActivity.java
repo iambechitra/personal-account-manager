@@ -1,65 +1,32 @@
 package com.example.bechitra.walleto.activity;
 
 import android.os.Build;
-import androidx.core.widget.NestedScrollView;
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
-import com.example.bechitra.walleto.DatabaseHelper;
-import com.example.bechitra.walleto.R;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
+import com.example.bechitra.walleto.adapter.RowViewAdapter;
 import com.example.bechitra.walleto.databinding.ActivityCategoryViewBinding;
 import com.example.bechitra.walleto.room.entity.Transaction;
+import com.example.bechitra.walleto.utility.ColorUtility;
 import com.example.bechitra.walleto.utility.DataProcessor;
 import com.example.bechitra.walleto.utility.DateManager;
-import com.example.bechitra.walleto.adapter.RowViewAdapter;
-import com.example.bechitra.walleto.table.PrimeTable;
-import com.example.bechitra.walleto.utility.ColorUtility;
 import com.example.bechitra.walleto.viewmodel.CategoryItemViewerViewModel;
-import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 
-import java.util.*;
+import java.util.List;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class CategoryItemViewerActivity extends AppCompatActivity {
-
-   // @BindView(R.id.barchartCategory)
-    //BarChart barChart;
-    //@BindView(R.id.categoryNameInDialog)
-    //TextView categoryName;
-    //@BindView(R.id.recordCountCategoryText) TextView recordCount;
-    //@BindView(R.id.rowDataViewRecycler)
-    //RecyclerView rowDataViewRecycler;
-
-    //@BindView(R.id.rowViewScrollView)
-    //NestedScrollView scrollView;
-
-    //@BindView(R.id.labelLayout)
-    //RelativeLayout labelLayout;
-
-    //@BindView(R.id.recordBar) RelativeLayout recordBar;
-
-    //@BindView(R.id.backButton) TextView backButton;
-
-    //DatabaseHelper db;
     RowViewAdapter adapter;
     DataProcessor dataProcessor;
     DateManager dateManager;
@@ -72,7 +39,7 @@ public class CategoryItemViewerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         viewBind = ActivityCategoryViewBinding.inflate(getLayoutInflater());
         setContentView(viewBind.getRoot());
-        //setContentView(R.layout.activity_category_view);
+
         ButterKnife.bind(this);
         dataProcessor = new DataProcessor(this);
         dateManager = new DateManager();
@@ -81,18 +48,16 @@ public class CategoryItemViewerActivity extends AppCompatActivity {
         viewBind.rowViewScrollView.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
         String date = dateManager.getCurrentDate();
         String category = getIntent().getExtras().getString("category");
-        //db = new DatabaseHelper(this);
+
         viewModel = new ViewModelProvider(this).get(CategoryItemViewerViewModel.class);
         viewModel.getAllTransaction().observe(this, transactions -> {
             transactionList = viewModel.getTransactionByTag(transactions, getIntent().getExtras().getString("table"));
             List<Transaction> filteredData = viewModel.getCategorisedTransactionWithinBound(transactionList, category,"01/01/"+dateManager.getYearFromDate(date), date);
             adapter.setData(filteredData);
             viewBind.recordCountCategoryText.setText(""+filteredData.size());
-            graphPreset(viewModel.getMonthlyData(filteredData, "01/01/"+dateManager.getYearFromDate(date), date), category);
+            graphPreset(filteredData, category, date);
             viewBind.barchartCategory.invalidate();
         });
-
-
 
         viewBind.categoryNameInDialog.setText(category);
         int color = new ColorUtility().getColors(category);
@@ -102,12 +67,7 @@ public class CategoryItemViewerActivity extends AppCompatActivity {
 
         viewBind.labelLayout.setBackgroundColor(new ColorUtility().getColors(category));
 
-        viewBind.backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        viewBind.backButton.setOnClickListener(view -> finish());
 
         viewBind.rowDataViewRecycler.setNestedScrollingEnabled(false);
         viewBind.rowDataViewRecycler.setHasFixedSize(true);
@@ -117,32 +77,8 @@ public class CategoryItemViewerActivity extends AppCompatActivity {
         viewBind.rowDataViewRecycler.setAdapter(adapter);
     }
 
-    private void graphPreset(Map<String, List<Transaction>> map, String category) {
-        ArrayList<BarEntry> barEntries = new ArrayList<>();
-        Map<Integer, Float> balance = new HashMap<>();
-        int[] monthCount = new int[13];
-        for(Map.Entry<String, List<Transaction>> entry : map.entrySet()) {
-            float amount = Float.parseFloat(dataProcessor.getBalanceCalculation(entry.getValue()));
-            StringTokenizer stk = new StringTokenizer(entry.getKey());
-            String monthName = stk.nextToken();
-            int monthID = dateManager.getMonthID(monthName);
-            balance.put(monthID, amount);
-            monthCount[monthID] = 1;
-        }
-
-        //Assigning value to BarChart;
-        for(int i = 1; i < monthCount.length; i++)
-            if(monthCount[i] != 1)
-                barEntries.add(new BarEntry(i, 0f));
-            else
-                barEntries.add(new BarEntry(i, balance.get(i)));
-
-
-        BarDataSet dataSet = new BarDataSet(barEntries, "Cost");
-        dataSet.setValueTextSize(8f);
-        dataSet.setColors(new ColorUtility().getColors(category));
-
-        BarData data = new BarData(dataSet);
+    private void graphPreset(List<Transaction> transactions, String category, String date) {
+        BarData data = new BarData(viewModel.getGraphData(transactions, category, date));
         viewBind.barchartCategory.setData(data);
         viewBind.barchartCategory.setPinchZoom(false);
         viewBind.barchartCategory.setDrawValueAboveBar(true);

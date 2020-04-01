@@ -1,5 +1,6 @@
 package com.example.bechitra.walleto;
 
+import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -10,8 +11,8 @@ import android.graphics.Color;
 import android.os.Build;
 import androidx.core.app.NotificationCompat;
 
-import com.example.bechitra.walleto.table.Schedule;
-import com.example.bechitra.walleto.table.PrimeTable;
+import com.example.bechitra.walleto.room.entity.Schedule;
+import com.example.bechitra.walleto.room.entity.Transaction;
 import com.example.bechitra.walleto.utility.DateManager;
 
 import java.text.ParseException;
@@ -19,14 +20,14 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 public class AlertManager extends BroadcastReceiver{
-    DatabaseHelper db;
+    DataRepository repository;
     final String COLUMN_NAME = "DATE";
     final String TABLE = "SCHEDULE";
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        db = new DatabaseHelper(context);
-        List<Schedule> schedules = db.getScheduledData();
+        repository = new DataRepository((Application) context.getApplicationContext());
+        List<Schedule> schedules = repository.getAllScheduleList();
         DateManager spc = new DateManager();
         String currentDate = spc.getCurrentDate();
         boolean flag = false;
@@ -37,10 +38,12 @@ public class AlertManager extends BroadcastReceiver{
                 String next = formatDate(spc.addDate(s.getDate(), Integer.parseInt(s.getRepeat())));
                 //long diff = spc.dateDifference(currentDate, next);
                 if(next.equals(currentDate)) {
-                    PrimeTable data = new PrimeTable(null, s.getCategory(), s.getAmount(), s.getNote(), next, s.getWalletID());
+                    Transaction data = new Transaction(
+                            s.getCategory(), s.getAmount(), s.getNote(),
+                            s.getDate(), s.getTag(), s.getWalletID()
+                    );
 
-                    db.insertOnTable(s.getTableName(), data);
-                    db.updateRowFromTable(TABLE, s.getID(), COLUMN_NAME, next);
+                    repository.insertTransaction(data);
                     flag = true;
                     counter++;
 
@@ -61,7 +64,7 @@ public class AlertManager extends BroadcastReceiver{
         while (stk.hasMoreTokens())
             d[i++] = Integer.parseInt(stk.nextToken());
 
-        return (Integer.toString(d[0])+"/"+Integer.toString(d[1])+"/"+Integer.toString(d[2]));
+        return (d[0] +"/"+ d[1] +"/"+ d[2]);
 
     }
 
@@ -83,7 +86,7 @@ public class AlertManager extends BroadcastReceiver{
             String id = "my_channel_01";
             CharSequence name = "Char Seq";
             String description = "Hello World";
-            int importance = NotificationManager.IMPORTANCE_LOW;
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel mChannel = new NotificationChannel(id, name, importance);
             mChannel.setDescription(description);
 

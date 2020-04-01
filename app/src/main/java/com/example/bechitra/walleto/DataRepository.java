@@ -56,6 +56,8 @@ public class DataRepository {
         return scheduleOfActivatedWallet;
     }
 
+    List<Schedule> getAllScheduleList() { return scheduleDao.getAllScheduleList(); }
+
     public long insertTransaction(Transaction transaction) {
             return transactionDao.insert(transaction);
     }
@@ -98,6 +100,10 @@ public class DataRepository {
 
     public void deleteSchedule(Schedule schedule) {
         scheduleDao.delete(schedule);
+    }
+
+    public Schedule getScheduleByTransaction(long transactionID) {
+        return scheduleDao.getScheduleByTransaction(transactionID);
     }
 
     public void deleteWallet(Wallet wallet) {

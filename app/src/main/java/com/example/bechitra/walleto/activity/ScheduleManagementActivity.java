@@ -4,6 +4,8 @@ import android.app.DatePickerDialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+
 import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
@@ -12,81 +14,81 @@ import butterknife.ButterKnife;
 import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.adapter.DefaultSpinnerAdapter;
+import com.example.bechitra.walleto.databinding.ActivityScheduleManagementBinding;
 import com.example.bechitra.walleto.dialog.RowDeleteDialog;
-import com.example.bechitra.walleto.dialog.listener.OnCloseDialogListener;
+import com.example.bechitra.walleto.room.entity.Schedule;
 import com.example.bechitra.walleto.utility.DateManager;
-import com.example.bechitra.walleto.utility.ScheduleParser;
+import com.example.bechitra.walleto.utility.ScheduleParcel;
+import com.example.bechitra.walleto.viewmodel.ScheduleManagementActivityViewModel;
 
 import java.util.*;
 
 public class ScheduleManagementActivity extends AppCompatActivity {
-    @BindView(R.id.deleteSchedule) TextView deleteButton;
+    //@BindView(R.id.deleteSchedule) TextView deleteButton;
     @BindView(R.id.editSchedule) TextView editButton;
-    @BindView(R.id.backButton) TextView backButton;
-    @BindView(R.id.tableSpinner) Spinner tableSpinner;
-    @BindView(R.id.categorySpinner) Spinner categorySpinner;
-    @BindView(R.id.noteEdit) EditText noteEdit;
-    @BindView(R.id.amountEdit) EditText amountEdit;
-    @BindView(R.id.dateText) TextView dateText;
-    @BindView(R.id.autoRepetitionSpinner) Spinner autoRepetitionSpinner;
+    //@BindView(R.id.backButton) TextView backButton;
+    //@BindView(R.id.tableSpinner) Spinner tableSpinner;
+    //@BindView(R.id.categorySpinner) Spinner categorySpinner;
+    //@BindView(R.id.noteEdit) EditText noteEdit;
+    //@BindView(R.id.amountEdit) EditText amountEdit;
+    //@BindView(R.id.dateText) TextView dateText;
+    //@BindView(R.id.autoRepetitionSpinner) Spinner autoRepetitionSpinner;
     @BindView(R.id.isActiveSwitch) Switch isActiveSwitch;
-    @BindView(R.id.updateButton) TextView updateButton;
+    //@BindView(R.id.updateButton) TextView updateButton;
 
     private DatePickerDialog.OnDateSetListener dateSetListener;
-    private ScheduleParser schedule;
+    private ScheduleParcel schedule;
     private List<String> spinnerItem;
     private DatabaseHelper db;
     private String DATE = "";
     private Map<String, String> count;
+    ActivityScheduleManagementBinding viewBind;
+    ScheduleManagementActivityViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_schedule_management);
-        ButterKnife.bind(this);
-        db = new DatabaseHelper(this);
+        viewBind = ActivityScheduleManagementBinding.inflate(getLayoutInflater());
+        setContentView(viewBind.getRoot());
+
+        viewModel = new ViewModelProvider(this).get(ScheduleManagementActivityViewModel.class);
+
         DATE = new DateManager().getCurrentDate();
 
         schedule = getIntent().getParcelableExtra("schedule");
 
-        amountEdit.setText(schedule.getAmount());
-        noteEdit.setText(schedule.getNote());
-        dateText.setText(schedule.getDate());
+        viewBind.amountEdit.setText(""+schedule.getAmount());
+        viewBind.noteEdit.setText(schedule.getNote());
+        viewBind.dateText.setText(schedule.getDate());
 
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        viewBind.backButton.setOnClickListener(view -> finish());
 
-        deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                RowDeleteDialog dialog = new RowDeleteDialog();
-                dialog.show(getSupportFragmentManager(), "TAG");
+        viewBind.deleteSchedule.setOnClickListener(view -> {
+            RowDeleteDialog dialog = new RowDeleteDialog();
+            dialog.show(getSupportFragmentManager(), "TAG");
 
-                dialog.setOnCloseDialogManager(new OnCloseDialogListener() {
-                    @Override
-                    public void onClose(boolean flag) {
-                        if(flag) {
-                            db.deleteRowFromTable("SCHEDULE", schedule.getID());
-                            finish();
-                        }
-                    }
-                });
-            }
-        });
+            dialog.setOnCloseDialogManager(flag -> {
+                if(flag) {
+                    Schedule scheduleBuilder = new Schedule(
+                            schedule.getTag(), schedule.getCategory(), schedule.getAmount(),
+                            schedule.getNote(), schedule.getDate(), schedule.getRepeat(),
+                            schedule.getWalletID(), schedule.getTransactionID(),
+                            schedule.isActive()
+                    );
 
-        updateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(isDataChanged(schedule)) {
-                    createToastMassage("Update Successful!");
+                    scheduleBuilder.setId(schedule.getID());
+                    viewModel.deleteSchedule(scheduleBuilder);
                     finish();
-                } else {
-                    createToastMassage("Press Back to exit");
                 }
+            });
+        });
+
+        viewBind.updateButton.setOnClickListener(view -> {
+            if(isDataChanged()) {
+                createToastMassage("Update Successful!");
+                finish();
+            } else {
+                createToastMassage("Press Back to exit");
             }
         });
 
@@ -96,15 +98,15 @@ public class ScheduleManagementActivity extends AppCompatActivity {
                         arrays); //selected item will look like a spinner set from XML
         spinnerArrayAdapterForTable.setDropDownViewResource(android.R.layout
                 .simple_spinner_dropdown_item);
-        tableSpinner.setAdapter(spinnerArrayAdapterForTable);
+        viewBind.tableSpinner.setAdapter(spinnerArrayAdapterForTable);
 
-        if(schedule.getTableName().equals(arrays[0]))
-            tableSpinner.setSelection(0);
+        if(schedule.getTag().equals(arrays[0]))
+            viewBind.tableSpinner.setSelection(0);
         else
-            tableSpinner.setSelection(1);
+            viewBind.tableSpinner.setSelection(1);
 
         List<String> temp;
-        if(schedule.getTableName().equals("EARNING"))
+        if(schedule.getTag().equals("EARNING"))
             temp = Arrays.asList(getResources().getStringArray(R.array.ECATEGORY));
         else
             temp = Arrays.asList(getResources().getStringArray(R.array.SCATEGORY));
@@ -122,8 +124,8 @@ public class ScheduleManagementActivity extends AppCompatActivity {
             }
 
         DefaultSpinnerAdapter adapter = new DefaultSpinnerAdapter(this, spinnerItem);
-        categorySpinner.setAdapter(adapter);
-        categorySpinner.setSelection(position);
+        viewBind.categorySpinner.setAdapter(adapter);
+        viewBind.categorySpinner.setSelection(position);
 
         String[] array = {"Daily", "Weekly", "Monthly", "Yearly"};
         ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>
@@ -131,7 +133,7 @@ public class ScheduleManagementActivity extends AppCompatActivity {
                         array); //selected item will look like a spinner set from XML
         spinnerArrayAdapter.setDropDownViewResource(android.R.layout
                 .simple_spinner_dropdown_item);
-        autoRepetitionSpinner.setAdapter(spinnerArrayAdapter);
+        viewBind.autoRepetitionSpinner.setAdapter(spinnerArrayAdapter);
         initializeRepetitionSpinner(schedule, array);
 
 
@@ -139,11 +141,11 @@ public class ScheduleManagementActivity extends AppCompatActivity {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 DATE = new DateManager().getDate(dayOfMonth, month+1, year);
-                dateText.setText(DATE);
+                viewBind.dateText.setText(DATE);
             }
         };
 
-        dateText.setOnClickListener(new View.OnClickListener() {
+        viewBind.dateText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Calendar calendar = Calendar.getInstance();
@@ -157,7 +159,7 @@ public class ScheduleManagementActivity extends AppCompatActivity {
         });
     }
 
-    private void initializeRepetitionSpinner(ScheduleParser schedule, String[] array) {
+    private void initializeRepetitionSpinner(ScheduleParcel schedule, String[] array) {
         count = new HashMap<>();
         count.put("Daily", "1");
         count.put("Weekly", "7");
@@ -168,50 +170,23 @@ public class ScheduleManagementActivity extends AppCompatActivity {
             if(map.getValue().equals(schedule.getRepeat()))
                 for(int i = 0; i < array.length; i++)
                     if(array[i].equals(map.getKey()))
-                        autoRepetitionSpinner.setSelection(i);
+                        viewBind.autoRepetitionSpinner.setSelection(i);
 
     }
 
-    private boolean isDataChanged(ScheduleParser parser) {
-        String tableName = tableSpinner.getSelectedItem().toString();
-        String category = categorySpinner.getSelectedItem().toString();
-        String amount = amountEdit.getText().toString();
-        String notes = noteEdit.getText().toString();
-        String repeat = count.get(autoRepetitionSpinner.getSelectedItem().toString());
+    private boolean isDataChanged() {
+        String tag = viewBind.tableSpinner.getSelectedItem().toString();
+        String category = viewBind.categorySpinner.getSelectedItem().toString();
+        String amount = viewBind.amountEdit.getText().toString();
+        String notes = viewBind.noteEdit.getText().toString();
+        String repeat = count.get(viewBind.autoRepetitionSpinner.getSelectedItem().toString());
+        Schedule uSchedule = new Schedule(
+                tag, category, Double.parseDouble(amount), notes,schedule.getDate(), repeat, schedule.getWalletID(),schedule.getTransactionID(), schedule.isActive()
+        );
+        uSchedule.setId(schedule.getID());
+        viewModel.updateSchedule(uSchedule);
 
-        boolean flag = false;
-
-        if(!parser.getTableName().equals(tableName)) {
-            db.updateRowFromTable("SCHEDULE", schedule.getID(), "TABLE_NAME", tableName);
-            flag = true;
-        }
-
-        if(!parser.getCategory().equals(category)) {
-            db.updateRowFromTable("SCHEDULE", schedule.getID(), "CATEGORY", category);
-            flag = true;
-        }
-
-        if(!parser.getAmount().equals(amount)) {
-            db.updateRowFromTable("SCHEDULE", schedule.getID(), "AMOUNT", amount);
-            flag = true;
-        }
-
-        if(!parser.getDate().equals(DATE)) {
-            db.updateRowFromTable("SCHEDULE", schedule.getID(), "DATE", DATE);
-            flag = true;
-        }
-
-        if(!parser.getNote().equals(notes)) {
-            db.updateRowFromTable("SCHEDULE", schedule.getID(), "NOTE", notes);
-            flag = true;
-        }
-
-        if(!schedule.getRepeat().equals(repeat)) {
-            db.updateRowFromTable("SCHEDULE", schedule.getID(), "REPEAT", repeat);
-            flag = true;
-        }
-
-        return flag;
+        return true;
     }
 
     private void createToastMassage(String text) {

@@ -1,67 +1,34 @@
 package com.example.bechitra.walleto.activity;
-
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.view.View;
-import android.widget.TextView;
-import com.example.bechitra.walleto.DatabaseHelper;
-import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.adapter.ScheduleViewAdapter;
-import com.example.bechitra.walleto.table.Schedule;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import com.example.bechitra.walleto.databinding.ActivityScheduleDataViewerBinding;
+import com.example.bechitra.walleto.viewmodel.ScheduleDataViewerViewModel;
 
 public class ScheduleDataViewerActivity extends AppCompatActivity {
-    @BindView(R.id.recyclerView) RecyclerView recyclerView;
-    @BindView(R.id.backButton) TextView backButton;
-
     private ScheduleViewAdapter adapter;
-    private DatabaseHelper db;
+    ActivityScheduleDataViewerBinding viewBind;
+    ScheduleDataViewerViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_schedule_data_viewer);
-        ButterKnife.bind(this);
-        db = new DatabaseHelper(this);
+        viewBind = ActivityScheduleDataViewerBinding.inflate(getLayoutInflater());
+        setContentView(viewBind.getRoot());
 
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-
-        adapter = new ScheduleViewAdapter(this, filteredScheduler());
-        recyclerView.setAdapter(adapter);
-
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
+        viewModel = new ViewModelProvider(this).get(ScheduleDataViewerViewModel.class);
+        viewModel.getAllSchedule().observe(this, schedules -> {
+            adapter.setData(schedules);
         });
-    }
 
-    private List<Schedule> filteredScheduler() {
-        List<Schedule> list = db.getScheduledData();
-        String currentActiveWallet = db.getActivatedWalletID();
-        List<Schedule> adapterData = new ArrayList<>();
+        viewBind.recyclerView.setHasFixedSize(true);
+        viewBind.recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
-        for(Schedule s : list)
-            if(s.getWalletID().equals(currentActiveWallet))
-                adapterData.add(s);
+        adapter = new ScheduleViewAdapter(this);
+        viewBind.recyclerView.setAdapter(adapter);
 
-        return adapterData;
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        adapter.setData(filteredScheduler());
-        adapter.notifyDataSetChanged();
+        viewBind.backButton.setOnClickListener(view -> finish());
     }
 }

@@ -31,4 +31,11 @@ public interface ScheduleDao {
 
     @Query("select * from schedule where id = :id")
     Schedule getScheduleByID(long id);
+
+    @Query("select * from schedule")
+    List<Schedule>getAllScheduleList();
+
+
+    @Query("select * from schedule where transaction_id = :transactionID")
+    Schedule getScheduleByTransaction(long transactionID);
 }
