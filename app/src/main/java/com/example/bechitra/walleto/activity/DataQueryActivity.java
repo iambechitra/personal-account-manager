@@ -131,18 +131,15 @@ public class DataQueryActivity extends AppCompatActivity{
             }
         });
 
-        expandMoreLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                expandableLayout.toggle();
+        expandMoreLayout.setOnClickListener(v -> {
+            expandableLayout.toggle();
 
-                if(ROTATION_ANGLE == 0) {
-                    ROTATION_ANGLE = 180;
-                    expandMoreLayout.startAnimation(rotateIn);
-                } else {
-                    ROTATION_ANGLE = 0;
-                    expandMoreLayout.startAnimation(rotateOut);
-                }
+            if(ROTATION_ANGLE == 0) {
+                ROTATION_ANGLE = 180;
+                expandMoreLayout.startAnimation(rotateIn);
+            } else {
+                ROTATION_ANGLE = 0;
+                expandMoreLayout.startAnimation(rotateOut);
             }
         });
 
@@ -223,8 +220,8 @@ public class DataQueryActivity extends AppCompatActivity{
         earningTableRadioButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if(isChecked) {
                 spendingTableRadioButton.setChecked(false);
-                refreshRecyclerView(startDateEditText.getText().toString() ,endDateEditText.getText().toString(), true);
-                resetChartData(dataProcessor.getMonthlyData(viewModel.getTransactionByTag(transactions, DataRepository.EARNING_TAG), "01/01/"+
+                refreshRecyclerView(startDateEditText.getText().toString(), endDateEditText.getText().toString(), true);
+                resetChartData(dataProcessor.getMonthlyData(viewModel.getTransactionByTag(transactions, DataRepository.EARNING_TAG), "01/01/" +
                         dateManager.getYearFromDate(dateManager.getCurrentDate()), dateManager.getCurrentDate()), true);
             }
         });

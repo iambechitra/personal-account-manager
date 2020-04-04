@@ -27,24 +27,24 @@ public class DataQueryActivityViewModel extends AndroidViewModel {
     public LiveData<List<Transaction>> getAllTransaction() { return repository.getTransactionOfActivatedWallet(); }
 
     public List<DataOrganizer> getYearlyTransaction(List<Transaction> transactions, String lowerBound, String upperBound) {
-        return processor.getProcessedYearlyData(transactions, lowerBound, upperBound);
+        return transactions.isEmpty() ? null :processor.getProcessedYearlyData(transactions, lowerBound, upperBound);
     }
 
     public List<DataOrganizer> getMonthlyTransaction(List<Transaction> transactions, String lowerBound, String upperBound) {
-        return processor.getProcessedMonthlyData(transactions, lowerBound, upperBound);
+        return transactions.isEmpty() ? null :processor.getProcessedMonthlyData(transactions, lowerBound, upperBound);
     }
 
     public List<DataOrganizer> getWeeklyTransaction(List<Transaction> transactions, String lowerBound, String upperBound) {
-        return processor.getProcessedWeeklyData(transactions, lowerBound, upperBound);
+        return transactions.isEmpty() ? null :processor.getProcessedWeeklyData(transactions, lowerBound, upperBound);
     }
 
     public List<DataOrganizer> getDailyTransaction(List<Transaction> transactions, String lowerBound, String upperBound) {
-        return processor.getProcessedDailyData(transactions, lowerBound, upperBound);
+        return transactions.isEmpty() ? null : processor.getProcessedDailyData(transactions, lowerBound, upperBound);
     }
 
     public List<Transaction> getTransactionByTag(List<Transaction> transactions, String tag) { return processor.getTransactionsByTag(transactions, tag); }
 
     public Map<String, List<Transaction>> getMonthlyDataMap(List<Transaction> transactions, String lowerBound, String upperBound) {
-        return processor.getMonthlyData(transactions, lowerBound, upperBound);
+        return transactions.isEmpty() ? null : processor.getMonthlyData(transactions, lowerBound, upperBound);
     }
 }
