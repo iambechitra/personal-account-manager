@@ -1,6 +1,7 @@
 package com.example.bechitra.walleto.framents;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,12 +34,7 @@ import java.util.List;
  */
 
 public class OverviewFragment extends Fragment{
-    DateManager dateManager;
-    DataProcessor dataProcessor;
-
-    List<CategoryProcessor> list;
     RecyclerViewAdapter recyclerViewAdapter;
-    View view;
     OverviewFragmentViewModel viewModel;
     FragmentSpendingEarningBinding viewBind;
 
@@ -46,8 +42,7 @@ public class OverviewFragment extends Fragment{
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         viewBind = FragmentSpendingEarningBinding.inflate(inflater, container, false);
-        view = viewBind.getRoot();
-
+        View view = viewBind.getRoot();
         viewBind.nestedScroll.setFocusableInTouchMode(true);
         viewBind.nestedScroll.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
 
@@ -58,9 +53,6 @@ public class OverviewFragment extends Fragment{
                 return (T) new OverviewFragmentViewModel(requireActivity().getApplication());
             }
         }).get(OverviewFragmentViewModel.class);
-
-        dataProcessor = new DataProcessor(view.getContext());
-        dateManager = new DateManager();
 
 
         String[] array = {"Daily", "Weekly", "Monthly", "Yearly"};
@@ -74,7 +66,7 @@ public class OverviewFragment extends Fragment{
 
         viewBind.spendingOrEarningRecyclerView.setHasFixedSize(true);
         viewBind.spendingOrEarningRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext(), LinearLayoutManager.VERTICAL, false));
-
+/*
         viewModel.getAllTransactionData().observe(getViewLifecycleOwner(), transactions -> {
             double spend = viewModel.getLifeTimeCalculationByTag(transactions, DataRepository.SPENDING_TAG);
             double earn = viewModel.getLifeTimeCalculationByTag(transactions, DataRepository.EARNING_TAG);
@@ -86,6 +78,21 @@ public class OverviewFragment extends Fragment{
             recyclerViewAdapter.setData(viewModel.getRecyclerData(transactions));
             setGraphData(transactions);
 
+        });
+
+ */
+
+        viewModel.getActiveWallet().observe(getViewLifecycleOwner(), walletList -> {
+            List<Transaction> transactions = viewModel.getAllTransactionList();
+            double spend = viewModel.getBalanceCalculationByTag(transactions, DataRepository.SPENDING_TAG);
+            double earn = viewModel.getBalanceCalculationByTag(transactions, DataRepository.EARNING_TAG);
+
+            viewBind.lifeTimeEarnText.setText(""+earn);
+            viewBind.lifeTimeSpendText.setText(""+spend);
+            viewBind.amountEntryTransaction.setText(""+(earn+spend));
+
+            recyclerViewAdapter.setData(viewModel.getRecyclerData(transactions));
+            setGraphData(transactions);
         });
 
         recyclerViewAdapter = new RecyclerViewAdapter(getActivity());

@@ -29,11 +29,14 @@ public class HomeFragmentViewModel extends AndroidViewModel {
     private DataRepository repository;
     private DataProcessor processor;
     private DateManager manager;
+    private String lowerBound, upperBound;
     public HomeFragmentViewModel(@NonNull Application application) {
         super(application);
         repository = new DataRepository(application);
         processor = new DataProcessor();
         manager = new DateManager();
+        upperBound = manager.getCurrentDate();
+        lowerBound = manager.getFirstDate(upperBound);
     }
 
     public LiveData<List<Transaction>> getTransactionData() { return repository.getTransactionOfActivatedWallet(); }
@@ -43,8 +46,16 @@ public class HomeFragmentViewModel extends AndroidViewModel {
         return processor.getTransactionsByTag(transactions, tag);
     }
 
+    public List<Transaction> getListOfTransaction() {
+        return processor.getTransactionsByRange(repository.getListTransaction(), lowerBound, upperBound);
+    }
+
     public List<DataOrganizer> getTransactionOfCurrentMonth(List<Transaction> transactions, String tag) {
         return processor.getProcessedTransactionOfCurrentMonth(transactions, tag);
+    }
+
+    public LiveData<Wallet> getActiveWalletData() {
+        return repository.getActiveWalletData();
     }
 
     private List<EntrySet> getPieChartData(List<Transaction> data) {

@@ -26,6 +26,10 @@ public class EarningSetterViewModel extends AndroidViewModel {
         repository.insertSchedule(schedule);
     }
 
+    public void updateWallet(Wallet wallet) { repository.updateWallet(wallet); }
+
+    public Wallet getActivatedWallet() { return repository.getActiveWallet(); }
+
     public long getActivatedWalletID() {
         return repository.getActiveWalletID();
     }

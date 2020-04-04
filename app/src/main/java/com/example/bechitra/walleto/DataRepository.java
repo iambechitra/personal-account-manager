@@ -39,7 +39,6 @@ public class DataRepository {
 
         activeWalletID = walletDao.getActivatedWalletID();
         allWallet = walletDao.getAllWallet();
-//        Log.d("tag", allWallet.getValue().size()+">-<");
         transactionOfActivatedWallet = transactionDao.getAllTransactionOfActiveWallet(activeWalletID);
         scheduleOfActivatedWallet = scheduleDao.getAllScheduleFromActiveWallet(activeWalletID);
     }
@@ -66,6 +65,10 @@ public class DataRepository {
         DatabaseRoom.databaseWriteExecutor.execute(() -> {
             scheduleDao.insert(schedule);
         });
+    }
+
+    public List<Transaction> getListTransaction() {
+        return transactionDao.getListOfTransactionOfActiveWallet(walletDao.getActivatedWalletID());
     }
 
     public void insertWallet(Wallet wallet) {
@@ -130,15 +133,16 @@ public class DataRepository {
         return transactionDao.getTransactionWithinRange(lowerBound, upperBound, activeWalletID);
     }
 
+    public LiveData<Wallet> getActiveWalletData() { return walletDao.getActiveWallet(); }
+
     public Wallet getActiveWallet() {
-        if(allWallet != null) {
-            for (Wallet wallet : allWallet.getValue())
-                if (wallet.isActive())
-                    return wallet;
-        } else {
-            walletDao.insert(new Wallet("PRIMARY", 0, true));
-            return getActiveWallet();
-        }
-        return null;
+        return walletDao.getActivedWallet();
+    }
+
+    public void resetAllData() {
+        transactionDao.reset();
+        scheduleDao.reset();
+        walletDao.resetWallet();
+        walletDao.insert(new Wallet("PRIMARY", 0, true));
     }
 }

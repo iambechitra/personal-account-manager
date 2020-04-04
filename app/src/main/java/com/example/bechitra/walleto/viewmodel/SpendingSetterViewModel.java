@@ -26,6 +26,10 @@ public class SpendingSetterViewModel extends AndroidViewModel {
         repository.insertSchedule(schedule);
     }
 
+    public Wallet getActiveWallet() { return repository.getActiveWallet(); }
+
+    public void updateWallet(Wallet wallet) { repository.updateWallet(wallet); }
+
     public long getActivatedWalletID() {
         return repository.getActiveWalletID();
     }

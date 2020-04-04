@@ -23,20 +23,6 @@ import com.example.bechitra.walleto.framents.HomeFragment;
 import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
-
-    //@BindView(R.id.drawerLayout)
-   // DrawerLayout drawerLayout;
-    //@BindView(R.id.nav_view) NavigationView navigationView;
-   // @BindView(R.id.rootFloatingButton)
-    //FloatingActionButton rootFloatingButton;
-    //@BindView(R.id.dashboard)
-    //TextView dashboardTextView;
-    //@BindView(R.id.dashboardBack) RelativeLayout dashboardBack;
-    //@BindView(R.id.overviewBack) RelativeLayout overviewBack;
-
-    //@BindView(R.id.navigationDrawerIconText) TextView navDrawerIconText;
-
-    //@BindView(R.id.overview) TextView overviewTextView;
     AlarmManager alarmManager;
     PendingIntent pendingIntent;
     ActivityMainBinding binding;

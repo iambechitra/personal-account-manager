@@ -69,8 +69,13 @@ public class HomeFragment extends Fragment{
             transactions = transactionList;
             viewPieChart(transactions);
             refreshData(transactions);
-            Log.d("tagger", "i'm triggered "+transactionList.size());
+        });
 
+        homeFragmentViewModel.getActiveWalletData().observe(getViewLifecycleOwner(), wallet -> {
+                transactions = homeFragmentViewModel.getListOfTransaction();
+                viewPieChart(transactions);
+                refreshData(transactions);
+            Log.d("tag", "i was called "+transactions.size());
         });
 
         adapter = new DataOrganizerAdapter(requireContext());

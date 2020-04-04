@@ -32,6 +32,9 @@ public interface WalletDao {
     @Query("select * from `wallet` where is_active = 1")
     LiveData<Wallet> getActiveWallet();
 
+    @Query("select * from `wallet` where is_active = 1")
+    Wallet getActivedWallet();
+
     @Query("delete from `wallet`")
     void resetWallet();
 }

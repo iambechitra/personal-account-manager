@@ -72,52 +72,40 @@ public class EarningDialog extends DialogFragment {
         });
 
 
-        earningDateText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Calendar calendar = Calendar.getInstance();
-                DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
-                        R.style.Theme_AppCompat_Light_Dialog, dateSetListener, calendar.get(Calendar.YEAR),
-                        calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+        earningDateText.setOnClickListener(viewView -> {
+            Calendar calendar;
+            calendar = Calendar.getInstance();
+            DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
+                    R.style.Theme_AppCompat_Light_Dialog, dateSetListener, calendar.get(Calendar.YEAR),
+                    calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
 
-                datePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FFFFFF")));
-                datePickerDialog.show();
-            }
+            datePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FFFFFF")));
+            datePickerDialog.show();
         });
 
-        dateSetListener = new DatePickerDialog.OnDateSetListener()
-        {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+        dateSetListener = (view1, year, month, dayOfMonth) -> earningDateText.setText(dayOfMonth + "/" + (month + 1) + "/" + Integer.toString(year));
 
-                earningDateText.setText(Integer.toString(dayOfMonth) + "/" + Integer.toString(month + 1) + "/" + Integer.toString(year));
-            }
-        };
+        alertDialogBuilder.setPositiveButton("ADD", (dialog, which) -> {
+            if(earningCatagorySpinner.getSelectedItem() != null && !earningAmountEdit.getText().toString().equals("")) {
+                DateManager stk = new DateManager();
+                BigDecimal big = new BigDecimal(earningAmountEdit.getText().toString());
+                if(big.compareTo(BigDecimal.ZERO) == 1) {
+                    String date;
 
-        alertDialogBuilder.setPositiveButton("ADD", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if(earningCatagorySpinner.getSelectedItem() != null && !earningAmountEdit.getText().toString().equals("")) {
-                    DateManager stk = new DateManager();
-                    BigDecimal big = new BigDecimal(earningAmountEdit.getText().toString());
-                    if(big.compareTo(BigDecimal.ZERO) == 1) {
-                        String date = "";
+                    if (!earningDateText.getText().equals("TODAY"))
+                        date = earningDateText.getText().toString();
+                    else
+                        date = stk.getCurrentDate();
 
-                        if (!earningDateText.getText().equals("TODAY"))
-                            date = earningDateText.getText().toString();
-                        else
-                            date = stk.getCurrentDate();
-
-                        PrimeTable earning = new PrimeTable(null,stk.stringFormatter(earningCatagorySpinner.getSelectedItem().toString()).trim(), earningAmountEdit.getText().toString(), date, null, db.getActivatedWalletID());
-                        db.insertOnTable(db.getEarningTable(),earning);
-                    }
-
+                    PrimeTable earning = new PrimeTable(null,stk.stringFormatter(earningCatagorySpinner.getSelectedItem().toString()).trim(), earningAmountEdit.getText().toString(), date, null, db.getActivatedWalletID());
+                    db.insertOnTable(db.getEarningTable(),earning);
                 }
 
-                if(listener != null)
-                    listener.onClose(true);
-
             }
+
+            if(listener != null)
+                listener.onClose(true);
+
         });
 
         alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

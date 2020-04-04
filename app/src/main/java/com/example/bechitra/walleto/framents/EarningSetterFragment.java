@@ -1,52 +1,33 @@
 package com.example.bechitra.walleto.framents;
 
 import android.app.DatePickerDialog;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.core.widget.NestedScrollView;
-import androidx.lifecycle.ViewModelProvider;
-
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.TextView;
-
+import android.widget.*;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.widget.NestedScrollView;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import com.example.bechitra.walleto.DataRepository;
-import com.example.bechitra.walleto.DatabaseHelper;
-import com.example.bechitra.walleto.MainActivity;
 import com.example.bechitra.walleto.R;
-import com.example.bechitra.walleto.room.entity.Schedule;
-import com.example.bechitra.walleto.room.entity.Transaction;
-import com.example.bechitra.walleto.utility.DateManager;
+import com.example.bechitra.walleto.adapter.SpinnerAdapter;
 import com.example.bechitra.walleto.dialog.CategoryCreatorDialog;
 import com.example.bechitra.walleto.dialog.listener.DialogListener;
-import com.example.bechitra.walleto.adapter.SpinnerAdapter;
-import com.example.bechitra.walleto.table.PrimeTable;
+import com.example.bechitra.walleto.room.entity.Schedule;
+import com.example.bechitra.walleto.room.entity.Transaction;
+import com.example.bechitra.walleto.room.entity.Wallet;
+import com.example.bechitra.walleto.utility.DateManager;
 import com.example.bechitra.walleto.viewmodel.EarningSetterViewModel;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import java.util.*;
 
 public class EarningSetterFragment extends Fragment {
 
@@ -71,7 +52,6 @@ public class EarningSetterFragment extends Fragment {
     @BindView(R.id.earningNoteEdit) EditText earningNoteEdit;
 
     private DatePickerDialog.OnDateSetListener dateSetListener;
-    //private DatabaseHelper db;
     DataRepository repository;
     private List<String> spinnerItem;
     private SpinnerAdapter spinnerAdapter;
@@ -118,10 +98,7 @@ public class EarningSetterFragment extends Fragment {
         if(getArguments() == null) {
             earningCatagorySpinner.setSelection(0);
             autoRepetitionSpinner.setVisibility(View.INVISIBLE);
-            Log.d("inState", "null");
-        } else
-            loadSavedState(getArguments());
-
+        }
 
 
         earningCatagorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -192,6 +169,9 @@ public class EarningSetterFragment extends Fragment {
                             date, DataRepository.EARNING_TAG, repository.getActiveWalletID());
 
                     long rowID = earningSetterViewModel.insertTransaction(earning);
+                    Wallet wallet = earningSetterViewModel.getActivatedWallet();
+                    wallet.setBalance(wallet.getBalance()+Double.parseDouble(earningAmountEdit.getText().toString()));
+                    earningSetterViewModel.updateWallet(wallet);
 
                     if(autoRepetitionCheckBox.isChecked()) {
                         earningSetterViewModel.insertSchedule(new Schedule(DataRepository.EARNING_TAG, category,
@@ -214,34 +194,6 @@ public class EarningSetterFragment extends Fragment {
         return view;
     }
 
-    private void loadSavedState(Bundle savedInstanceState) {
-        /*
-        SaveInstanceState state = new SaveInstanceState(savedInstanceState);
-        if(state.isExist()) {
-            earningCatagorySpinner.setSelection(spinnerItem.indexOf(state.getCategory()));
-            earningAmountEdit.setText(state.getAmount());
-            earningNoteEdit.setText(state.getNote());
-            earningDateText.setText(state.getDate());
-
-            if(state.isRepetitionChaked()) {
-                autoRepetitionCheckBox.setChecked(true);
-                autoRepetitionSpinner.setVisibility(View.VISIBLE);
-
-                String[] array = {"Daily", "Weekly", "Monthly", "Yearly"};
-                String repeat = state.getRepeatKey();
-                for(int i = 0; i < array.length; i++) {
-                    if(array[i].equals(repeat)) {
-                        autoRepetitionSpinner.setSelection(i);
-                        break;
-                    }
-                }
-
-            } else
-                autoRepetitionSpinner.setVisibility(View.INVISIBLE);
-        }
-        */
-    }
-
 
     private String getRepeat() {
         HashMap<String, String> count = new HashMap<>();
@@ -251,12 +203,5 @@ public class EarningSetterFragment extends Fragment {
         count.put("Yearly", "365");
 
         return count.get(autoRepetitionSpinner.getSelectedItem().toString());
-    }
-
-    private void loadMainActivity() {
-        Intent i = new Intent(getActivity(), MainActivity.class);
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        getActivity().finish();
-        startActivity(i);
     }
 }

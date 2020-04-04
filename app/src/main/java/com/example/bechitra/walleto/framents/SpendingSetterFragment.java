@@ -31,6 +31,7 @@ import com.example.bechitra.walleto.dialog.CategoryCreatorDialog;
 import com.example.bechitra.walleto.dialog.listener.DialogListener;
 import com.example.bechitra.walleto.room.entity.Schedule;
 import com.example.bechitra.walleto.room.entity.Transaction;
+import com.example.bechitra.walleto.room.entity.Wallet;
 import com.example.bechitra.walleto.utility.DateManager;
 import com.example.bechitra.walleto.utility.SaveInstanceState;
 import com.example.bechitra.walleto.viewmodel.SpendingSetterViewModel;
@@ -129,76 +130,67 @@ public class SpendingSetterFragment extends Fragment{
             }
         });
 
-        dateSetListener = new DatePickerDialog.OnDateSetListener()
-        {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth)
-            {
-                spendingDateText.setText(new DateManager().getDate(dayOfMonth, month+1, year));
-            }
-        };
+        dateSetListener = (view, year, month, dayOfMonth) -> spendingDateText.setText(new DateManager().getDate(dayOfMonth, month+1, year));
 
 
-        confirmButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (categorySpinner.getSelectedItem() != null && !spendingAmountEdit.getText().toString().equals("")) {
+        confirmButton.setOnClickListener(view -> {
+            if (categorySpinner.getSelectedItem() != null && !spendingAmountEdit.getText().toString().equals("")) {
 
-                    BigDecimal big = new BigDecimal(spendingAmountEdit.getText().toString());
-                    if (big.compareTo(BigDecimal.ZERO) == 1) {
-                        String date = "";
-                        DateManager stk = new DateManager();
-                        String category = stk.stringFormatter(spinnerItem.get(pos)).trim();
+                BigDecimal big = new BigDecimal(spendingAmountEdit.getText().toString());
+                if (big.compareTo(BigDecimal.ZERO) == 1) {
+                    String date = "";
+                    DateManager stk = new DateManager();
+                    String category = stk.stringFormatter(spinnerItem.get(pos)).trim();
 
-                        if (!spendingDateText.getText().equals("TODAY"))
-                            date = spendingDateText.getText().toString();
-                        else
-                            date = new DateManager().getCurrentDate();
+                    if (!spendingDateText.getText().equals("TODAY"))
+                        date = spendingDateText.getText().toString();
+                    else
+                        date = new DateManager().getCurrentDate();
 
-                        Transaction spending = new Transaction(category, Double.parseDouble(spendingAmountEdit.getText().toString()),
-                                stk.stringFormatter(additionalNoteEdit.getText().toString().toUpperCase()).trim(),
-                                date, DataRepository.SPENDING_TAG, spendingSetterViewModel.getActivatedWalletID());
+                    Transaction spending = new Transaction(category, Double.parseDouble(spendingAmountEdit.getText().toString()),
+                            stk.stringFormatter(additionalNoteEdit.getText().toString().toUpperCase()).trim(),
+                            date, DataRepository.SPENDING_TAG, spendingSetterViewModel.getActivatedWalletID());
 
-                        long rowId = spendingSetterViewModel.insertTransaction(spending);
-                        double bal = Double.parseDouble(spendingAmountEdit.getText().toString());
-                        Log.d("sbal", "non -> "+bal);
+                    long rowId = spendingSetterViewModel.insertTransaction(spending);
+                    double bal = Double.parseDouble(spendingAmountEdit.getText().toString());
 
-                        if(autoRepetitionCheckBox.isChecked())
-                            spendingSetterViewModel.insertSchedule(new Schedule(DataRepository.SPENDING_TAG, category, Double.parseDouble(spendingAmountEdit.getText().toString()),
-                                    stk.stringFormatter(additionalNoteEdit.getText().toString().toUpperCase()).trim(), date, getRepeat(), spending.getWalletID(),rowId, true));
+                    Wallet wallet = spendingSetterViewModel.getActiveWallet();
+                    wallet.setBalance(wallet.getBalance() - bal);
 
-                        getActivity().finish();
-                    }
+                    spendingSetterViewModel.updateWallet(wallet);
+
+                    if(autoRepetitionCheckBox.isChecked())
+                        spendingSetterViewModel.insertSchedule(new Schedule(DataRepository.SPENDING_TAG, category, Double.parseDouble(spendingAmountEdit.getText().toString()),
+                                stk.stringFormatter(additionalNoteEdit.getText().toString().toUpperCase()).trim(), date, getRepeat(), spending.getWalletID(),rowId, true));
+
+                    getActivity().finish();
                 }
             }
         });
 
-        newCatagoryCreatorText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CategoryCreatorDialog dialog = new CategoryCreatorDialog();
-                dialog.setOnAddCategory(new DialogListener() {
-                    boolean flag = false;
-                    @Override
-                    public void onSetDialog(String regex, boolean flag) {
-                        if(!regex.equals("NULL")) {
-                            for (String str : spinnerItem) {
-                                if (str.equals(regex))
-                                    flag = true;
-                            }
+        newCatagoryCreatorText.setOnClickListener(viewView -> {
+            CategoryCreatorDialog dialog = new CategoryCreatorDialog();
+            dialog.setOnAddCategory(new DialogListener() {
+                boolean flag = false;
+                @Override
+                public void onSetDialog(String regex, boolean flag) {
+                    if(!regex.equals("NULL")) {
+                        for (String str : spinnerItem) {
+                            if (str.equals(regex))
+                                flag = true;
+                        }
 
-                            if (!flag) {
-                                Log.d("Cat", regex);
-                                spinnerItem.add(regex);
-                                spinnerAdapter.setData(spinnerItem);
-                                spinnerAdapter.notifyDataSetChanged();
-                                categorySpinner.setSelection(spinnerItem.size() - 1);
-                            }
+                        if (!flag) {
+                            Log.d("Cat", regex);
+                            spinnerItem.add(regex);
+                            spinnerAdapter.setData(spinnerItem);
+                            spinnerAdapter.notifyDataSetChanged();
+                            categorySpinner.setSelection(spinnerItem.size() - 1);
                         }
                     }
-                });
-                dialog.show(getActivity().getSupportFragmentManager(), "OK");
-            }
+                }
+            });
+            dialog.show(getActivity().getSupportFragmentManager(), "OK");
         });
 
         autoRepetitionCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {

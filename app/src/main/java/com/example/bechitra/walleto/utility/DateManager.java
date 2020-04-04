@@ -20,6 +20,11 @@ public class DateManager {
         return ("/"+str[1]+"/"+str[0]);
     }
 
+    public String getFirstDate(String dateDate) {
+        String []date = getSeparatedDateArray(dateDate);
+        return "01/"+date[1]+"/"+date[2];
+    }
+
     public String getMonthWithYear(String date) {
         String[] str = getSeparatedDateArray(date);
         return ("/"+str[1]+"/"+str[2]);

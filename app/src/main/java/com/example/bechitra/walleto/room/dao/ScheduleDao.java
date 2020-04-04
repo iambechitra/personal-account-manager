@@ -38,4 +38,7 @@ public interface ScheduleDao {
 
     @Query("select * from schedule where transaction_id = :transactionID")
     Schedule getScheduleByTransaction(long transactionID);
+
+    @Query("delete from schedule")
+    void reset();
 }

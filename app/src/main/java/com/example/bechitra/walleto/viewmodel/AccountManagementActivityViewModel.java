@@ -9,6 +9,7 @@ import androidx.lifecycle.LiveData;
 import com.example.bechitra.walleto.DataRepository;
 import com.example.bechitra.walleto.room.entity.Transaction;
 import com.example.bechitra.walleto.room.entity.Wallet;
+import com.example.bechitra.walleto.utility.DataProcessor;
 
 
 import java.util.ArrayList;
@@ -17,15 +18,20 @@ import java.util.List;
 public class AccountManagementActivityViewModel extends AndroidViewModel {
     private DataRepository repository;
     private LiveData<List<Wallet>> walletList;
+    private DataProcessor processor;
     public AccountManagementActivityViewModel(@NonNull Application application) {
         super(application);
         repository = new DataRepository(application);
-
+        this.processor = new DataProcessor();
         walletList = repository.getAllWallet();
     }
 
     public LiveData<List<Wallet>> getWalletList() {
         return walletList;
+    }
+
+    public double getBalanceByTaggedTransaction(List<Transaction> transactions, String tag) {
+        return processor.getAmountByTag(transactions, tag);
     }
 
     public void insertNewWallet(Wallet wallet) { repository.insertWallet(wallet); }
@@ -54,8 +60,8 @@ public class AccountManagementActivityViewModel extends AndroidViewModel {
         repository.deleteTransactionByID(walletID);
     }
 
-    public LiveData<List<Transaction>> getAllTransaction() {
-        return repository.getTransactionOfActivatedWallet();
+    public List<Transaction> getAllTransaction() {
+        return repository.getListTransaction();
     }
 
     public void updateWallet(Wallet wallet) { repository.updateWallet(wallet); }

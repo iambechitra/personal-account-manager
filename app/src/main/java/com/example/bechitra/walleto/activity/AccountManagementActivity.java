@@ -10,9 +10,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import com.example.bechitra.walleto.DataRepository;
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.adapter.WalletCreatorAdapter;
 import com.example.bechitra.walleto.dialog.WalletCreatorDialog;
+import com.example.bechitra.walleto.room.entity.Transaction;
 import com.example.bechitra.walleto.room.entity.Wallet;
 import com.example.bechitra.walleto.viewmodel.AccountManagementActivityViewModel;
 
@@ -53,10 +55,15 @@ public class AccountManagementActivity extends AppCompatActivity {
             adapter.setData(data);
             wallet = viewModel.getActiveWallet(walletList);
             activeWalletName.setText(wallet.getName());
-        });
+            activeWalletCurrentBalance.setText("$"+wallet.getBalance());
 
-        viewModel.getAllTransaction().observe(this, transactions -> {
+            List<Transaction> transactions = viewModel.getAllTransaction();
 
+            double spend = viewModel.getBalanceByTaggedTransaction(transactions, DataRepository.SPENDING_TAG);
+            double earn = viewModel.getBalanceByTaggedTransaction(transactions, DataRepository.EARNING_TAG);
+
+            activeWalletTotalEarning.setText("$"+earn);
+            activeWalletTotalSpending.setText("$"+spend);
         });
 
         newWalletCreatorLayout.setOnClickListener(view-> {

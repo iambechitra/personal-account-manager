@@ -2,6 +2,7 @@ package com.example.bechitra.walleto.viewmodel;
 
 import android.app.Application;
 import android.graphics.Color;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -9,6 +10,7 @@ import androidx.lifecycle.LiveData;
 
 import com.example.bechitra.walleto.DataRepository;
 import com.example.bechitra.walleto.room.entity.Transaction;
+import com.example.bechitra.walleto.room.entity.Wallet;
 import com.example.bechitra.walleto.utility.CategoryProcessor;
 import com.example.bechitra.walleto.utility.DataProcessor;
 import com.example.bechitra.walleto.utility.DateManager;
@@ -28,16 +30,25 @@ public class OverviewFragmentViewModel extends AndroidViewModel {
     private DataRepository repository;
     private DataProcessor dataProcessor;
     private DateManager dateManager;
+    private String lowerBound, upperBound;
     public OverviewFragmentViewModel(@NonNull Application application) {
         super(application);
         repository = new DataRepository(application);
         dataProcessor = new DataProcessor();
         dateManager = new DateManager();
+        upperBound = dateManager.getCurrentDate();
+        lowerBound = "01/01/"+dateManager.getYearFromDate(upperBound);
     }
 
     public LiveData<List<Transaction>> getAllTransactionData() { return repository.getTransactionOfActivatedWallet(); }
 
-    public double getLifeTimeCalculationByTag(List<Transaction> transactions, String tag) {
+    public LiveData<Wallet> getActiveWallet() { return repository.getActiveWalletData(); }
+
+    public List<Transaction> getAllTransactionList() {
+        return dataProcessor.getTransactionsByRange(repository.getListTransaction(),lowerBound, upperBound);
+    }
+
+    public double getBalanceCalculationByTag(List<Transaction> transactions, String tag) {
         return dataProcessor.getAmountByTag(transactions, tag);
     }
 
