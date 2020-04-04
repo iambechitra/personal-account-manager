@@ -10,8 +10,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
 import butterknife.BindView;
-import butterknife.ButterKnife;
-import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.adapter.DefaultSpinnerAdapter;
 import com.example.bechitra.walleto.databinding.ActivityScheduleManagementBinding;
@@ -24,22 +22,12 @@ import com.example.bechitra.walleto.viewmodel.ScheduleManagementActivityViewMode
 import java.util.*;
 
 public class ScheduleManagementActivity extends AppCompatActivity {
-    //@BindView(R.id.deleteSchedule) TextView deleteButton;
     @BindView(R.id.editSchedule) TextView editButton;
-    //@BindView(R.id.backButton) TextView backButton;
-    //@BindView(R.id.tableSpinner) Spinner tableSpinner;
-    //@BindView(R.id.categorySpinner) Spinner categorySpinner;
-    //@BindView(R.id.noteEdit) EditText noteEdit;
-    //@BindView(R.id.amountEdit) EditText amountEdit;
-    //@BindView(R.id.dateText) TextView dateText;
-    //@BindView(R.id.autoRepetitionSpinner) Spinner autoRepetitionSpinner;
     @BindView(R.id.isActiveSwitch) Switch isActiveSwitch;
-    //@BindView(R.id.updateButton) TextView updateButton;
 
     private DatePickerDialog.OnDateSetListener dateSetListener;
     private ScheduleParcel schedule;
     private List<String> spinnerItem;
-    private DatabaseHelper db;
     private String DATE = "";
     private Map<String, String> count;
     ActivityScheduleManagementBinding viewBind;

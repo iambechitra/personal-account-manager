@@ -9,17 +9,17 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.bechitra.walleto.R;
+import com.example.bechitra.walleto.room.entity.Transaction;
 import com.example.bechitra.walleto.utility.DateManager;
-import com.example.bechitra.walleto.table.PrimeTable;
 
 import java.util.List;
-
+/// ############################### NO USE OF THIS ADAPTER ######################### \\\
 public class SpendingRecyclerAdapter extends RecyclerView.Adapter<SpendingRecyclerAdapter.SpendingRecyclerViewHolder>{
-    private List<PrimeTable> spendingsList;
+    private List<Transaction> spendingsList;
     private Context context;
     private RelativeLayout.LayoutParams params;
 
-    public SpendingRecyclerAdapter(List<PrimeTable> spendingsList, Context context) {
+    public SpendingRecyclerAdapter(List<Transaction> spendingsList, Context context) {
         this.spendingsList = spendingsList;
         this.context = context;
         this.params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -33,13 +33,13 @@ public class SpendingRecyclerAdapter extends RecyclerView.Adapter<SpendingRecycl
         return new SpendingRecyclerViewHolder(view);
     }
 
-    public void setData(List<PrimeTable> list) {
+    public void setData(List<Transaction> list) {
         this.spendingsList = list;
     }
 
     @Override
     public void onBindViewHolder(SpendingRecyclerViewHolder holder, int position) {
-        PrimeTable spending = spendingsList.get(position);
+        Transaction spending = spendingsList.get(position);
         DateManager spc = new DateManager();
 
         String []str = spc.getSeparatedDateArray(spending.getDate());
@@ -47,7 +47,7 @@ public class SpendingRecyclerAdapter extends RecyclerView.Adapter<SpendingRecycl
         holder.spendingRecyclerDay.setText(str[0]);
         holder.spendingRecyclerMonth.setText(spc.getMonthName(Integer.parseInt(str[1])));
         holder.spendingRecyclerYear.setText(str[2]);
-        holder.spendingRecyclerTitle.setText(spending.getID());
+        holder.spendingRecyclerTitle.setText(""+spending.getId());
         holder.spendingRecyclerCategory.setText(spending.getCategory());
         holder.spendingRecyclerNote.setText(spending.getNote());
         holder.spendingRecyclerAmount.setText("$"+spending.getAmount());

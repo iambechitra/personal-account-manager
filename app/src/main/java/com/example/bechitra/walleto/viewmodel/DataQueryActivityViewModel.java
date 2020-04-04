@@ -47,4 +47,12 @@ public class DataQueryActivityViewModel extends AndroidViewModel {
     public Map<String, List<Transaction>> getMonthlyDataMap(List<Transaction> transactions, String lowerBound, String upperBound) {
         return transactions.isEmpty() ? null : processor.getMonthlyData(transactions, lowerBound, upperBound);
     }
+
+    public double getBalanceCalculation(List<Transaction> value) {
+        return processor.getBalanceOfTransaction(value);
+    }
+
+    public Map<String, List<Transaction>> getMonthlyData(List<Transaction> transactionByTag, String lowerBound, String upperBound) {
+        return processor.getMonthlyData(transactionByTag, lowerBound, upperBound);
+    }
 }

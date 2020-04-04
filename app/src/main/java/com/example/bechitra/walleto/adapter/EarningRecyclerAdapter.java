@@ -9,17 +9,19 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.bechitra.walleto.R;
+import com.example.bechitra.walleto.room.entity.Transaction;
 import com.example.bechitra.walleto.utility.DateManager;
-import com.example.bechitra.walleto.table.PrimeTable;
 
 import java.util.List;
 
+/// %%%%%%%%%%%%%%%%%%%%%%%%% NO USE OF THIS ADAPTER %%%%%%%%%%%%%%%%%%%%%%%%%%%%% \\\
+
 public class EarningRecyclerAdapter extends RecyclerView.Adapter<EarningRecyclerAdapter.EarningRecyclerViewGroup>{
     private Context context;
-    private List<PrimeTable> earningList;
+    private List<Transaction> earningList;
     private RelativeLayout.LayoutParams params;
 
-    public EarningRecyclerAdapter(Context context, List<PrimeTable> earningList) {
+    public EarningRecyclerAdapter(Context context, List<Transaction> earningList) {
         this.context = context;
         this.earningList = earningList;
         this.params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -36,7 +38,7 @@ public class EarningRecyclerAdapter extends RecyclerView.Adapter<EarningRecycler
     @Override
     public void onBindViewHolder(EarningRecyclerViewGroup holder, int position) {
         DateManager spc = new DateManager();
-        PrimeTable earning = earningList.get(position);
+        Transaction earning = earningList.get(position);
         holder.categoryOfEarning.setText(earning.getCategory());
         holder.earningAmount.setText("$"+earning.getAmount());
         holder.earningDate.setText(spc.monthStringBuilder(earning.getDate()));
@@ -47,7 +49,7 @@ public class EarningRecyclerAdapter extends RecyclerView.Adapter<EarningRecycler
         return earningList.size();
     }
 
-    public void setData(List<PrimeTable> list) {
+    public void setData(List<Transaction> list) {
         this.earningList = list;
     }
 

@@ -1,19 +1,12 @@
 package com.example.bechitra.walleto.utility;
 
 import androidx.annotation.NonNull;
-import com.example.bechitra.walleto.table.PrimeTable;
 import java.util.List;
 
 public class MapEntry {
     String key;
-    List<PrimeTable> value;
     List<MapEntry> mapValue;
     boolean flag = false;
-
-    public MapEntry(String key, List<PrimeTable> value) {
-        this.key = key;
-        this.value = value;
-    }
 
     public List<MapEntry> getValues() {
         return mapValue;
@@ -31,9 +24,5 @@ public class MapEntry {
 
     public boolean isFlag() {
         return flag;
-    }
-
-    public List<PrimeTable> getValue() {
-        return value;
     }
 }

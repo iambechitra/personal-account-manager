@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.dialog.WalletManagementDialog;
 import com.example.bechitra.walleto.dialog.listener.DialogListener;
@@ -29,7 +28,6 @@ public class WalletCreatorAdapter extends RecyclerView.Adapter<WalletCreatorAdap
     List<Wallet> data;
     Context context;
     RelativeLayout.LayoutParams params;
-    DatabaseHelper db;
     List<String> balance;
     OnItemClick listener;
     ColorUtility colorUtility;
@@ -39,7 +37,6 @@ public class WalletCreatorAdapter extends RecyclerView.Adapter<WalletCreatorAdap
         this.context = context;
         this.colorUtility = new ColorUtility();
         this.params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        //db = new DatabaseHelper(context);
         balance = new ArrayList<>();
     }
 

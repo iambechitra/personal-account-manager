@@ -1,7 +1,6 @@
 package com.example.bechitra.walleto.utility;
 
 import com.example.bechitra.walleto.room.entity.Transaction;
-import com.example.bechitra.walleto.table.PrimeTable;
 
 public class DataOrganizer {
     private CategoryProcessor processor;

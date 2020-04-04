@@ -5,16 +5,13 @@ import android.os.Bundle;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-
 import com.example.bechitra.walleto.adapter.RowViewAdapter;
 import com.example.bechitra.walleto.databinding.ActivityCategoryViewBinding;
 import com.example.bechitra.walleto.room.entity.Transaction;
 import com.example.bechitra.walleto.utility.ColorUtility;
-import com.example.bechitra.walleto.utility.DataProcessor;
 import com.example.bechitra.walleto.utility.DateManager;
 import com.example.bechitra.walleto.viewmodel.CategoryItemViewerViewModel;
 import com.github.mikephil.charting.components.AxisBase;
@@ -24,11 +21,8 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 
 import java.util.List;
 
-import butterknife.ButterKnife;
-
 public class CategoryItemViewerActivity extends AppCompatActivity {
     RowViewAdapter adapter;
-    DataProcessor dataProcessor;
     DateManager dateManager;
     CategoryItemViewerViewModel viewModel;
     ActivityCategoryViewBinding viewBind;
@@ -39,9 +33,6 @@ public class CategoryItemViewerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         viewBind = ActivityCategoryViewBinding.inflate(getLayoutInflater());
         setContentView(viewBind.getRoot());
-
-        ButterKnife.bind(this);
-        dataProcessor = new DataProcessor(this);
         dateManager = new DateManager();
 
         viewBind.rowViewScrollView.setFocusableInTouchMode(true);

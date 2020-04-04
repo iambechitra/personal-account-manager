@@ -1,36 +1,16 @@
 package com.example.bechitra.walleto.utility;
 
-import android.content.Context;
-import android.util.Log;
-
-import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.room.entity.Transaction;
-import com.example.bechitra.walleto.table.PrimeTable;
-
-import java.text.ParseException;
 import java.util.*;
 
-import butterknife.Optional;
-
 public class DataProcessor {
-    //private DatabaseHelper db;
+
     private DateManager dateManager;
-    private List<Transaction> transactions;
 
     public DataProcessor() {
         this.dateManager = new DateManager();
     }
 
-    public DataProcessor(Context context) {
-        this.dateManager = new DateManager();
-    }
-
-
-
-    public DataProcessor(List<Transaction> transactions) {
-        this.transactions = transactions;
-        this.dateManager = new DateManager();
-    }
 
     public List<DataOrganizer> getProcessedTransactionOfCurrentMonth(List<Transaction> transactions,  String tag) {
         String today = dateManager.getCurrentDate();
@@ -62,8 +42,6 @@ public class DataProcessor {
 
         return balance;
     }
-
-    public void setTransactions(List<Transaction> transactions) { this.transactions = transactions; }
 
     public List<Transaction> getTransactionsByRange(List<Transaction> transactions, String lowerBound, String upperBound) {
         List<Transaction> filteredTransaction = new ArrayList<>();
@@ -308,6 +286,7 @@ public class DataProcessor {
 
         return amount;
     }
+
 
     public List<MapHelper> getCategorisedData(List<Transaction> list) {
         Map<String, List<Transaction>> listMap = new HashMap<>();

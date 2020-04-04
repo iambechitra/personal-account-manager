@@ -9,7 +9,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Bundle;
@@ -21,17 +20,9 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
-import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.example.bechitra.walleto.DataRepository;
-import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.MainActivity;
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.adapter.DefaultSpinnerAdapter;
@@ -50,40 +41,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import com.example.bechitra.walleto.utility.DateManager;
 import com.example.bechitra.walleto.viewmodel.DataEditorActivityViewModel;
 
 public class DataEditorActivity extends AppCompatActivity {
-
-    //@BindView(R.id.amountEdit)
-    //EditText amountEt;
-    //@BindView(R.id.noteEdit) EditText note;
-    //@BindView(R.id.updateButton)
-    //Button updateButton;
-    //@BindView(R.id.categorySpinner)
-    //Spinner categorySpinner;
-    //@BindView(R.id.circleBack)
-    //RelativeLayout circleBack;
-    //@BindView(R.id.circleIcon)
-    //TextView circleIcon;
-    //@BindView(R.id.repeatCheck)
-    //CheckBox repeatCheckbox;
-    //@BindView(R.id.dateText) TextView dateText;
-    //@BindView(R.id.backText) TextView back;
-    //@BindView(R.id.deleteText) TextView delete;
-    //@BindView(R.id.editText) TextView edit;
-    //@BindView(R.id.titleBar) RelativeLayout titleBarLayout;
-    //@BindView(R.id.repeatStatusSpinner) Spinner autoRepetitionSpinner;
-
     private DatePickerDialog.OnDateSetListener dateSetListener;
-
     boolean editable = false;
     TransactionParcel data;
-
     private List<String> spinnerItem;
-    DatabaseHelper db;
     Schedule schedule;
     DataEditorActivityViewModel viewModel;
     ActivityDataEditorBinding viewBind;

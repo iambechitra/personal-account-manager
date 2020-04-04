@@ -4,7 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.example.bechitra.walleto.room.entity.Transaction;
-import com.example.bechitra.walleto.table.PrimeTable;
 
 public class TransactionParcel implements Parcelable{
     private String tag,category, note, date;

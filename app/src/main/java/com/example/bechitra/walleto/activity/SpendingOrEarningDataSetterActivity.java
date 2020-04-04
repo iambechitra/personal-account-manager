@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.bechitra.walleto.R;
+import com.example.bechitra.walleto.databinding.ActivityDataSetterBinding;
 import com.example.bechitra.walleto.framents.EarningSetterFragment;
 import com.example.bechitra.walleto.framents.SpendingSetterFragment;
 
@@ -20,16 +21,13 @@ public class SpendingOrEarningDataSetterActivity extends AppCompatActivity {
     SpendingSetterFragment spendingSetterFragment;
     EarningSetterFragment earningSetterFragment;
     FragmentTransaction fragmentTransaction;
-
-    @BindView(R.id.spendingButton) Button spendingButton;
-
-    @BindView(R.id.earningButton) Button earningButton;
+    ActivityDataSetterBinding viewBind;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_data_setter);
-        ButterKnife.bind(this);
+        viewBind = ActivityDataSetterBinding.inflate(getLayoutInflater());
+        setContentView(viewBind.getRoot());
 
         spendingSetterFragment = new SpendingSetterFragment();
         earningSetterFragment = new EarningSetterFragment();
@@ -38,11 +36,11 @@ public class SpendingOrEarningDataSetterActivity extends AppCompatActivity {
 
         attachFragment(spendingSetterFragment);
 
-        spendingButton.setOnClickListener(view -> {
+        viewBind.spendingButton.setOnClickListener(view -> {
             attachFragment(spendingSetterFragment);
         });
 
-        earningButton.setOnClickListener(view -> {
+        viewBind.earningButton.setOnClickListener(view -> {
             attachFragment(earningSetterFragment);
         });
     }

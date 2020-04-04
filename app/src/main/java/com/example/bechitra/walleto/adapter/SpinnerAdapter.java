@@ -1,6 +1,5 @@
 package com.example.bechitra.walleto.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
@@ -9,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.utility.ColorUtility;
 

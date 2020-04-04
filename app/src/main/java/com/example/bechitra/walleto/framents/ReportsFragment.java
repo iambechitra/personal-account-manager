@@ -12,22 +12,11 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
-import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.dialog.ExcessSpendingAlertDialog;
 import com.example.bechitra.walleto.dialog.listener.AlertManagerListener;
-import com.example.bechitra.walleto.utility.EntrySet;
 import com.github.mikephil.charting.charts.HorizontalBarChart;
-import com.github.mikephil.charting.components.AxisBase;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.github.mikephil.charting.utils.ColorTemplate;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -39,8 +28,6 @@ import butterknife.ButterKnife;
 
 public class ReportsFragment extends Fragment{
     @BindView(R.id.excessSpendingAlertSwitch) Switch excessSpendingAlert;
-    DatabaseHelper db;
-
     @BindView(R.id.horizontalBarchart)
     HorizontalBarChart horizontalBarChart;
     Map<Integer, String> map;

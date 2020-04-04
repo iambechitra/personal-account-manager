@@ -2,18 +2,10 @@ package com.example.bechitra.walleto.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.CompoundButton;
-import android.widget.Switch;
 import android.widget.Toast;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelStore;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import com.example.bechitra.walleto.DatabaseHelper;
-import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.databinding.ActivitySettingsBinding;
 import com.example.bechitra.walleto.dialog.ResetDialog;
-import com.example.bechitra.walleto.dialog.listener.OnResetListener;
 import com.example.bechitra.walleto.viewmodel.SettingActivityViewModel;
 
 public class SettingsActivity extends AppCompatActivity {

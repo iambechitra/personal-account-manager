@@ -14,7 +14,6 @@ import android.widget.CompoundButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.utility.DateManager;
 import com.example.bechitra.walleto.dialog.listener.FilterDialogListener;
@@ -35,11 +34,12 @@ public class AdvanceFilterDialog extends DialogFragment{
     @BindView(R.id.categoryItemSpinner) Spinner categorySpinner;
     @BindView(R.id.yearItemSpinner) Spinner yearItemSpinner;
     @BindView(R.id.monthSpinner) Spinner monthSpinner;
-    DatabaseHelper db;
     boolean []checked = new boolean[4];
 
     @NonNull
     @Override
+
+    /// ################### NEED TO CHECK ################# \\\
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = LayoutInflater.from(getActivity());
@@ -47,7 +47,6 @@ public class AdvanceFilterDialog extends DialogFragment{
         alertDialogBuilder.setView(view);
         ButterKnife.bind(this, view);
         Bundle bundle = getArguments();
-        db = new DatabaseHelper(getContext());
 
         daysChecked.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -136,8 +135,8 @@ public class AdvanceFilterDialog extends DialogFragment{
         monthSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         monthSpinner.setAdapter(monthSpinnerAdapter);
 
-        List<String> categoryItem = db.getDistinctCategory(bundle.getString("TABLE_NAME"));
-        List<String> yearItem = db.getDistinctDate(bundle.getString("TABLE_NAME"));
+        List<String> categoryItem = null;//= db.getDistinctCategory(bundle.getString("TABLE_NAME"));
+        List<String> yearItem = null;//= db.getDistinctDate(bundle.getString("TABLE_NAME"));
         ArrayAdapter<String> categorySpinnerAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, categoryItem);
         categorySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         categorySpinner.setAdapter(categorySpinnerAdapter);

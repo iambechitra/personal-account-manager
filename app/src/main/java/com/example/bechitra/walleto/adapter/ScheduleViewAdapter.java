@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.activity.ScheduleManagementActivity;
 import com.example.bechitra.walleto.room.entity.Schedule;
@@ -29,13 +28,11 @@ public class ScheduleViewAdapter extends RecyclerView.Adapter<ScheduleViewAdapte
     Context context;
     List<Schedule> data;
     RelativeLayout.LayoutParams params;
-    DatabaseHelper db;
 
     OnDeleteItem listener;
 
     public ScheduleViewAdapter(Context context) {
         this.context = context;
-        db = new DatabaseHelper(context);
         this.params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
     }
 

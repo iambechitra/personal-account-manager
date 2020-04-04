@@ -3,34 +3,21 @@ package com.example.bechitra.walleto.activity;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import com.example.bechitra.walleto.DatabaseHelper;
-import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.adapter.RowViewAdapter;
 import com.example.bechitra.walleto.databinding.ActivityCategorisedDataViewerBinding;
-import com.example.bechitra.walleto.databinding.ActivityCategoryViewBinding;
 import com.example.bechitra.walleto.room.entity.Transaction;
-import com.example.bechitra.walleto.table.PrimeTable;
 import com.example.bechitra.walleto.utility.CategorisedDataParcel;
 import com.example.bechitra.walleto.utility.ColorUtility;
 import com.example.bechitra.walleto.utility.DateManager;
 import com.example.bechitra.walleto.viewmodel.CategorisedDataViewerViewModel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CategorisedDataViewerActivity extends AppCompatActivity {

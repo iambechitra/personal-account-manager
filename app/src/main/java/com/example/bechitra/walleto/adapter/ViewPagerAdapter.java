@@ -7,7 +7,7 @@ import androidx.fragment.app.FragmentPagerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/// ########## NO USE OF THIS ADAPTER ############ \\\
 public class ViewPagerAdapter extends FragmentPagerAdapter{
     List<Fragment> fragmentList = new ArrayList<>();
     List<String> fragmentTitle = new ArrayList<>();

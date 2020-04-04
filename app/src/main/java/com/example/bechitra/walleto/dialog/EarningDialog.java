@@ -11,19 +11,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.fragment.app.DialogFragment;
 
-import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.R;
 import com.example.bechitra.walleto.utility.DateManager;
 import com.example.bechitra.walleto.dialog.listener.DialogListener;
 import com.example.bechitra.walleto.dialog.listener.OnCloseDialogListener;
-import com.example.bechitra.walleto.table.PrimeTable;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
@@ -32,6 +29,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+/// ######################### NEED TO CHECK ######################## \\\
 public class EarningDialog extends DialogFragment {
     @BindView(R.id.earningDateText) TextView earningDateText;
     @BindView(R.id.earningAmountEdit) EditText earningAmountEdit;
@@ -48,15 +46,15 @@ public class EarningDialog extends DialogFragment {
         alertDialogBuilder.setView(view);
         ButterKnife.bind(this, view);
 
-        final DatabaseHelper db = new DatabaseHelper(getActivity());
+        //final DatabaseHelper db = new DatabaseHelper(getActivity());
 
-        final List<String> spinnerItem = db.getDistinctCategory("EARNING");
+        final List<String> spinnerItem = null;// db.getDistinctCategory("EARNING");
 
         final ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, spinnerItem);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         earningCatagorySpinner.setAdapter(spinnerAdapter);
 
-        if(spinnerItem!= null)
+        //if(spinnerItem!= null)
             earningCatagorySpinner.setSelection(0);
 
         earningCatagorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -97,8 +95,8 @@ public class EarningDialog extends DialogFragment {
                     else
                         date = stk.getCurrentDate();
 
-                    PrimeTable earning = new PrimeTable(null,stk.stringFormatter(earningCatagorySpinner.getSelectedItem().toString()).trim(), earningAmountEdit.getText().toString(), date, null, db.getActivatedWalletID());
-                    db.insertOnTable(db.getEarningTable(),earning);
+                    //PrimeTable earning = new PrimeTable(null,stk.stringFormatter(earningCatagorySpinner.getSelectedItem().toString()).trim(), earningAmountEdit.getText().toString(), date, null, db.getActivatedWalletID());
+                    //db.insertOnTable(db.getEarningTable(),earning);
                 }
 
             }

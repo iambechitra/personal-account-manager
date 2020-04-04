@@ -40,11 +40,7 @@ public class HomeFragmentViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<Transaction>> getTransactionData() { return repository.getTransactionOfActivatedWallet(); }
-    public LiveData<List<Wallet>> getWalletData() { return repository.getAllWallet(); }
     public Wallet getActiveWallet() { return repository.getActiveWallet(); }
-    public List<Transaction> getTransactionByTag(List<Transaction> transactions, String tag) {
-        return processor.getTransactionsByTag(transactions, tag);
-    }
 
     public List<Transaction> getListOfTransaction() {
         return processor.getTransactionsByRange(repository.getListTransaction(), lowerBound, upperBound);
