@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "9526200947",
+    "firebase_url": "https://expense-manager-cdb94.firebaseio.com",
+    "project_id": "expense-manager-cdb94",
+    "storage_bucket": "expense-manager-cdb94.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:9526200947:android:97a830f8fe9cab31ca3806",
+        "android_client_info": {
+          "package_name": "com.pipapps.walleto"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "9526200947-4s1o43krd5unua7jo0880ar0prkel4re.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAX1xhiaHsjng49vPsM1FLISChRl4iYDdM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "9526200947-4s1o43krd5unua7jo0880ar0prkel4re.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.example.bechitra.walleto">
+          package="com.pipapps.bechitra.walleto">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.SET_ALARM"/>
@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name="com.pipapps.bechitra.walleto.MainActivity"
             android:screenOrientation="fullSensor">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -22,23 +22,23 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.SpendingOrEarningDataSetterActivity"
+            android:name="com.pipapps.bechitra.walleto.activity.SpendingOrEarningDataSetterActivity"
             android:screenOrientation="fullSensor"/>
 
-        <receiver android:name=".AlertManager"/>
+        <receiver android:name="com.pipapps.bechitra.walleto.AlertManager"/>
 
         <activity
-            android:name=".activity.DataEditorActivity"
+            android:name="com.pipapps.bechitra.walleto.activity.DataEditorActivity"
             android:label="Information"/>
-        <activity android:name=".activity.CategoryItemViewerActivity"/>
-        <activity android:name=".activity.AccountManagementActivity"/>
-        <activity android:name=".activity.ScheduleDataViewerActivity"/>
-        <activity android:name=".activity.DataQueryActivity"/>
-        <activity android:name=".activity.ScheduleManagementActivity">
+        <activity android:name="com.pipapps.bechitra.walleto.activity.CategoryItemViewerActivity"/>
+        <activity android:name="com.pipapps.bechitra.walleto.activity.AccountManagementActivity"/>
+        <activity android:name="com.pipapps.bechitra.walleto.activity.ScheduleDataViewerActivity"/>
+        <activity android:name="com.pipapps.bechitra.walleto.activity.DataQueryActivity"/>
+        <activity android:name="com.pipapps.bechitra.walleto.activity.ScheduleManagementActivity">
         </activity>
-        <activity android:name=".activity.SettingsActivity">
+        <activity android:name="com.pipapps.bechitra.walleto.activity.SettingsActivity">
         </activity>
-        <activity android:name=".activity.CategorisedDataViewerActivity">
+        <activity android:name="com.pipapps.bechitra.walleto.activity.CategorisedDataViewerActivity">
         </activity>
     </application>
 
