@@ -11,39 +11,37 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.example.bechitra.walleto.DatabaseHelper;
 import com.example.bechitra.walleto.R;
+import com.example.bechitra.walleto.databinding.ActivitySettingsBinding;
 import com.example.bechitra.walleto.dialog.ResetDialog;
 import com.example.bechitra.walleto.dialog.listener.OnResetListener;
 import com.example.bechitra.walleto.viewmodel.SettingActivityViewModel;
 
 public class SettingsActivity extends AppCompatActivity {
-    @BindView(R.id.resetWalletSwitch) Switch resetWalletSwitch;
-
     private SettingActivityViewModel viewModel;
+    private ActivitySettingsBinding viewBind;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
-        ButterKnife.bind(this);
+        viewBind = ActivitySettingsBinding.inflate(getLayoutInflater());
+        setContentView(viewBind.getRoot());
+
         viewModel = new ViewModelProvider(this).get(SettingActivityViewModel.class);
 
-        resetWalletSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) {
-                    ResetDialog resetDialog = new ResetDialog();
-                    resetDialog.show(getSupportFragmentManager(), "TAG");
-                    resetDialog.setOnResetListener(action -> {
-                        if(action) {
-                            viewModel.reset();
-                            toastMassage("Action Successful");
-                            resetWalletSwitch.setChecked(false);
-                        } else {
-                            toastMassage("Action not Performed");
-                            resetWalletSwitch.setChecked(false);
-                        }
-                    });
-                }
+        viewBind.resetWalletSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(isChecked) {
+                ResetDialog resetDialog = new ResetDialog();
+                resetDialog.show(getSupportFragmentManager(), "TAG");
+                resetDialog.setOnResetListener(action -> {
+                    if(action) {
+                        viewModel.reset();
+                        toastMassage("Action Successful");
+                        viewBind.resetWalletSwitch.setChecked(false);
+                    } else {
+                        toastMassage("Action not Performed");
+                        viewBind.resetWalletSwitch.setChecked(false);
+                    }
+                });
             }
         });
     }
