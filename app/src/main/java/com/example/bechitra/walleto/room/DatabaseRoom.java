@@ -37,10 +37,8 @@ public abstract class DatabaseRoom extends RoomDatabase {
 
             databaseWriteExecutor.execute(()->{
                 WalletDao dao = instance.walletDao();
-                Log.d("exe", "i was run");
                 dao.resetWallet();
                 dao.insert(new Wallet("PRIMARY", 0, true));
-                Log.d("data", ""+dao.getAllWallet().getValue());
             });
         }
 

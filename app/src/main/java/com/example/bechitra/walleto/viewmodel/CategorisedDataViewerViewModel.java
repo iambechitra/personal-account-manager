@@ -47,5 +47,4 @@ public class CategorisedDataViewerViewModel extends AndroidViewModel {
         return processor.getTransactionsByTag(transactions, tag);
     }
 
-
 }
