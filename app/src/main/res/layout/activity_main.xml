@@ -7,7 +7,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/drawerLayout"
         android:fitsSystemWindows="true"
-        tools:context="com.example.bechitra.walleto.MainActivity"
+        tools:context="com.pipapps.bechitra.walleto.MainActivity"
         tools:openDrawer="end">
 
         <RelativeLayout
