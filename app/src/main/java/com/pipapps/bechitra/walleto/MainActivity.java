@@ -4,21 +4,15 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import androidx.annotation.NonNull;
-
-import com.pipapps.bechitra.walleto.databinding.ActivityMainBinding;
-import com.pipapps.bechitra.walleto.framents.OverviewFragment;
-import com.google.android.material.navigation.NavigationView;
+import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.core.view.GravityCompat;
-import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.View;
-
 import com.pipapps.bechitra.walleto.activity.*;
+import com.pipapps.bechitra.walleto.databinding.ActivityMainBinding;
 import com.pipapps.bechitra.walleto.framents.HomeFragment;
+import com.pipapps.bechitra.walleto.framents.OverviewFragment;
 
 import java.util.Calendar;
 
@@ -37,65 +31,48 @@ public class MainActivity extends AppCompatActivity {
         attachFragment(new HomeFragment());
         //dashboardBack.setBackgroundColor(view.getResources().getColor(R.color.tab_selected));
 
-        binding.rootFloatingButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), SpendingOrEarningDataSetterActivity.class);
-                startActivity(intent);
-            }
+        binding.rootFloatingButton.setOnClickListener(view -> {
+            Intent intent = new Intent(view.getContext(), SpendingOrEarningDataSetterActivity.class);
+            startActivity(intent);
         });
 
-        binding.dashboard.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                attachFragment(new HomeFragment());
-                binding.dashboardBack.setBackgroundResource(R.drawable.ic_background_custom);
-                binding.overviewBack.setBackgroundResource(R.color.green);
-            }
+        binding.dashboard.setOnClickListener(view -> {
+            attachFragment(new HomeFragment());
+            binding.dashboardBack.setBackgroundResource(R.drawable.ic_background_custom);
+            binding.overviewBack.setBackgroundResource(R.color.green);
         });
 
-        binding.overview.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                attachFragment(new OverviewFragment());
-                binding.overviewBack.setBackgroundResource(R.drawable.ic_background_custom);
-                binding.dashboardBack.setBackgroundResource(R.color.green);
-            }
+        binding.overview.setOnClickListener(view -> {
+            attachFragment(new OverviewFragment());
+            binding.overviewBack.setBackgroundResource(R.drawable.ic_background_custom);
+            binding.dashboardBack.setBackgroundResource(R.color.green);
         });
 
-        binding.navigationDrawerIconText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                binding.drawerLayout.openDrawer(GravityCompat.START);
-            }
-        });
+        binding.navigationDrawerIconText.setOnClickListener(view -> binding.drawerLayout.openDrawer(GravityCompat.START));
 
-        binding.navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.manageAccount: {
-                        startActivity(AccountManagementActivity.class);
-                        break;
-                    }
-                    case R.id.scheduleData: {
-                        startActivity(ScheduleDataViewerActivity.class);
-                        break;
-                    }
-
-                    case R.id.dataQuery : {
-                        startActivity(DataQueryActivity.class);
-                        break;
-                    }
-
-                    case R.id.settingsMenu : {
-                        startActivity(SettingsActivity.class);
-                        break;
-                    }
+        binding.navView.setNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.manageAccount: {
+                    startActivity(AccountManagementActivity.class);
+                    break;
+                }
+                case R.id.scheduleData: {
+                    startActivity(ScheduleDataViewerActivity.class);
+                    break;
                 }
 
-                return true;
+                case R.id.dataQuery : {
+                    startActivity(DataQueryActivity.class);
+                    break;
+                }
+
+                case R.id.settingsMenu : {
+                    startActivity(SettingsActivity.class);
+                    break;
+                }
             }
+            binding.drawerLayout.closeDrawer(GravityCompat.START);
+            return true;
         });
 
     }
